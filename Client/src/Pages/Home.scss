@@ -1,0 +1,10 @@
+.home {
+    display: flex;  
+    &__left {
+      width: 12%;
+    }  
+    &__right {
+      width: 88%;
+      margin-left: 20px;
+    }
+  }

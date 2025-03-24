@@ -1,0 +1,169 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./Register.scss";
+import { toast } from "react-toastify";
+import Header from "./Header";
+
+const Register = () => {
+  const navigate = useNavigate();
+  const Url = import.meta.env.VITE_API_URL + "auth/";
+  console.log("url came", Url);
+  const [offices, setOffices] = useState([{}]);
+  const loadOffices = async () => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: Url + "getAllOffices",        
+      });
+      setOffices(response.data.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const OnSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const data= dataObject.fromEntries(formData);
+    console.log(data);
+    if (
+      data.contactno.length == 0 ||
+      data.email.length == 0 ||
+      data.password.length == 0 ||
+      data.confirmpassword.length == 0 ||
+      data.officeid.length == 0
+    ) {
+      toast.warning("Please fill the form");
+      return;
+    }
+    if (data.password != data.confirmpassword) {
+      toast.warning("password and confirm password doesnot match");
+      return;
+    }
+    try {
+      const response = await axios({
+        method: "post",
+        url: Url + "register",
+        data: data,
+      });
+      if (response.data.status == true) {
+        toast.success(response.data.message);
+        navigate("/home");
+      } else {
+        toast.warning(response.data.message);
+        console.log(response);
+      }
+    } catch (error) {
+      toast.warning(error);
+    }
+  };
+  useEffect(() => {
+    loadOffices();
+  }, []);
+  return (
+    <section id="register" className="register">
+      <Header/>
+      <div className="register__form-outer">
+        <h5 className="register__form-outer__header-text">Registration Form</h5>
+        <form className="register__form-inner" onSubmit={OnSubmit}>
+          <div className="register__form-inner__div">         
+          <div className="register__form-inner__div__item">
+            <input
+              className="register__form-inner__div__item__input"
+              type="email"
+              name="email"
+              autoComplete="off"
+              placeholder="email"
+              required
+            />
+          </div>
+          <div className="register__form-inner__div__item">
+            <input
+              className="register__form-inner__div__item__input"
+              type="text"
+              name="engname"
+              autoComplete="off"
+              placeholder="full name english"
+              required
+            />
+          </div>
+          <div className="register__form-inner__div__item">
+            <input
+              className="register__form-inner__div__item__input"
+              type="text"
+              name="nepname"
+              autoComplete="off"
+              placeholder="पुरा नाम नेपालीमा"
+              required
+            />
+          </div>
+          <div className="register__form-inner__div__item">
+            <input
+              className="register__form-inner__div__item__input"
+              type="text"
+              name="contactno"
+              autoComplete="off"
+              placeholder="contactno"
+              required
+             
+            />
+          </div>
+          </div>
+          <div className="register__form-inner__div">
+            
+          <div className="register__form-inner__div__item">
+            <input
+              className="register__form-inner__div__item__input"
+              type="password"
+              name="password"
+              autoComplete="off"
+              placeholder="password"
+              required
+            />
+          </div>
+          <div className="register__form-inner__div__item">
+            <input
+              className="register__form-inner__div__item__input"
+              type="password"
+              name="confirmpassword"
+              autoComplete="off"
+              placeholder="re-enter password"
+              required
+            />
+          </div>
+          <div className="register__form-inner__div__item">
+            <select
+              className="register__form-inner__div__item__input"
+              name="officeid"
+            >
+              {offices ? offices.map((data,index) => {
+                    return (
+                      <option key={index} value={data.id}>
+                        {data.office_name}
+                      </option>
+                    );
+                  }):null
+                }
+            </select>
+          </div>
+          <div className="register__form-inner__div__item">
+            <input
+              type="submit"
+              value="Register"
+              className="register__form-inner__div__item__button"
+            />
+          </div>
+          </div>        
+          
+        </form>
+
+        <h6 className="register__form-outer__footer-text">
+          <Link to="/login">Already registered. Please login</Link>
+        </h6>
+      </div>
+    </section>
+  );
+};
+
+export default Register;

@@ -1,0 +1,70 @@
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+/dist
+/Client/dist
+/Server/dist
+
+/Client/iisnode
+/Server/iisnode
+
+.vscode
+/Client/.vscode
+/Client/.angular
+/Server/.vscode
+/Server/.angular
+
+/tmp
+/Client/tmp
+/Server/tmp
+
+/out-tsc
+/Client/out-tsc
+/Server/out-tsc
+
+/bazel-out
+/Client/bazel-out
+/Server/bazel-out
+
+# Node
+/node_modules
+/Client/node_modules
+/Server/node_modules
+npm-debug.log
+/Client/npm-debug.log
+/Server/npm-debug.log
+yarn-error.log
+/Client/yarn-error.log
+/Server/yarn-error.log
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+/Client/.vscode/*
+/Server/.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+/Client/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# System files
+.DS_Store
+Thumbs.db
