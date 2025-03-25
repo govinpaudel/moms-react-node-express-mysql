@@ -3,7 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Login.scss";
 import { toast } from "react-toastify";
-import Header from "./Header";
+import { BsInfoCircleFill } from "react-icons/bs";
+import PageHeaderComponent from "../Components/PageHeaderComponent";
+import MainHeaderComponent from "../Components/MainHeaderComponent";
 const Login = () => {
   const [aabas, setaabas] = useState([]);
   const [defaaba, setdefaaba] = useState();
@@ -28,11 +30,11 @@ const Login = () => {
       });
       console.log("response",response);
       if (response.data.status == 200) {
-       
-        sessionStorage.setItem("aabaid", JSON.stringify(data.aabaid));
+        let data1={...response.data.data,"aabaid":data.aabaid}   
+        console.log("data1",data1)            
         sessionStorage.setItem("access_token", JSON.stringify(response.data.access_token));
         sessionStorage.setItem("refresh_token", JSON.stringify(response.data.refresh_token));
-        sessionStorage.setItem("loggedUser", JSON.stringify(response.data.data));
+        sessionStorage.setItem("loggedUser", JSON.stringify(data1));
         toast.success(response.data.message);
         navigate("/");
       } else {
@@ -72,7 +74,7 @@ const Login = () => {
   }, [aabas]);
   return (
     <section id="login" className="login">
-      <Header/>
+      <MainHeaderComponent headerText="मालपोत कार्यालय व्यवस्थापन प्रणाली"/>
       <div className="login__form-outer">
         <h5 className="login__form-outer__header-text">Login Form</h5>
         <form className="login__form-inner" onSubmit={OnSubmit}>

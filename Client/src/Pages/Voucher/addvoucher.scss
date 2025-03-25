@@ -1,9 +1,11 @@
 .Addvoucher {
   display: flex;
   flex-direction: column;
+
   &__Form {
     display: flex;
     flex-direction: column;
+
     &__part {
       display: flex;
       justify-content: space-around;
@@ -11,21 +13,32 @@
       &__item {
         display: flex;
         flex-direction: column;
-        
-        &__label {
-          color: var(--yellow-theme-main-color);
-          font-size: 14px;
+        width: 250px;
+        justify-content: space-around;
+
+        &__button {
+          padding: 10px 20px;
+          background-color: var(--yellow-theme-main-color);
+          border-radius: 15px;
+          cursor: pointer;
+          text-align: center;
         }
-          &__input{
-            
-            padding: 5px 40px 5px 15px;
-            border: 1px solid var(--yellow-theme-sub-text-color) !important;
-            border-radius: 25px;
-            width: 100%;
-            font-size: 17px;
-            background-color: var(--yellow-theme-background-color);
-            color: var(--yellow-theme-main-color);
-          
+
+        &__label {
+          color: var(--yellow-theme-sub-text-color);
+          font-size: 16px;
+        }
+
+        &__input {
+
+          padding: 5px 40px 5px 15px;
+          border: 1px solid var(--yellow-theme-sub-text-color) !important;
+          border-radius: 25px;
+          width: 100%;          
+          font-size: 17px;
+          background-color: var(--yellow-theme-background-color);
+          color: var(--yellow-theme-main-color);
+
         }
       }
 
@@ -33,37 +46,4 @@
     }
 
   }
-}
-
-
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.entryForm {
-  margin-top: 5px;
-  margin-left: 5px;
-  margin-bottom: 20px;
-}
-
-.heading1 {
-  margin-top: 10px;
-  background-color: skyblue;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  color: white;
-  font-size: large;
-  border-radius: 10px;
-}
-
-.small {
-  width: 200px;
-}
-
-.amttowords {
-  margin-top: 5px;
-  font-size: 12px;
-  color: var(--color2);
 }

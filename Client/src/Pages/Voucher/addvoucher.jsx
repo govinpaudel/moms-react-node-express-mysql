@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
+import { NavLink } from "react-router-dom"
 const Addvoucher = () => {
   const initialdata = {
     id: 0,
@@ -32,7 +33,7 @@ const Addvoucher = () => {
 
   const handleChange = (e) => {
     setVdata({ ...vdata, [e.target.name]: e.target.value });
-    console.log("data changed",vdata);
+    console.log("data changed", vdata);
   };
   const handlesDate = ({ bsDate, adDate }) => {
     console.log("date is changed");
@@ -43,11 +44,11 @@ const Addvoucher = () => {
     const response = await axios({
       method: "post",
       url: Url + "getVoucherMaster",
-      data: {        
+      data: {
         office_id: loggedUser.office_id,
       },
     });
-    console.log( response.data.data); 
+    console.log(response.data.data);
     setsirshaks(response.data.data.sirshaks);
     setfants(response.data.data.fants);
     setnapas(response.data.data.napas);
@@ -57,14 +58,16 @@ const Addvoucher = () => {
 
 
 
-  
+
   const checkVoucher = (e) => {
     console.log(e);
+    console.log(params);
     let a = e.length;
     let b = e;
     let c = b.toString();
     let d = c.substring(0, 1);
     let f = d.toString() + a.toString();
+    console.log(f);
     let status = params.find((temp) => temp.parm == f);
     if (status) {
       console.log("voucher ok");
@@ -79,8 +82,7 @@ const Addvoucher = () => {
     const myArray = vdata.ndate.split("-");
     vdata.office_id = loggedUser.officeid;
     vdata.aaba_id = loggedUser.aabaid;
-    vdata.created_by_user_id = loggedUser.id;
-    vdata.type = "save";
+    vdata.created_by_user_id = loggedUser.id;    
     vdata.month_id = myArray[1];
     if (!vdata.oldvoucher) {
       vdata.oldvoucher = "off";
@@ -127,7 +129,7 @@ const Addvoucher = () => {
   };
   useEffect(() => {
     setVdata(initialdata);
-    getVoucherMaster();    
+    getVoucherMaster();
   }, []);
 
   return (
@@ -202,7 +204,7 @@ const Addvoucher = () => {
         </div>
         <div className="Addvoucher__Form__part">
           <div className="Addvoucher__Form__part__item">
-            <label className="Addvoucher__Form__part__label">शिर्षक</label>
+            <label className="Addvoucher__Form__part__item__label">शिर्षक</label>
             <select
               name="sirshak_id"
               className="Addvoucher__Form__part__item__input"
@@ -221,11 +223,11 @@ const Addvoucher = () => {
                 : null}
             </select>
           </div>
-          <div className="form-group">
-            <label className="datelabel">न.पाः</label>
+          <div className="Addvoucher__Form__part__item">
+            <label className="Addvoucher__Form__part__item__label">न.पाः</label>
             <select
               name="napa_id"
-              className="input"
+              className="Addvoucher__Form__part__item__input"
               value={vdata.napa_id}
               onChange={handleChange}
             >
@@ -240,58 +242,63 @@ const Addvoucher = () => {
                 : null}
             </select>
           </div>
-          <div className="form-group">
-            <label className="datelabel">भौचर नं</label>
+
+          <div className="Addvoucher__Form__part__item">
+            <label className="Addvoucher__Form__part__item__label">जम्मा गर्ने व्यक्तिको नाम</label>
             <input
               type="text"
-              name="voucherno"
-              className="input"
-              required
-              value={vdata.voucherno}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form-group">
-            <label className="datelabel">रकम</label>
-            <input
-              type="number"
-              name="amount"
-              className="input"
-              value={vdata.amount}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        </div>
-        <h6 className="amttowords center">{convertToWords(vdata.amount)}</h6>
-        <div className="main-div flex">
-          <div className="form-group">
-            <label className="datelabel">जम्मा गर्ने व्यक्तिको नाम</label>
-            <input
-              type="text"
-              className="input"
+              className="Addvoucher__Form__part__item__input"
               name="remarks"
               required
               onChange={handleChange}
               value={vdata.remarks}
             />
           </div>
-          <div className="form-group center">
+          <div className="Addvoucher__Form__part__item">
+            <label className="Addvoucher__Form__part__item__label">भौचर नं</label>
+            <input
+              type="text"
+              name="voucherno"
+              className="Addvoucher__Form__part__item__input"
+              required
+              value={vdata.voucherno}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        <div className="Addvoucher__Form__part">
+          <div className="Addvoucher__Form__part__item">
+            <label className="Addvoucher__Form__part__item__label">रकम</label>
+            <input
+              type="number"
+              name="amount"
+              className="Addvoucher__Form__part__item__input"
+              value={vdata.amount}
+              onChange={handleChange}
+              required
+            />
+            
+          </div>
+          <div className="Addvoucher__Form__part__item">
+            <label className="Addvoucher__Form__part__item__label">रकम अक्षरमा</label>
+            <h6 className="Addvoucher__Form__part__item__input">{convertToWords(vdata.amount)}</h6>            
+          </div>
+          <div className="Addvoucher__Form__part__item">
             <input
               type="submit"
-              className="button center small"
+              className="Addvoucher__Form__part__item__button"
               value="सेभ गर्नुहोस्"
             />
           </div>
-          <div className="form-group center">
-            <div
-              onClick={() => {
-                // props.Close();
-              }}
-              className="button center small"
-            >
-              <span>रद्द गर्नुहोस्</span>
-            </div>
+          <div className="Addvoucher__Form__part__item">
+            <NavLink to={"/home/listvoucher"}>
+            <input
+              type="cancel"
+              className="Addvoucher__Form__part__item__button"
+              value="रद्द गर्नुहोस्"
+            />
+            </NavLink>
           </div>
         </div>
       </form>

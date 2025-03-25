@@ -46,7 +46,7 @@ loadsidebardata();
               })}
             </ul>
             <h6 className="sidebar__menus__menu-text">Reports</h6>
-      <ul>
+            <ul>
               {reports.map((item, i) => {
                 return (
                   <li key={i}>
@@ -54,6 +54,13 @@ loadsidebardata();
                   </li>
                 );
               })}
+            </ul>
+            
+            <ul>          
+               
+                  <li >
+                    <NavLink to={"/home/logout"}>Logout</NavLink>
+                  </li>                
             </ul>
       </div>    
     </section>

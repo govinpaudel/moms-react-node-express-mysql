@@ -32,32 +32,40 @@ const Listvoucher = () => {
       }
     }
   });
+  const SearchVoucher = (e) => {
+    if (e.key == 'Enter') {
+      loadSingleVoucher();
+    }
 
+  }
   const loadSingleVoucher = async () => {
-    const data = {
-      office_id: loggedUser.officeid,
-      aaba_id: loggedUser.aabaid,
-      voucherno: props.data,
-      type: "getdetailbyvoucherno",
-    };
-    console.log(data);
-    const response = await axios({
-      method: "post",
-      url: Url + "voucher.php",
-      data: data,
-    });
-    setvoucherlist(response.data.data);
+    if (svoucherno.length > 0) {
+      const data = {
+        office_id: loggedUser.office_id,
+        aaba_id: loggedUser.aabaid,
+        voucherno: svoucherno,
+      };
+      const response = await axios({
+        method: "post",
+        url: Url + "loadSingleVoucher",
+        data: data,
+      });
+      setvoucherlist(response.data.data);
+    }
+    else {
+      loadTodayVouchers();
+    }
   };
 
   const loadTodayVouchers = async () => {
-    const data={ 
-      created_by_user_id: loggedUser.id     
+    const data = {
+      created_by_user_id: loggedUser.id
     }
-    console.log("data sent",data);    
+    console.log("data sent", data);
     const response = await axios({
       method: "post",
       url: Url + "getTodaysVoucher",
-      data:data
+      data: data
     });
     console.log(response);
     setvoucherlist(response.data.data);
@@ -87,30 +95,34 @@ const Listvoucher = () => {
         icon={<BsInfoCircleFill size={40} />}
       />
       <div className="listvoucher__adddiv">
-       <div className="listvoucher__adddiv__search">
-       <input
+        <div className="listvoucher__adddiv__search">
+          <input
             type="text"
             className="listvoucher__adddiv__search__input"
-            placeholder="खोजीको लागि भौचर नं प्रविष्ट गर्नुहोस् ।"                    
+            placeholder="खोजीको लागि भौचर नं प्रविष्ट गर्नुहोस् ।"
+            onKeyUp={SearchVoucher}
+            onChange={(e) => {
+              setsvoucherno(e.target.value)
+            }}
           />
-       </div>
-       <NavLink to={"/home/addvoucher"}>
-       <div className="listvoucher__adddiv__addbtn">
-       <span> ( + )भौचर दर्ता गर्नुहोस्</span>
-       </div>
-       </NavLink>
+        </div>
+        <NavLink to={"/home/addvoucher"}>
+          <div className="listvoucher__adddiv__addbtn">
+            <span> ( + )भौचर दर्ता गर्नुहोस्</span>
+          </div>
+        </NavLink>
       </div>
       <div className="listvoucher__summary">
         {summary
           ? summary.map((data, i) => {
-              return (
-                <div key={i} className="listvoucher__summary__inner-div">
-                  <h4 className="listvoucher__summary__inner-div__sirshak">
-                    {data.sirshak_name} : {data.amount} ।
-                  </h4>
-                </div>
-              );
-            })
+            return (
+              <div key={i} className="listvoucher__summary__inner-div">
+                <h4 className="listvoucher__summary__inner-div__sirshak">
+                  {data.sirshak_name} : {data.amount} ।
+                </h4>
+              </div>
+            );
+          })
           : null}
       </div>
       {/* List voucher starts */}

@@ -1,0 +1,166 @@
+import React, { useState } from "react";
+import "./VoucherMonthly.scss";
+import axios from "axios";
+const VoucherMonthly = () => {
+  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const Url = import.meta.env.VITE_API_URL + "voucher/";
+  const [mselected, setmselected] = useState(0);
+  const [regi,setregi]=useState([{}]);
+  const [summary,setsummary]=useState([{}]);
+  const [isthaniye,setisthaniye]=useState();
+  const [pardesh,setpardesh]=useState([]);
+  const [reportData, setreportData] = useState();
+  const [reportData1, setreportData1] = useState();
+  const data = [
+    { mid: 4, mname: "श्रावण" },
+    { mid: 5, mname: "भदौ" },
+    { mid: 6, mname: "असोज" },
+    { mid: 7, mname: "कार्तिक" },
+    { mid: 8, mname: "मंसिर" },
+    { mid: 9, mname: "पौष" },
+    { mid: 10, mname: "माघ" },
+    { mid: 11, mname: "फाल्गुन" },
+    { mid: 12, mname: "चैत्र" },
+    { mid: 1, mname: "बैशाख" },
+    { mid: 2, mname: "जेष्ठ" },
+    { mid: 3, mname: "असार" },
+  ];
+
+  const genReport = async () => {
+    if(mselected==0){
+      return;
+    }
+    const data = {     
+      office_id: loggedUser.office_id,
+      aaba_id: loggedUser.aabaid,
+      monthid: mselected,
+    };
+    console.log("data sent", data);
+    const response = await axios({
+      method: "post",
+      url: Url + "VoucherMonthly",
+      data: data,
+    });
+    console.log(response.data.data);    
+    setregi(response.data.data.registration); 
+    setsummary(response.data.data.summary);
+    setisthaniye(response.data.data.isthaniye);
+    setpardesh(response.data.data.pardesh);
+  };
+
+  function handleclick(e) {   
+    if (e.target.checked) {      
+      setmselected(e.target.value);     
+      console.log("new value", mselected); 
+    } else {      
+      setmselected(0);
+    }
+    
+  }
+  return (
+    <section id="Vouchermonthly" className="Vouchermonthly">
+      <div className="Vouchermonthly__month">
+        {data.map((item, i) => {
+          return (
+            <div className="Vouchermonthly__month__item" key={i}>
+              <input
+                className="Vouchermonthly__month__item__box"
+                type="checkbox"
+                name="month"
+                value={item.mid}
+                onClick={handleclick}
+              />
+              <h4>{item.mname}</h4>
+            </div>
+          );
+        })}
+        <div className="Vouchermonthly__month__button">
+          <button onClick={genReport} className="Vouchermonthly__month__button__button">
+            रीपोर्ट हेर्नुहोस्
+          </button>
+        </div>
+      </div>      
+      <table className="reporttable">
+        <thead>
+          <tr>
+            <th>शिर्षक</th> 
+            <th>रकम</th>            
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{regi[0].sirshak_name}</td>
+            <td>{regi[0].amount}</td>
+          </tr>
+          <tr>
+            <td>संचितकोषमा जाने</td>
+            <td>{summary[0].sanchitkosh}</td>
+          </tr>
+          <tr>
+            <th colSpan={2}>स्थानियमा जाने</th>
+          </tr>
+          {isthaniye ? isthaniye.map((item,i)=>{
+              return <tr key={i}><td>{item.napa_name}</td><td>{item.isthaniye}</td></tr>
+          }):null}
+
+          <tr>
+            <td>स्थानियमा जाने</td>
+            <td>{summary[0].isthaniye}</td>
+          </tr>
+          <tr>
+            <td colSpan={2}>प्रदेशमा जाने</td>            
+          </tr>
+          {
+            pardesh.map((item,i)=>{
+              return <tr key={i}>
+                <td>{item.sirshak_name}</td>
+                <td>{item.pardesh}</td>
+              </tr>
+            })
+          }
+          <tr>
+            <td>जम्मा प्रदेशमा जाने</td>
+            <td>{summary[0].pardesh}</td>
+          </tr>
+
+
+        </tbody>
+      </table>
+
+      <table className="table">
+        <thead>
+          <tr>
+            <th>न.पा.</th>
+            <th>जम्मा</th>
+            <th>संघ</th>
+            <th>प्रदेश</th>
+            <th>स्थानिय</th>
+            <th>संचितकोष</th>
+          </tr>
+        </thead>
+        <tbody>
+          {reportData1 ? (
+            reportData1.map((item) => {
+              return (
+                <tr key={item.napa_id}>
+                  <td>{item.napa_name}</td>
+                  <td>{item.amount}</td>
+                  <td>{item.sangh}</td>
+                  <td>{item.pardesh}</td>
+                  <td>{item.isthaniye}</td>
+                  <td>{item.sanchitkosh}</td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td>No data loaded</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </section>
+  );
+};
+
+export default VoucherMonthly;

@@ -1,0 +1,39 @@
+.Vouchermonthly {
+  &__month {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    border: 1px solid var(--yellow-theme-main-color);
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-right: 10px;
+
+    &__button {
+      &__button {
+        background-color: var(--yellow-theme-main-color);
+        border: 1px solid var(--yellow-theme-background-color);
+        color: var(--yellow-theme-background-color);
+        font-weight: 800;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 15px;
+      }
+    }
+
+    &__item {
+      &__box {
+        width: 35px;
+        color: var(--yellow-theme-main-color);
+      }
+
+      h4 {
+        color: var(--yellow-theme-main-color);
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.reporttable {
+  text-align: left;
+}

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Register.scss";
 import { toast } from "react-toastify";
-import Header from "./Header";
+import MainHeaderComponent from "../Components/MainHeaderComponent";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -63,7 +63,7 @@ const Register = () => {
   }, []);
   return (
     <section id="register" className="register">
-      <Header/>
+      <MainHeaderComponent headerText="मालपोत कार्यालय व्यवस्थापन प्रणाली"/>
       <div className="register__form-outer">
         <h5 className="register__form-outer__header-text">Registration Form</h5>
         <form className="register__form-inner" onSubmit={OnSubmit}>
