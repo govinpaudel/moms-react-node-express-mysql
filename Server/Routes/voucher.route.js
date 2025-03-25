@@ -4,6 +4,23 @@ const router = express.Router();
 const date = require('date-and-time')
 router.get('/', (req, res, next) => { res.send("Hello from voucherpage") })
 
+router.post('/Monthlist', (req, res) => {
+    let user=req.body;
+    let query="select DISTINCT a.month_id as mid,b.month_name as mname,b.month_order from voucher a\
+    inner join voucher_month b on a.month_id=b.id\
+    where a.office_id=? and aaba_id=?\
+    order by b.month_order";
+    connection.query(query,[user.office_id,user.aaba_id], (err, months) => {
+    if (err) { return; }
+    return res.status(200).json({
+        message: "डाटा सफलतापुर्वक प्राप्त भयो",
+        months:months
+    })
+})
+})
+
+
+
 router.post('/VoucherMonthly', (req, res) => {
     let user = req.body;
     console.log(user);
@@ -12,12 +29,12 @@ router.post('/VoucherMonthly', (req, res) => {
     a.sirshak_id = b.id\
     where aaba_id=? and office_id=? and month_id=? and sirshak_id=2\
     group by aaba_id,office_id,sirshak_id";
-    let query2 = "select a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,sum(a.amount) as amount,sum(a.amount*(d.sanchitkosh)/100) as sanchitkosh,sum(a.amount*(d.pardesh)/100) as pardesh,sum(a.amount*(d.isthaniye)/100) as isthaniye from voucher a\
+    let query2 = "select a.aaba_id,a.office_id,sum(a.amount) as amount,sum(a.amount*(d.sangh)/100) as sangh,sum(a.amount*(d.sanchitkosh)/100) as sanchitkosh,sum(a.amount*(d.pardesh)/100) as pardesh,sum(a.amount*(d.isthaniye)/100) as isthaniye from voucher a\
     inner join voucher_sirshak b on a.sirshak_id = b.id\
     inner join offices c on a.office_id=c.id\
     inner join voucher_badhfadh d on a.aaba_id=d.aaba_id and a.sirshak_id=d.sirshak_id and c.state_id=d.pardes_id\
-    where a.aaba_id=? and a.office_id=? and a.month_id=? and a.sirshak_id=2\
-    group by a.aaba_id,a.office_id,a.sirshak_id";
+    where a.aaba_id=? and a.office_id=? and a.month_id=?\
+    group by a.aaba_id,a.office_id";
     let query3="select a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,a.napa_id,e.napa_name,sum(a.amount) as amount,sum(a.amount*(d.sanchitkosh)/100) as sanchitkosh,sum(a.amount*(d.pardesh)/100) as pardesh,sum(a.amount*(d.isthaniye)/100) as isthaniye from voucher a\
     inner join voucher_sirshak b on a.sirshak_id = b.id\
     inner join offices c on a.office_id=c.id\

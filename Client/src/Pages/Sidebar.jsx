@@ -33,7 +33,7 @@ loadsidebardata();
 }, [])
 
   return (
-    <section id="sidebar" className="sidebar">
+    <section id="sidebar" className="sidebar no-print">
       <div className="sidebar__menus">
       <h6 className="sidebar__menus__menu-text">Operations</h6>
       <ul>

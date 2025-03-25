@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import "./VoucherMonthly.scss";
 import axios from "axios";
 const VoucherMonthly = () => {
@@ -9,22 +9,30 @@ const VoucherMonthly = () => {
   const [summary,setsummary]=useState([{}]);
   const [isthaniye,setisthaniye]=useState();
   const [pardesh,setpardesh]=useState([]);
-  const [reportData, setreportData] = useState();
-  const [reportData1, setreportData1] = useState();
-  const data = [
-    { mid: 4, mname: "श्रावण" },
-    { mid: 5, mname: "भदौ" },
-    { mid: 6, mname: "असोज" },
-    { mid: 7, mname: "कार्तिक" },
-    { mid: 8, mname: "मंसिर" },
-    { mid: 9, mname: "पौष" },
-    { mid: 10, mname: "माघ" },
-    { mid: 11, mname: "फाल्गुन" },
-    { mid: 12, mname: "चैत्र" },
-    { mid: 1, mname: "बैशाख" },
-    { mid: 2, mname: "जेष्ठ" },
-    { mid: 3, mname: "असार" },
-  ];
+  const [mdata,setmdata]=useState([]);
+  
+  
+
+  const loadmonth=async()=>{
+    const data = {     
+      office_id: loggedUser.office_id,
+      aaba_id: loggedUser.aabaid,      
+    };
+    console.log("getting monthlist",data)
+    const response = await axios({
+      method: "post",
+      url: Url + "Monthlist",
+      data: data,
+    });
+    console.log(response.data);
+    setmdata(response.data.months);
+  }
+
+
+useEffect(() => {
+  loadmonth()
+}, [])
+  
 
   const genReport = async () => {
     if(mselected==0){
@@ -60,7 +68,7 @@ const VoucherMonthly = () => {
   return (
     <section id="Vouchermonthly" className="Vouchermonthly">
       <div className="Vouchermonthly__month">
-        {data.map((item, i) => {
+        {mdata.map((item, i) => {
           return (
             <div className="Vouchermonthly__month__item" key={i}>
               <input
@@ -74,7 +82,7 @@ const VoucherMonthly = () => {
             </div>
           );
         })}
-        <div className="Vouchermonthly__month__button">
+        <div className="Vouchermonthly__month__button no-print">
           <button onClick={genReport} className="Vouchermonthly__month__button__button">
             रीपोर्ट हेर्नुहोस्
           </button>
@@ -89,7 +97,7 @@ const VoucherMonthly = () => {
         </thead>
         <tbody>
           <tr>
-            <td>{regi[0].sirshak_name}</td>
+            <td>{ regi[0].sirshak_name}</td>
             <td>{regi[0].amount}</td>
           </tr>
           <tr>
@@ -121,44 +129,13 @@ const VoucherMonthly = () => {
           <tr>
             <td>जम्मा प्रदेशमा जाने</td>
             <td>{summary[0].pardesh}</td>
-          </tr>
-
-
-        </tbody>
-      </table>
-
-      <table className="table">
-        <thead>
+          </tr>          
           <tr>
-            <th>न.पा.</th>
-            <th>जम्मा</th>
-            <th>संघ</th>
-            <th>प्रदेश</th>
-            <th>स्थानिय</th>
-            <th>संचितकोष</th>
+            <td>संघमा जाने</td>
+            <td>{summary[0].sangh}</td>
           </tr>
-        </thead>
-        <tbody>
-          {reportData1 ? (
-            reportData1.map((item) => {
-              return (
-                <tr key={item.napa_id}>
-                  <td>{item.napa_name}</td>
-                  <td>{item.amount}</td>
-                  <td>{item.sangh}</td>
-                  <td>{item.pardesh}</td>
-                  <td>{item.isthaniye}</td>
-                  <td>{item.sanchitkosh}</td>
-                </tr>
-              );
-            })
-          ) : (
-            <tr>
-              <td>No data loaded</td>
-            </tr>
-          )}
         </tbody>
-      </table>
+      </table>     
     </section>
   );
 };
