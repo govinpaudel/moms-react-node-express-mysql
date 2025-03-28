@@ -18,7 +18,7 @@ const Login = () => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData);
-    if (data.email.length == 0 || data.password.length == 0) {
+    if (data.username.length == 0 || data.password.length == 0) {
       toast.warning("Please fill the form");
       return;
     }
@@ -81,10 +81,10 @@ const Login = () => {
           <div className="login__form-inner__item">
             <input
               className="login__form-inner__item__input"
-              type="email"
-              name="email"
+              type="text"
+              name="username"
               autoComplete="off"
-              placeholder="email"
+              placeholder="Username"
               required
             />
           </div>

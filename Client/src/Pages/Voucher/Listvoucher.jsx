@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import "./listvoucher.scss";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
 const Listvoucher = () => {
+  const navigate = useNavigate();
   const Url = import.meta.env.VITE_API_URL + "voucher/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const [voucherlist, setvoucherlist] = useState([]);
@@ -158,12 +160,12 @@ const Listvoucher = () => {
                     <td>{data.amount}</td>
                     <td>
                       <button
-                        className="btn edit"
-                        onClick={() => handleOpen(data.id)}
+                        className="listvoucher__list__editbtn"
+                        onClick={() => navigate("/home/editvoucher",{state:{id:data.id}})}
                       >
-                        Edit
+                        संशोधन
                       </button>
-                      <button className="btn del">Del</button>
+                      <button className="listvoucher__list__delbtn">हटाउनुहोस्</button>
                     </td>
                   </tr>
                 );

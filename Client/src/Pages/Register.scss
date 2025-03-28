@@ -8,9 +8,7 @@
         border: 1px solid var(--yellow-theme-main-color);
         border-radius: 15px;
 
-        &__header-text {
-            margin-top: 20px;
-            margin-bottom: 20px;
+        &__header-text {           
             text-align: center;
             color: var(--yellow-theme-main-color);
             font-size: 16px;
@@ -70,19 +68,22 @@
 
         &__button {       
             background-color: var(--yellow-theme-main-color);
-            border-radius: 5px;
+            border-radius: 15px;
             font-size: 17px;
             font-family: 'Source Sans Pro', sans-serif;
             padding: 6px 18px;
             cursor: pointer;
+            width: 250px;
         }
+
+    }
+}       
 
     }
 }
 
-        
-
-    }
+.last{
+    justify-content: space-around;
 }
 
 @media only screen and (max-width:768px) {

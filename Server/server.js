@@ -8,6 +8,7 @@ const {verifyAccesstoken}=require('./libraries/jwt_helper');
 // import routes
 const authRoute = require('./Routes/auth.route');
 const voucherRoute = require('./Routes/voucher.route');
+const bargikaranRoute=require('./Routes/bargikaran.route')
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -17,8 +18,9 @@ app.use(morgan('dev'));
 
 
 // lets handle request coming from frontend
-app.use('/auth', authRoute)
-app.use('/voucher', voucherRoute)
+app.use('/auth', authRoute);
+app.use('/voucher', voucherRoute);
+app.use('/bargikaran',bargikaranRoute);
 app.get('/', async (req, res, next) => { res.send("Hello from Server") })
 
 app.use((err, req, res, next) => {

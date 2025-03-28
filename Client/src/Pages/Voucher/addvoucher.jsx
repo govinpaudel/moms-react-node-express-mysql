@@ -1,14 +1,15 @@
 import { convertToWords } from "../../Utils/Utils";
 import Calendar from "@sbmdkl/nepali-datepicker-reactjs";
 import "@sbmdkl/nepali-datepicker-reactjs/dist/index.css";
-import "./addvoucher.scss";
+import "./Addvoucher.scss";
 import { toast } from "react-toastify";
 import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
-import { NavLink } from "react-router-dom"
+import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const Addvoucher = () => {
   const initialdata = {
     id: 0,
@@ -30,7 +31,7 @@ const Addvoucher = () => {
   const [vdata, setVdata] = useState(initialdata);
   const Url = import.meta.env.VITE_API_URL + "voucher/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setVdata({ ...vdata, [e.target.name]: e.target.value });
     console.log("data changed", vdata);
@@ -80,19 +81,11 @@ const Addvoucher = () => {
   const onSubmit = async (event) => {
     event.preventDefault();
     const myArray = vdata.ndate.split("-");
-    vdata.office_id = loggedUser.officeid;
+    vdata.office_id = loggedUser.office_id;
     vdata.aaba_id = loggedUser.aabaid;
-    vdata.created_by_user_id = loggedUser.id;    
+    vdata.created_by_user_id = loggedUser.id;
     vdata.month_id = myArray[1];
-    if (!vdata.oldvoucher) {
-      vdata.oldvoucher = "off";
-    }
-    if (!vdata.id) {
-      vdata.id = 0;
-    }
     const vstatus = checkVoucher(vdata.voucherno);
-    console.log("voucher status", vstatus);
-    console.log(vdata);
     if (vdata.fant_id == 0) {
       toast.warning("कृपया फाँट चयन गर्नुहोस् ।");
       return;
@@ -115,14 +108,14 @@ const Addvoucher = () => {
     }
     const res = await axios({
       method: "post",
-      url: Url + "voucher.php",
+      url: Url + "addOrUpdateVoucher",
       data: vdata,
     });
     console.log(res.data);
     if (res.data.status == true) {
       toast.success(res.data.message);
       setVdata(initialdata);
-      // props.Close();
+      navigate("/home/listvoucher");
     } else {
       toast.warning(res.data.message);
     }
@@ -278,11 +271,11 @@ const Addvoucher = () => {
               onChange={handleChange}
               required
             />
-            
+
           </div>
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">रकम अक्षरमा</label>
-            <h6 className="Addvoucher__Form__part__item__input">{convertToWords(vdata.amount)}</h6>            
+            <h6 className="Addvoucher__Form__part__item__input">{convertToWords(vdata.amount)}</h6>
           </div>
           <div className="Addvoucher__Form__part__item">
             <input
@@ -293,11 +286,11 @@ const Addvoucher = () => {
           </div>
           <div className="Addvoucher__Form__part__item">
             <NavLink to={"/home/listvoucher"}>
-            <input
-              type="cancel"
-              className="Addvoucher__Form__part__item__button"
-              value="रद्द गर्नुहोस्"
-            />
+              <input
+                type="cancel"
+                className="Addvoucher__Form__part__item__button"
+                value="रद्द गर्नुहोस्"
+              />
             </NavLink>
           </div>
         </div>

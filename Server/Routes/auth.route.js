@@ -43,8 +43,8 @@ router.post('/login', async (req, res, next) => {
     let user = req.body
     const query = "select a.*,b.state_id,b.office_name,c.state_name from users a\
     inner join offices b on a.office_id=b.id\
-    inner join states c on b.state_id=c.id where a.email=?"
-    connection.query(query, [user.email], async (err, result) => {
+    inner join states c on b.state_id=c.id where a.username=?"
+    connection.query(query, [user.username], async (err, result) => {
         try {
             if (!err) {
                 if (result.length > 0) {
@@ -122,7 +122,7 @@ router.post('/getSidebarlist', async (req, res, next) => {
     let query = "select a.user_id,b.type,b.name,b.path from user_modules a\
     inner join modules b\
     on a.module_id=b.id\
-    where a.user_id=? order by type";
+    where a.user_id=? order by b.type,b.display_order";
     try {
         connection.query(query,[user.user_id], (err, result) => {
             if (err) next(err.message)

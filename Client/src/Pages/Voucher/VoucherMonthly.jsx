@@ -1,10 +1,11 @@
 import React, { useState,useEffect } from "react";
 import "./VoucherMonthly.scss";
 import axios from "axios";
+import { toast } from "react-toastify";
 const VoucherMonthly = () => {
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const Url = import.meta.env.VITE_API_URL + "voucher/";
-  const [mselected, setmselected] = useState(0);
+  const [mselected, setmselected] = useState([]);
   const [regi,setregi]=useState([{}]);
   const [summary,setsummary]=useState([{}]);
   const [isthaniye,setisthaniye]=useState();
@@ -35,13 +36,18 @@ useEffect(() => {
   
 
   const genReport = async () => {
-    if(mselected==0){
+    setregi([{}]); 
+    setsummary([{}]);
+    setisthaniye([{}]);
+    setpardesh([{}]);
+    if(mselected.length==0){
+      toast.warning("कृपया महिना छनौट गर्नुहोला ।")
       return;
     }
     const data = {     
       office_id: loggedUser.office_id,
       aaba_id: loggedUser.aabaid,
-      monthid: mselected,
+      month_id: mselected,
     };
     console.log("data sent", data);
     const response = await axios({
@@ -56,14 +62,17 @@ useEffect(() => {
     setpardesh(response.data.data.pardesh);
   };
 
-  function handleclick(e) {   
-    if (e.target.checked) {      
-      setmselected(e.target.value);     
-      console.log("new value", mselected); 
+  function handleclick(e) { 
+    const x = mselected;  
+    if (e.target.checked) {            
+      x.push(e.target.value);
+      setmselected(x);
     } else {      
-      setmselected(0);
+      const index = mselected.indexOf(e.target.value);
+      x.splice(index, 1);
+      setmselected(x);      
     }
-    
+    console.log("Month", mselected);
   }
   return (
     <section id="Vouchermonthly" className="Vouchermonthly">
@@ -88,7 +97,7 @@ useEffect(() => {
           </button>
         </div>
       </div>      
-      <table className="reporttable">
+      <table className="Vouchermonthly__table">
         <thead>
           <tr>
             <th>शिर्षक</th> 
@@ -98,41 +107,54 @@ useEffect(() => {
         <tbody>
           <tr>
             <td>{ regi[0].sirshak_name}</td>
-            <td>{regi[0].amount}</td>
+            <td>{Math.trunc(regi[0].amount,2)}</td>
           </tr>
+          <tr><td colSpan={2}><hr className="line"/></td></tr>
           <tr>
             <td>संचितकोषमा जाने</td>
-            <td>{summary[0].sanchitkosh}</td>
+            <td>{Math.trunc(summary[0].sanchitkosh,2)}</td>
           </tr>
+          <tr><td colSpan={2}><hr className="line"/></td></tr>
           <tr>
             <th colSpan={2}>स्थानियमा जाने</th>
           </tr>
           {isthaniye ? isthaniye.map((item,i)=>{
-              return <tr key={i}><td>{item.napa_name}</td><td>{item.isthaniye}</td></tr>
+              return  <>              
+              <tr key={i}><td>{item.napa_name}</td><td>{Math.trunc(item.isthaniye)}</td></tr>
+              <tr><td colSpan={2}><hr className="line"/></td></tr>
+              </>
           }):null}
 
           <tr>
-            <td>स्थानियमा जाने</td>
-            <td>{summary[0].isthaniye}</td>
+            <td>जम्मा स्थानियमा जाने</td>
+            <td>{Math.trunc(summary[0].isthaniye)}</td>
           </tr>
           <tr>
-            <td colSpan={2}>प्रदेशमा जाने</td>            
+            <th colSpan={2}>प्रदेशमा जाने</th>            
           </tr>
           {
             pardesh.map((item,i)=>{
-              return <tr key={i}>
+              return <><tr key={i}>
                 <td>{item.sirshak_name}</td>
-                <td>{item.pardesh}</td>
+                <td>{Math.trunc(item.pardesh)}</td>
               </tr>
+              <tr><td colSpan={2}><hr className="line"/></td></tr>
+              </>
             })
           }
           <tr>
             <td>जम्मा प्रदेशमा जाने</td>
-            <td>{summary[0].pardesh}</td>
-          </tr>          
+            <td>{Math.trunc(summary[0].pardesh)}</td>
+          </tr>    
+          <tr><td colSpan={2}><hr className="line"/></td></tr>      
           <tr>
             <td>संघमा जाने</td>
-            <td>{summary[0].sangh}</td>
+            <td>{Math.trunc(summary[0].sangh)}</td>
+          </tr>
+          <tr><td colSpan={2}><hr className="line"/></td></tr>      
+          <tr>
+            <td>कार्यालय जम्मा </td>
+            <td>{Math.trunc(summary[0].amount)}</td>
           </tr>
         </tbody>
       </table>     

@@ -67,7 +67,17 @@ const Register = () => {
       <div className="register__form-outer">
         <h5 className="register__form-outer__header-text">Registration Form</h5>
         <form className="register__form-inner" onSubmit={OnSubmit}>
-          <div className="register__form-inner__div">         
+          <div className="register__form-inner__div">
+          <div className="register__form-inner__div__item">
+            <input
+              className="register__form-inner__div__item__input"
+              type="username"
+              name="username"
+              autoComplete="off"
+              placeholder="username"
+              required
+            />
+          </div>     
           <div className="register__form-inner__div__item">
             <input
               className="register__form-inner__div__item__input"
@@ -98,6 +108,9 @@ const Register = () => {
               required
             />
           </div>
+          
+          </div>
+          <div className="register__form-inner__div">
           <div className="register__form-inner__div__item">
             <input
               className="register__form-inner__div__item__input"
@@ -105,13 +118,9 @@ const Register = () => {
               name="contactno"
               autoComplete="off"
               placeholder="contactno"
-              required
-             
+              required             
             />
           </div>
-          </div>
-          <div className="register__form-inner__div">
-            
           <div className="register__form-inner__div__item">
             <input
               className="register__form-inner__div__item__input"
@@ -147,6 +156,8 @@ const Register = () => {
                 }
             </select>
           </div>
+          </div>        
+          <div className="register__form-inner__div last">
           <div className="register__form-inner__div__item">
             <input
               type="submit"
@@ -154,13 +165,13 @@ const Register = () => {
               className="register__form-inner__div__item__button"
             />
           </div>
-          </div>        
-          
-        </form>
-
-        <h6 className="register__form-outer__footer-text">
-          <Link to="/login">Already registered. Please login</Link>
+          <div className="register__form-inner__div__item">          
+          <h6 className="register__form-outer__footer-text">
+          <Link to="/login">Already registered? Please login</Link>
         </h6>
+          </div>
+          </div>          
+        </form>        
       </div>
     </section>
   );

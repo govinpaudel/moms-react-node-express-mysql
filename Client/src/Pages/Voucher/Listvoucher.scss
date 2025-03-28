@@ -15,19 +15,42 @@
 
     }
   }
-
   &__list {
+    &__editbtn{
+      padding: 10px 20px;
+      background-color: var(--yellow-theme-warning-button);
+      border-radius: 15px;
+      cursor: pointer;
+      text-align: center;
+      border-color: var(--yellow-theme-warning-button);
+      color: var(--yellow-theme-sub-text-color);
+      &:hover{
+        border-color: var(--yellow-theme-main-color);
+      }
+    }
+    &__delbtn{
+        padding: 10px 20px;
+        background-color: var(--yellow-theme-danger-button);
+        border-color: var(--yellow-theme-danger-button);
+        border-radius: 15px;
+        cursor: pointer;
+        text-align: center;
+        color: var(--yellow-theme-sub-text-color);
+        &:hover{
+          border-color: var(--yellow-theme-main-color);
+        }
+    }
     &__table {
+      
       width: 100%;
       text-align: left;
       border-collapse: collapse;
       font-family: kalimati;
-
       th,
       tr,
       td {
+        text-align: left;
         border: 1px solid var(--yellow-theme-main-color);
-
         color: var(--yellow-theme-main-color);
         font-size: 14px;
       }
@@ -57,24 +80,24 @@
 
     &__addbtn {
       padding: 10px 20px;
-      background-color: var(--yellow-theme-main-color);
+      background-color: var(--yellow-theme-success-button);
       border-radius: 15px;
       cursor: pointer;
-
+      border-color: var(--yellow-theme-success-button);
+     
       span {
         font-size: 1.5rem;
-        color: var(--yellow-theme-background-color);
+        color: var(---yellow-theme-sub-text-color);
         font-weight: 700;
         text-decoration: none;
 
       }
 
       &:hover {
-        background-color: var(--yellow-theme-background-color);
-        border: 1px solid var(--yellow-theme-main-color);
-
+        background-color: var(--yellow-theme-main-color);
+        border-color:var(--yellow-theme-main-color) ;
         span {
-          color: var(--yellow-theme-main-color);
+          color: var(--yellow-theme-nav-background-color);
         }
       }
     }

@@ -1,6 +1,5 @@
 import { NavLink } from "react-router-dom";
 import "./Sidebar.scss";
-import SidebarData from "./Sidebar-list";
 import { useEffect,useState } from "react";
 import axios from "axios";
 
@@ -35,6 +34,7 @@ loadsidebardata();
   return (
     <section id="sidebar" className="sidebar no-print">
       <div className="sidebar__menus">
+        <h5 className="sidebar__menus__menu-text">({loggedUser.username})</h5>
       <h6 className="sidebar__menus__menu-text">Operations</h6>
       <ul>
               {operations.map((item, i) => {
