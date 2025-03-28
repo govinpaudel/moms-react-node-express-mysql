@@ -2,7 +2,7 @@ const express = require('express')
 const connection = require('../Libraries/connection')
 const router = express.Router();
 const date = require('date-and-time')
-router.get('/', (req, res, next) => { res.send("Hello from voucherpage") })
+router.get('/', (req, res, next) => { res.send("Hello from voucher Route page") })
 
 router.post('/Monthlist', (req, res) => {
     let user=req.body;

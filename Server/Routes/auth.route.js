@@ -5,7 +5,7 @@ const router = express.Router();
 const { signAccessToken, signRefreshToken, verifyAccesstoken, verifyRefreshtoken } = require('../libraries/jwt_helper');
 const createError = require('http-errors');
 
-router.get('/', async (req, res, next) => { res.send("Hello from authpage") })
+router.get('/', async (req, res, next) => { res.send("Hello from auth Routepage") })
 
 router.post('/register', async (req, res, next) => {
     const data = req.body;

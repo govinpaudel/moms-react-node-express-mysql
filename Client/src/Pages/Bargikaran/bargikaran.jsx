@@ -30,7 +30,8 @@ const Bargikaran = () => {
     setOffices(response.data.data);
   }
   
-  const loadnapas=async(e)=>{   
+  const loadnapas=async()=>{
+    if(data.office_id>0){   
     const response = await axios({
       method: "get",
       url: Url + "getNapasByOfficeId/"+data.office_id      
@@ -38,8 +39,10 @@ const Bargikaran = () => {
     console.log("napalist", response.data);
     setNapas(response.data.data);
   }
+  }
   
-  const loadgapas=async(e)=>{   
+  const loadgapas=async()=>{
+    if(data.office_id>0 && data.napa_id>0){      
     const response = await axios({
       method: "get",
       url: Url + "getGabisasByOfficeId/"+data.office_id+"/"+data.napa_id      
@@ -47,14 +50,17 @@ const Bargikaran = () => {
     console.log("gapalist", response.data);
     setGapas(response.data.data);
   }
+  }
 
   const loadwards=async(e)=>{   
+    if(data.office_id>0 && data.napa_id>0 && data.gabisa_id>0){   
     const response = await axios({
       method: "get",
       url: Url + "getWardsByGabisaId/"+data.office_id+"/"+data.napa_id+"/"+data.gabisa_id   
     });  
     console.log("wardlist", response.data);
     setWards(response.data.data);
+  }
   }
 
   const handleChange = (e) => {
@@ -91,8 +97,21 @@ const Bargikaran = () => {
 
   const loaddata = async () => {
     if(data.office_id==0){
-     toast.warning("कृपया कार्यालय छान्नुहोस् ।")     
+     toast.warning("कृपया कार्यालय छान्नुहोस् ।");
+     return;     
     }
+    if(data.napa_id==0){
+      toast.warning("कृपया नगरपालिका छान्नुहोस् ।");
+      return;     
+     }
+     if(data.gabisa_id==0){
+      toast.warning("कृपया गा.वि.स. छान्नुहोस् ।");
+      return;     
+     }
+     if(data.ward_no==0){
+      toast.warning("कृपया वडा छान्नुहोस् ।");
+      return;     
+     }
     const response = await axios({
       method: "post",
       url: Url + "getKittaDetails",

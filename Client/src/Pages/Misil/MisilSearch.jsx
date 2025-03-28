@@ -5,59 +5,57 @@ import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
 
-const MisilSearch = () => {
-  const initialdata = {
-    type: "searchmisil",
-    misiltypeid: 0,
-    aabaid: 0,
-    miti: "",
-    minum: "",
-  };
-  const [aabas, setAabas] = useState([]);
+
+
+
+
+const MisilSearch = () => { 
   const [types, setTypes] = useState([]);
-  const [sdata, setsdata] = useState(initialdata);
+  const [aabas, setAabas] = useState([]);  
   const [Result, setResult] = useState([]);
   const Url = import.meta.env.VITE_API_URL + "misil/";
+  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  
+  const initialdata = {   
+    misil_type_id: 0,
+    aaba_id: 0,
+    miti: "",
+    minum: "",
+    office_id:loggedUser.office_id
+  };
+  const [sdata, setsdata] = useState(initialdata);
   const loadtypes = async () => {
     try {
       const response = await axios({
-        method: "post",
-        url: Url + "getlist.php",
-        data: {
-          type: "getalltypes",
-        },
+        method: "get",
+        url: Url + "getTypesByOfficeId/"+loggedUser.office_id   
       });
-      setTypes(response.data.types);
+      setTypes(response.data.data);
     } catch (error) {
       console.log(error);
     }
   };
+
   const loadaabas = async (e) => {
     try {
       const response = await axios({
-        method: "post",
-        url: Url + "getlist.php",
-        data: {
-          type: "getallaabas",
-          misiltypeid: e,
-        },
+        method: "get",
+        url: Url + "getAabaByOffice/"+loggedUser.office_id+"/"+sdata.misil_type_id        
       });
-      setAabas(response.data.aabas);
+      setAabas(response.data.data);
     } catch (error) {
       console.log(error);
     }
   };
-  const handletypechange = (e) => {
-    loadaabas(e.target.value);
-  };
-  const handlesubmit = async () => {
+  
+  const loadpoka = async () => {
     console.log(sdata);
     try {
-      if (sdata.misiltypeid == 0) {
+      if (sdata.misil_type_id == 0) {
         toast.warning("मिसिल प्रकार छान्नुहोस् ।");
         return;
       }
-      if (sdata.aabaid == 0) {
+      if (sdata.aaba_id == 0) {
         toast.warning("आ.ब. छान्नुहोस् ।");
         return;
       }
@@ -67,21 +65,33 @@ const MisilSearch = () => {
       }
       const response = await axios({
         method: "post",
-        url: Url + "getlist.php",
+        url: Url + "getpoka",
         data: sdata,
       });
       console.log(response);
-      setResult(response.data.result);
+      setResult(response.data.data);
     } catch (error) {
       console.log(error);
     }
   };
+
+
   const handlechange = (e) => {
     setsdata({ ...sdata, [e.target.name]: e.target.value });
   };
+
   useEffect(() => {
     loadtypes();
   }, []);
+
+  useEffect(() => {
+    loadaabas();
+  }, [sdata.misil_type_id]);
+
+  useEffect(() => {
+    loadpoka();
+  }, [sdata.miti,sdata.minum]);
+
 
   return (
     <section id="misilsearch" className="misilsearch">
@@ -94,15 +104,14 @@ const MisilSearch = () => {
           <div className="misilsearch__outer__form__item">
             <select
               className="misilsearch__outer__form__item__input"
-              name="misiltypeid"
-              onChange={handlechange}
-              onBlur={handletypechange}
+              name="misil_type_id"
+              onChange={handlechange}              
             >
               <option value={0}>मिसिल प्रकार छान्नुहोस् ।</option>
               {types
                 ? types.map((item, i) => {
                     return (
-                      <option key={i} value={item.misiltypeid}>
+                      <option key={i} value={item.misil_type_id}>
                         {item.misil_type_name}
                       </option>
                     );
@@ -113,14 +122,14 @@ const MisilSearch = () => {
           <div className="misilsearch__outer__form__item">
             <select
               className="misilsearch__outer__form__item__input"
-              name="aabaid"
+              name="aaba_id"
               onChange={handlechange}
             >
               <option value={0}>आ.व. छान्नुहोस् ।</option>
               {aabas
                 ? aabas.map((item, i) => {
                     return (
-                      <option key={i} value={item.aabaid}>
+                      <option key={i} value={item.aaba_id}>
                         {item.aaba_name}
                       </option>
                     );
@@ -147,15 +156,7 @@ const MisilSearch = () => {
               placeholder="मिसिल नं"
               onChange={handlechange}
             />
-          </div>
-          <div className="misilsearch__outer__form__item">
-            <button
-              className="misilsearch__outer__form__item__button"
-              onClick={handlesubmit}
-            >
-              खोजि गर्नुहोस्
-            </button>
-          </div>
+          </div>          
         </div>
       </div>
       <div className="main-div">
@@ -166,6 +167,8 @@ const MisilSearch = () => {
               <th>मिति</th>
               <th>मि.नं.</th>
               <th>पोका नं</th>
+              <th>निवेदकको नाम</th>
+              <th>जग्गाधनीको नाम</th>
             </tr>
           </thead>
           <tbody>
@@ -175,7 +178,9 @@ const MisilSearch = () => {
                   <td>{item.misil_type_name}</td>
                   <td>{item.miti}</td>
                   <td>{item.minum}</td>
-                  <td>{item.pokaname}</td>
+                  <td>{item.misil_poka_name}</td>
+                  <td>{item.nibedakname}</td>
+                  <td>{item.jaggadhaniname}</td>
                 </tr>
               );
             })}

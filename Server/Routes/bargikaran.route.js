@@ -3,6 +3,7 @@ const connection = require('../Libraries/connection')
 const router = express.Router();
 
 
+router.get('/', (req, res, next) => { res.send("Hello from bargikaran route page") })
 
 router.get('/getAllOffices/:id',(req,res)=>{    
     query="select * from brg_ofc where office_id=?";

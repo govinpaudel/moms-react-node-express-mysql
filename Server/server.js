@@ -9,6 +9,7 @@ const {verifyAccesstoken}=require('./libraries/jwt_helper');
 const authRoute = require('./Routes/auth.route');
 const voucherRoute = require('./Routes/voucher.route');
 const bargikaranRoute=require('./Routes/bargikaran.route')
+const misilRoute=require('./Routes/misil.route')
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -21,7 +22,9 @@ app.use(morgan('dev'));
 app.use('/auth', authRoute);
 app.use('/voucher', voucherRoute);
 app.use('/bargikaran',bargikaranRoute);
-app.get('/', async (req, res, next) => { res.send("Hello from Server") })
+app.use('/misil',misilRoute);
+
+app.get('/', async (req, res, next) => { res.send("Hello from Main Server Page") })
 
 app.use((err, req, res, next) => {
     res.status(err.status || 500)
