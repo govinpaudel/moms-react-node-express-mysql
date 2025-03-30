@@ -34,7 +34,7 @@ loadsidebardata();
   return (
     <section id="sidebar" className="sidebar no-print">
       <div className="sidebar__menus">
-        <h5 className="sidebar__menus__menu-text">({loggedUser.username})</h5>
+        <h5 className="sidebar__menus__menu-text">({loggedUser.username} )| {loggedUser.role_name}</h5>
       <h6 className="sidebar__menus__menu-text">Operations</h6>
       <ul>
               {operations.map((item, i) => {

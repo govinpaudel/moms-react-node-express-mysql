@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Login.scss";
 import { toast } from "react-toastify";
-import { BsInfoCircleFill } from "react-icons/bs";
-import PageHeaderComponent from "../Components/PageHeaderComponent";
 import MainHeaderComponent from "../Components/MainHeaderComponent";
 const Login = () => {
   const [aabas, setaabas] = useState([]);
@@ -13,6 +11,14 @@ const Login = () => {
   console.log("url came", Url);
   const loggedUser = sessionStorage.getItem("loggedUser");
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+    if(loggedUser){
+      navigate("/home");
+    }
+  }, []);  
+
 
   const OnSubmit = async (event) => {
     event.preventDefault();
@@ -36,7 +42,7 @@ const Login = () => {
         sessionStorage.setItem("refresh_token", JSON.stringify(response.data.refresh_token));
         sessionStorage.setItem("loggedUser", JSON.stringify(data1));
         toast.success(response.data.message);
-        navigate("/");
+        navigate("/home");
       } else {
         console.log("data",response.data.status)
         toast.warning(response.data.message);

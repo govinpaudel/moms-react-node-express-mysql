@@ -83,17 +83,15 @@ const Listvoucher = () => {
       console.log("all voucher called");
     }
   };
-  function handleOpen(e) {
-    console.log("i am opening edit form");
-    props.Open(e);
-  }
+  
   useEffect(() => {
     loadVouchers();
   }, []);
   return (
     <section id="listvoucher" className="listvoucher">
       <PageHeaderComponent
-        headerText="आज दर्ता भएका भौचरहरु"
+      officeText={`( ${loggedUser.nepname} )`}
+        headerText="बाट आज दर्ता भएका भौचरहरु"
         icon={<BsInfoCircleFill size={40} />}
       />
       <div className="listvoucher__adddiv">
@@ -156,7 +154,7 @@ const Listvoucher = () => {
                     <td>{data.fant_name}</td>
                     <td>{data.staff_name}</td>
                     <td>{data.voucherno}</td>
-                    <td>{data.remarks}</td>
+                    <td>{data.deposited_by}</td>
                     <td>{data.amount}</td>
                     <td>
                       <button

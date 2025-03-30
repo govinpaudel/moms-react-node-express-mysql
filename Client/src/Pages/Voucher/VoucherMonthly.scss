@@ -1,6 +1,7 @@
 .Vouchermonthly {
   &__table{
     text-align: left;
+    width: 800px;
   }
     &__month {
     display: flex;
@@ -36,11 +37,9 @@
   }
 }
 
-.reporttable {
-  text-align: left;
-}
 .line{
-  height: 10px;
+  height: 20px;
+  background-color:var(--yellow-theme-main-color);
 }
 
 
@@ -63,5 +62,8 @@
       }
     }
     
+  }
+  .line{
+    background-color:#000000;
   }
 }

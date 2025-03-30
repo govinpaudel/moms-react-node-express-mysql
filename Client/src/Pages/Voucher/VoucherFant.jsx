@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./VoucherFant.scss";
 import axios from "axios";
 import { toast } from "react-toastify";
+import PageHeaderComponent from "../../Components/PageHeaderComponent";
+import { BsInfoCircleFill } from "react-icons/bs";
 const VoucherFant = () => {
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const Url = import.meta.env.VITE_API_URL + "voucher/";
@@ -101,6 +103,7 @@ const VoucherFant = () => {
     }
     console.log("Month", mselected);
   }
+  
   function handlefant(e) {
     const x = fselected;
     if (e.target.checked) {
@@ -115,6 +118,11 @@ const VoucherFant = () => {
 
   return (
     <section id="Vouchermonthly" className="Vouchermonthly">
+       <PageHeaderComponent
+       officeText={`(${loggedUser.office_name})`}
+        headerText="को फाँट अनुसारको प्रतिवेदन"
+        icon={<BsInfoCircleFill size={40} />}
+      />
       <div className="Vouchermonthly__month">
         {mdata ? mdata.map((item, i) => {
           return (
@@ -161,7 +169,7 @@ const VoucherFant = () => {
         </thead>
         <tbody>
           {summary ? summary.map((item, i) => {
-            return <tr key={i}><td>{item.sirshak_name}</td><td>{Math.trunc(item.amount)}</td></tr>
+            return <tr key={i}><td>{item.sirshak_name}</td><td>{Math.round(item.amount)}</td></tr>
           }) : null}
           <tr><td>जम्मा</td>
             <td>{total}</td></tr>

@@ -2,6 +2,8 @@ import React, { useState,useEffect } from "react";
 import "./VoucherMonthly.scss";
 import axios from "axios";
 import { toast } from "react-toastify";
+import PageHeaderComponent from "../../Components/PageHeaderComponent";
+import { BsInfoCircleFill } from "react-icons/bs";
 const VoucherMonthly = () => {
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const Url = import.meta.env.VITE_API_URL + "voucher/";
@@ -10,9 +12,7 @@ const VoucherMonthly = () => {
   const [summary,setsummary]=useState([{}]);
   const [isthaniye,setisthaniye]=useState();
   const [pardesh,setpardesh]=useState([]);
-  const [mdata,setmdata]=useState([]);
-  
-  
+  const [mdata,setmdata]=useState([]); 
 
   const loadmonth=async()=>{
     const data = {     
@@ -76,6 +76,11 @@ useEffect(() => {
   }
   return (
     <section id="Vouchermonthly" className="Vouchermonthly">
+       <PageHeaderComponent
+       officeText={`(${loggedUser.office_name})`}
+        headerText="कार्यालयको मासिक प्रतिवेदन"
+        icon={<BsInfoCircleFill size={40} />}
+      />
       <div className="Vouchermonthly__month">
         {mdata.map((item, i) => {
           return (
@@ -107,57 +112,66 @@ useEffect(() => {
         <tbody>
           <tr>
             <td>{ regi[0].sirshak_name}</td>
-            <td>{Math.trunc(regi[0].amount,2)}</td>
+            <td>{Math.round(regi[0].amount,2)}</td>
           </tr>
-          <tr><td colSpan={2}><hr className="line"/></td></tr>
           <tr>
             <td>संचितकोषमा जाने</td>
-            <td>{Math.trunc(summary[0].sanchitkosh,2)}</td>
+            <td>{Math.round(summary[0].sanchitkosh,2)}</td>
           </tr>
-          <tr><td colSpan={2}><hr className="line"/></td></tr>
+          <tr><td colSpan={2}><hr className="line"/></td></tr> 
+        </tbody>
+        </table>       
+        <table className="Vouchermonthly__table">
+          <tbody>         
           <tr>
-            <th colSpan={2}>स्थानियमा जाने</th>
+            <th>स्थानियमा जाने</th>
+            <th>रकम</th>
           </tr>
           {isthaniye ? isthaniye.map((item,i)=>{
-              return  <>              
-              <tr key={i}><td>{item.napa_name}</td><td>{Math.trunc(item.isthaniye)}</td></tr>
-              <tr><td colSpan={2}><hr className="line"/></td></tr>
-              </>
+              return  <tr key={i}><td>{item.napa_name}</td><td>{Math.round(item.isthaniye)}</td></tr>                            
           }):null}
-
           <tr>
             <td>जम्मा स्थानियमा जाने</td>
-            <td>{Math.trunc(summary[0].isthaniye)}</td>
+            <td>{Math.round(summary[0].isthaniye)}</td>
           </tr>
+          <tr><td colSpan={2}><hr className="line"/></td></tr> 
+          </tbody> 
+          </table>          
+          <table className="Vouchermonthly__table">
+          <tbody>
           <tr>
-            <th colSpan={2}>प्रदेशमा जाने</th>            
+            <th>प्रदेशमा जाने</th> <th>रकम</th>      
           </tr>
           {
             pardesh.map((item,i)=>{
               return <><tr key={i}>
                 <td>{item.sirshak_name}</td>
-                <td>{Math.trunc(item.pardesh)}</td>
-              </tr>
-              <tr><td colSpan={2}><hr className="line"/></td></tr>
+                <td>{Math.round(item.pardesh)}</td>
+              </tr>              
               </>
             })
           }
           <tr>
             <td>जम्मा प्रदेशमा जाने</td>
-            <td>{Math.trunc(summary[0].pardesh)}</td>
-          </tr>    
-          <tr><td colSpan={2}><hr className="line"/></td></tr>      
+            <td>{Math.round(summary[0].pardesh)}</td>
+          </tr>
+          <tr><td colSpan={2}><hr className="line"/></td></tr>  
+          </tbody>
+            </table>
+           
+          <table className="Vouchermonthly__table">
+          <tbody>
           <tr>
             <td>संघमा जाने</td>
-            <td>{Math.trunc(summary[0].sangh)}</td>
+            <td>{Math.round(summary[0].sangh)}</td>
           </tr>
           <tr><td colSpan={2}><hr className="line"/></td></tr>      
           <tr>
             <td>कार्यालय जम्मा </td>
-            <td>{Math.trunc(summary[0].amount)}</td>
+            <td>{Math.round(summary[0].amount)}</td>
           </tr>
-        </tbody>
-      </table>     
+          </tbody>
+          </table>
     </section>
   );
 };

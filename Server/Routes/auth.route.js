@@ -41,8 +41,9 @@ router.post('/register', async (req, res, next) => {
 })
 router.post('/login', async (req, res, next) => {
     let user = req.body
-    const query = "select a.*,b.state_id,b.office_name,c.state_name from users a\
+    const query = "select a.*,b.state_id,b.office_name,c.state_name,d.role_name from users a\
     inner join offices b on a.office_id=b.id\
+    inner join user_roles d on a.role=d.id\
     inner join states c on b.state_id=c.id where a.username=?"
     connection.query(query, [user.username], async (err, result) => {
         try {

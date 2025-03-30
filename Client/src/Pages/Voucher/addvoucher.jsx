@@ -21,7 +21,7 @@ const Addvoucher = () => {
     napa_id: 0,
     voucherno: "",
     amount: "",
-    remarks: "",
+    deposited_by: "",
   };
   const [sirshaks, setsirshaks] = useState();
   const [fants, setfants] = useState();
@@ -150,7 +150,7 @@ const Addvoucher = () => {
               type="text"
               name="edate"
               className="Addvoucher__Form__part__item__input"
-              value={vdata.edate}
+              defaultValue={vdata.edate}
               readOnly
             />
           </div>
@@ -241,10 +241,10 @@ const Addvoucher = () => {
             <input
               type="text"
               className="Addvoucher__Form__part__item__input"
-              name="remarks"
+              name="deposited_by"
               required
               onChange={handleChange}
-              value={vdata.remarks}
+              value={vdata.deposited_by}
             />
           </div>
           <div className="Addvoucher__Form__part__item">

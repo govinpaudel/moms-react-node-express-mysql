@@ -24,8 +24,7 @@ const KittaSearch = () => {
     { ward_no: 8 },
     { ward_no: 9 },
   ]);
-  const [data, setData] = useState({
-    type: "getdetails",
+  const [data, setData] = useState({    
     gabisa_id: 0,
     ward_no: 0,
     kitta_no: 0,

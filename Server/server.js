@@ -9,7 +9,9 @@ const {verifyAccesstoken}=require('./libraries/jwt_helper');
 const authRoute = require('./Routes/auth.route');
 const voucherRoute = require('./Routes/voucher.route');
 const bargikaranRoute=require('./Routes/bargikaran.route')
-const misilRoute=require('./Routes/misil.route')
+const misilRoute=require('./Routes/misil.route');
+const kittaRoute=require('./Routes/kitta.route');
+
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -23,6 +25,7 @@ app.use('/auth', authRoute);
 app.use('/voucher', voucherRoute);
 app.use('/bargikaran',bargikaranRoute);
 app.use('/misil',misilRoute);
+app.use('/kitta',kittaRoute);
 
 app.get('/', async (req, res, next) => { res.send("Hello from Main Server Page") })
 

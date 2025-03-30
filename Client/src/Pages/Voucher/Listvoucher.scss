@@ -17,7 +17,7 @@
   }
   &__list {
     &__editbtn{
-      padding: 10px 20px;
+      padding: 2px 10px;
       background-color: var(--yellow-theme-warning-button);
       border-radius: 15px;
       cursor: pointer;
@@ -29,7 +29,7 @@
       }
     }
     &__delbtn{
-        padding: 10px 20px;
+        padding: 2px 10px;
         background-color: var(--yellow-theme-danger-button);
         border-color: var(--yellow-theme-danger-button);
         border-radius: 15px;
@@ -79,7 +79,7 @@
     }
 
     &__addbtn {
-      padding: 10px 20px;
+      padding: 5px 15px;
       background-color: var(--yellow-theme-success-button);
       border-radius: 15px;
       cursor: pointer;
