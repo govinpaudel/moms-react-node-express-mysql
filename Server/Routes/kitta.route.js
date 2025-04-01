@@ -8,12 +8,24 @@ router.get('/', (req, res, next) => { res.send("Hello from kitta route page") })
 router.post('/getDetails',(req,res)=>{
     let user=req.body;
     console.log(user);    
-    let query1="select a.F2,a.F6,a.f3,a.f4,a.f5 from kitta a where a.F13=9 AND a.F15=2";
-    let query2="select distinct a.F12,a.F13,a.F15,a.F19,a.f18,a.f20,a.f21 from kitta a where a.F13=9 AND a.F15=2";
-        connection.query(query1,[user.ward_no,user.kitta],(err,results)=>{
-            if(!err){
-                console.log(results);
-                return res.status(200).json({message:"डाटा प्राप्त भयो",data:results});
+    let query1="select a.F2,a.F6,a.F3,a.F4,a.F5 from kitta a where a.F13=? AND a.F15=?";
+    let query2="select distinct a.F12,a.F13,a.F15,a.F19,a.F18,a.F20,a.F21 from kitta a where a.F13=? AND a.F15=?";
+        connection.query(query1,[user.ward_no,user.kitta_no],(err,OwnerDetails)=>{
+            if(!err){                
+                connection.query(query2,[user.ward_no,user.kitta_no],(err,LandDetails)=>{
+                    if(!err){
+                        console.log(OwnerDetails);
+                        console.log(LandDetails);
+                        return res.status(200).json({message:"डाटा प्राप्त भयो",OwnerDetails:OwnerDetails,LandDetails:LandDetails});
+
+                    }
+                });
+
+
+                
+
+
+
             }
             else{
                 console.log(err);

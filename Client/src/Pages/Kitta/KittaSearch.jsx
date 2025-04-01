@@ -47,15 +47,15 @@ const KittaSearch = () => {
       console.log(search);
       const response = await axios({
         method: "post",
-        url: Url + "getlist.php",
+        url: Url + "getDetails",
         data: data,
       });
       console.log("sentData", data);
       console.log("receivedData", response.data);
       console.log("ownerdetails", response.data.data);
       console.log("landdetails", response.data.data1);
-      setOwnerDetails(response.data.data);
-      setLandDetails(response.data.data1);
+      setOwnerDetails(response.data.OwnerDetails);
+      setLandDetails(response.data.LandDetails);
     }
   };
   useEffect(() => {

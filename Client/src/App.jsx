@@ -15,6 +15,7 @@ import VoucherMonthly from './Pages/Voucher/VoucherMonthly';
 import VoucherFant from './Pages/Voucher/VoucherFant';
 import Editvoucher from './Pages/Voucher/editvoucher';
 import Voucherdetails from './Pages/Voucher/Voucherdetails';
+import Test from './Pages/test';
 function App() {
   return (
     <>
@@ -22,6 +23,7 @@ function App() {
         <Routes>
           <Route element={<Protected_route />}>
             <Route path="/" element={<Home />} />
+            <Route path="/test" element={<Test/>}/>
             {/* App Routes Starts */}
             <Route path="/home" element={<Home />} >
               <Route path='' element={<Listvoucher />} />

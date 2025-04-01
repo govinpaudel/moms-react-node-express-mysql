@@ -1,6 +1,6 @@
 import { convertToWords } from "../../Utils/Utils";
-import Calendar from "@sbmdkl/nepali-datepicker-reactjs";
-import "@sbmdkl/nepali-datepicker-reactjs/dist/index.css";
+import Calendar from '@sbmdkl/nepali-datepicker-reactjs';
+import '@sbmdkl/nepali-datepicker-reactjs/dist/index.css';
 import "./Addvoucher.scss";
 import { toast } from "react-toastify";
 import React from "react";
@@ -139,7 +139,7 @@ const Addvoucher = () => {
               key={vdata.ndate}
               onChange={handlesDate}
               theme="green"
-              language="en"
+              language="en"              
               className="Addvoucher__Form__part__item__input"
               defaultDate={vdata.ndate}
             />
@@ -195,7 +195,9 @@ const Addvoucher = () => {
             </select>
           </div>
         </div>
+        {/* first row ends */}
         <div className="Addvoucher__Form__part">
+        
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">शिर्षक</label>
             <select
@@ -259,6 +261,7 @@ const Addvoucher = () => {
             />
           </div>
         </div>
+        {/* second row ends */}
 
         <div className="Addvoucher__Form__part">
           <div className="Addvoucher__Form__part__item">
@@ -294,6 +297,7 @@ const Addvoucher = () => {
             </NavLink>
           </div>
         </div>
+        {/* third row ends */}
       </form>
 
       {/* create voucher form ends */}
