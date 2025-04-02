@@ -6,6 +6,8 @@ const Logout = () => {
     let user = sessionStorage.getItem("loggedUser");
     if (user) {
       sessionStorage.removeItem("loggedUser");
+      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("refresh_token");
     }
     navigate("/login");
   }, []);

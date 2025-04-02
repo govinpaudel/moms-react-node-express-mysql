@@ -25,7 +25,7 @@ const Register = () => {
   const OnSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const data= dataObject.fromEntries(formData);
+    const data= Object.fromEntries(formData);
     console.log(data);
     if (
       data.contactno.length == 0 ||

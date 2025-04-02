@@ -2,30 +2,31 @@ const express = require('express')
 const connection = require('../Libraries/connection')
 const bcrypt = require('bcryptjs')
 const router = express.Router();
-const { signAccessToken, signRefreshToken, verifyAccesstoken, verifyRefreshtoken } = require('../libraries/jwt_helper');
+const { signAccessToken, signRefreshToken, verifyAccesstoken, verifyRefreshtoken } = require('../Libraries/jwt_helper');
 const createError = require('http-errors');
 
 router.get('/', async (req, res, next) => { res.send("Hello from auth Routepage") })
 
 router.post('/register', async (req, res, next) => {
     const data = req.body;
-    // console.log(data);
+    console.log(data);
     try {
-        const query = "select * from users where email=?";
+        const query = "select * from users where username=? or email=?";
         connection.query(query, [data.username, data.email], (err, result) => {
             if (!err) {
+                console.log(result);
                 if (result.length > 0) {
-                    return res.status(200).json({ status: 201, message: `Email:${data.email} or Username:${data.username} is already registered.` })
+                    return res.status(200).json({ status: false, message: `Email:${data.email} or Username:${data.username} is already registered.` })
                 }
                 else {
                     const hash = bcrypt.hashSync(data.password, 10);
-                    const query = "insert into users (email,password,nepname,engname,contactno,officeid,role,status) values(?,?,?,?,?,?,?,?)";
+                    const query = "insert into users (email,password,nepname,engname,contactno,office_id,role,isactive) values(?,?,?,?,?,?,?,?)";
                     connection.query(query, [data.email, hash, data.nepname, data.engname, data.contactno, data.officeid, "1", "0"], (err, result) => {
-                        if (!err) {
-                            return res.status(200).json({ status: 200, message: `Userid ${data.username} is registered successfully.` })
+                        if (err) {
+                            console.log(err);
                         }
                         else {
-                            next(err.message)
+                            return res.status(200).json({ status: true, message: `Userid ${data.username} is registered successfully.` })
                         }
                     });
                 }

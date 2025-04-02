@@ -68,6 +68,7 @@ const dototal =()=>{
     sdata.nep_start_date = bsDate;
     sdata.eng_start_date = adDate;
   };
+
   const handleEndDate = ({ bsDate, adDate }) => {
     sdata.nep_end_date = bsDate;
     sdata.eng_end_date = adDate;
@@ -76,7 +77,7 @@ const dototal =()=>{
   const genReport = async () => {   
     const data = {      
       start_date:sdata.eng_start_date,
-      end_date:sdata.eng_start_date,
+      end_date:sdata.eng_end_date,
       fant_id: fselected,
       office_id:loggedUser.office_id
     };

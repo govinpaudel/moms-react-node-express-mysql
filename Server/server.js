@@ -4,14 +4,14 @@ const cors=require("cors");
 const morgan=require("morgan");
 const app=express();
 const PORT = process.env.API_PORT || 3000
-const {verifyAccesstoken}=require('./libraries/jwt_helper');
+const {verifyAccesstoken}=require('./Libraries/jwt_helper');
 // import routes
 const authRoute = require('./Routes/auth.route');
 const voucherRoute = require('./Routes/voucher.route');
 const bargikaranRoute=require('./Routes/bargikaran.route')
 const misilRoute=require('./Routes/misil.route');
 const kittaRoute=require('./Routes/kitta.route');
-
+const adminRoute=require('./Routes/admin.route');
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +26,7 @@ app.use('/voucher', voucherRoute);
 app.use('/bargikaran',bargikaranRoute);
 app.use('/misil',misilRoute);
 app.use('/kitta',kittaRoute);
+app.use('/admin',adminRoute);
 
 app.get('/', async (req, res, next) => { res.send("Hello from Main Server Page") })
 
