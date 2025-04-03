@@ -8,7 +8,7 @@ const VoucherMonthly = () => {
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const Url = import.meta.env.VITE_API_URL + "voucher/";
   const [mselected, setmselected] = useState([]);
-  const [regi,setregi]=useState([{}]);
+  const [regi,setregi]=useState([]);
   const [summary,setsummary]=useState([{}]);
   const [isthaniye,setisthaniye]=useState();
   const [pardesh,setpardesh]=useState([]);
@@ -111,12 +111,12 @@ useEffect(() => {
         </thead>
         <tbody>
           <tr>
-            <td>{ regi[0].sirshak_name}</td>
-            <td>{Math.round(regi[0].amount,2)}</td>
+            <td>{regi[0] ? regi[0].sirshak_name : null}</td>
+            <td>{regi[0] ? Math.round(regi[0].amount,2): null}</td>
           </tr>
           <tr>
             <td>संचितकोषमा जाने</td>
-            <td>{Math.round(summary[0].sanchitkosh,2)}</td>
+            <td>{summary[0] ? Math.round(summary[0].sanchitkosh,2): null}</td>
           </tr>
           <tr><td colSpan={2}><hr className="line"/></td></tr> 
         </tbody>
@@ -132,7 +132,7 @@ useEffect(() => {
           }):null}
           <tr>
             <td>जम्मा स्थानियमा जाने</td>
-            <td>{Math.round(summary[0].isthaniye)}</td>
+            <td>{summary[0] ? Math.round(summary[0].isthaniye):0}</td>
           </tr>
           <tr><td colSpan={2}><hr className="line"/></td></tr> 
           </tbody> 
@@ -142,18 +142,18 @@ useEffect(() => {
           <tr>
             <th>प्रदेशमा जाने</th> <th>रकम</th>      
           </tr>
-          {
+          {pardesh ?
             pardesh.map((item,i)=>{
               return <><tr key={i}>
                 <td>{item.sirshak_name}</td>
                 <td>{Math.round(item.pardesh)}</td>
               </tr>              
               </>
-            })
+            }) :null
           }
           <tr>
             <td>जम्मा प्रदेशमा जाने</td>
-            <td>{Math.round(summary[0].pardesh)}</td>
+            <td>{summary[0] ? Math.round(summary[0].pardesh): 0}</td>
           </tr>
           <tr><td colSpan={2}><hr className="line"/></td></tr>  
           </tbody>
@@ -163,12 +163,12 @@ useEffect(() => {
           <tbody>
           <tr>
             <td>संघमा जाने</td>
-            <td>{Math.round(summary[0].sangh)}</td>
+            <td>{summary[0] ? Math.round(summary[0].sangh):0}</td>
           </tr>
           <tr><td colSpan={2}><hr className="line"/></td></tr>      
           <tr>
             <td>कार्यालय जम्मा </td>
-            <td>{Math.round(summary[0].amount)}</td>
+            <td>{summary[0] ? Math.round(summary[0].amount):0}</td>
           </tr>
           </tbody>
           </table>

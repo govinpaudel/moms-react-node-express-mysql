@@ -4,14 +4,16 @@ import MainHeaderComponent from "../../Components/MainHeaderComponent";
 import AdminSidebar from "./AdminSidebar";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Admin = () => {
-  const loggedUser=JSON.stringify(sessionStorage.getItem('loggedUser'));
+  const loggedUser=JSON.parse(sessionStorage.getItem('loggedUser'));
   const navigate=useNavigate();
   const checkRole=()=>{
     console.log("role",loggedUser)
   if (loggedUser.role!=1){
-    // navigate('/home')
+    toast.warning("एडमिन प्रयोगकर्तालाई मात्र यो अख्तियारी उपलब्ध छ ।")
+    navigate('/home')
   }    
   }
   useEffect(() => {

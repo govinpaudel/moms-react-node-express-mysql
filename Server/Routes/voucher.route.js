@@ -53,7 +53,7 @@ router.post('/VoucherMonthly', (req, res) => {
     inner join voucher_sirshak b on a.sirshak_id = b.id\
     inner join offices c on a.office_id=c.id\
     inner join voucher_badhfadh d on a.aaba_id=d.aaba_id and a.sirshak_id=d.sirshak_id and c.state_id=d.state_id\
-    inner join voucher_napa e on a.napa_id=e.id\
+    inner join voucher_napa e on a.napa_id=e.id and a.office_id=e.office_id\
     where a.aaba_id=? and a.office_id=? and a.month_id in (${months}) and a.sirshak_id=2\
     group by a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,a.napa_id,e.napa_name`;
     let query4=`select a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,sum(a.amount) as amount,sum(a.amount*(d.sanchitkosh)/100) as sanchitkosh,sum(a.amount*(d.pardesh)/100) as pardesh,sum(a.amount*(d.isthaniye)/100) as isthaniye,sum(a.amount*(d.sangh)/100) as sangh from voucher a\
@@ -102,10 +102,11 @@ router.post('/VoucherByDate', (req, res) => {
     console.log(fants);
     console.log(fants.length);
     if(fants.length==0){
-    let query="select a.edate,a.ndate,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id from voucher a\
+    let query="select a.edate,a.ndate,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.staff_id,e.staff_name,a.voucherno,a.amount,a.created_by_user_id,a.deposited_by from voucher a\
     inner join voucher_sirshak b on a.sirshak_id=b.id\
     inner join voucher_fant c on a.fant_id=c.id\
     inner join voucher_napa d on a.napa_id=d.id and a.office_id=d.office_id\
+    inner join voucher_staff e on a.staff_id=e.id\
     where a.office_id=? and  a.edate >=? and a.edate<=?\
     order by edate,ndate,voucherno";
     connection.query(query, [user.office_id,user.start_date,user.end_date], (err, data) => {

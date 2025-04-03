@@ -20,8 +20,8 @@ router.post('/register', async (req, res, next) => {
                 }
                 else {
                     const hash = bcrypt.hashSync(data.password, 10);
-                    const query = "insert into users (email,password,nepname,engname,contactno,office_id,role,isactive) values(?,?,?,?,?,?,?,?)";
-                    connection.query(query, [data.email, hash, data.nepname, data.engname, data.contactno, data.officeid, "1", "0"], (err, result) => {
+                    const query = "insert into users (username,email,password,nepname,engname,contactno,office_id,role,isactive) values(?,?,?,?,?,?,?,?,?)";
+                    connection.query(query, [data.username,data.email, hash, data.nepname, data.engname, data.contactno, data.officeid, "2", "0"], (err, result) => {
                         if (err) {
                             console.log(err);
                         }

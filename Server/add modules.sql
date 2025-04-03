@@ -1,5 +1,8 @@
-insert into user_modules(user_id,module_id,isactive)(select id as user_id,1 as module_id,1 as isactive from users where office_id=882);
-insert into user_modules(user_id,module_id,isactive) (select id as user_id,4 as module_id,1 as isactive from users where office_id=882);
-insert into user_modules(user_id,module_id,isactive)(select id as user_id,5 as module_id,1 as isactive from users where office_id=882);
-insert into user_modules(user_id,module_id,isactive) (select id as user_id,6 as module_id,1 as isactive from users where office_id=882);
-insert into user_modules(user_id,module_id,isactive) (select id as user_id,7 as module_id,1 as isactive from users where office_id=882);
+insert into user_modules(office_id,user_id,module_id,isactive)(SELECT DISTINCT
+	users.id as user_id, 
+	users.office_id, 
+	modules.id as module_id,
+	1 as isactive
+FROM
+	users,
+modules where modules.id in(1,4,5,7))

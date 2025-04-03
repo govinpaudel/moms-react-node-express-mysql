@@ -361,8 +361,8 @@ router.post('/addOrUpdateParms', (req, res) => {
     let user=req.body;
     console.log(user);
     if (user.id==0){
-        let query="insert into voucher_staff(office_id,staff_name,display_order,isactive)(?,?,?,?)";
-        connection.query(query,[user.office_id,user.staff_name,user.display_order,1], (err, results) => {
+        let query="insert into voucher_parameter(office_id,vstart,vlength,isactive)values(?,?,?,?)";
+        connection.query(query,[user.office_id,user.vstart,user.vlength,1], (err, results) => {
             if (err) { 
                 console.log(err);
                 return; }
@@ -374,8 +374,8 @@ router.post('/addOrUpdateParms', (req, res) => {
             })    }
 
     else{
-        let query="update voucher_staff set staff_name=?,display_order=? where id=?";
-        connection.query(query,[user.staff_name,user.display_order,user.id], (err, results) => {
+        let query="update voucher_parameter set vstart=?,vlength,display_order=? where id=?";
+        connection.query(query,[user.vstart,user.vlength,user.id], (err, results) => {
             if (err) { 
                 console.log(err);
                 return; }
