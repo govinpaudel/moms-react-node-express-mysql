@@ -291,7 +291,7 @@ router.post('/addOrUpdateNapas', (req, res) => {
 
     }
     else{
-        let query="update voucher_napa set napa_name=?,display_order=? where id=?";
+        let query="update voucher_napa set napa_name=?,display_order=? where napa_id=?";
         connection.query(query,[user.napa_name,user.display_order,user.id], (err, results) => {
             if (err) { 
                 console.log(err);

@@ -56,6 +56,9 @@ const Sidebar = () => {
           })}
         </ul>
         <ul>
+        <li >
+            <NavLink to={"/home/changepassword"}>पासवर्ड परिवर्तन</NavLink>
+          </li>
           <li >
             <NavLink to={"/home/logout"}>लगआउट</NavLink>
           </li>

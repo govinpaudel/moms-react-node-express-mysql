@@ -80,9 +80,42 @@ router.post('/login', async (req, res, next) => {
         }
     })
 })
-router.post('/changepassword', verifyAccesstoken, async (req, res, next) => {
-    res.status(200).json({ message: "I am changepassword" })
+
+router.post('/changepassword', (req, res) => {
+    const user = req.body;
+    console.log(user);
+    var query = "select * from users where id=?";
+    connection.query(query, [user.user_id], (err, results) => {
+        if (!err) {
+            if (results.length <= 0) {
+                return res.status(400).json({ message: "गलत प्रयोगकर्ता द्वारा प्रयास गरिएको ।" });
+            }
+            else {
+                console.log(results);
+                const check = bcrypt.compareSync(user.oldpassword, results[0].password)
+                if (check) {
+                    const hashnewpassword = bcrypt.hashSync(user.newpassword, 10);
+                    const uquery = "update users set password=? where id=?";
+                    connection.query(uquery, [hashnewpassword, user.user_id], (err, results) => {
+                        if (!err) {
+                            return res.status(200).json({ status:true, message: "पासवर्ड परिवर्तन सफल भयो ।" });
+                        }
+                        else {
+                            return res.status(500).json(err);
+                        }
+                    })
+                }
+                else {
+                    return res.status(200).json({ message: "गलत पुरानो पासवर्ड ।" });
+                }
+
+            }
+        }
+
+    })
 })
+
+
 router.post('/refresh-token', async (req, res, next) => {
     try {
         const { oldrefreshToken } = req.body        

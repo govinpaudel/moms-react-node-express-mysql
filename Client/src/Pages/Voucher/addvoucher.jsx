@@ -33,11 +33,9 @@ const Addvoucher = () => {
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const navigate = useNavigate();
   const handleChange = (e) => {
-    setVdata({ ...vdata, [e.target.name]: e.target.value });
-    console.log("data changed", vdata);
+    setVdata({ ...vdata, [e.target.name]: e.target.value });    
   };
-  const handlesDate = ({ bsDate, adDate }) => {
-    console.log("date is changed");
+  const handlesDate = ({ bsDate, adDate }) => {    
     vdata.ndate = bsDate;
     vdata.edate = adDate;
   };
@@ -131,28 +129,32 @@ const Addvoucher = () => {
         headerText="भौचर दर्ता फाराम"
         icon={<BsInfoCircleFill size={40} />}
       />
-      <form onSubmit={onSubmit} className="Addvoucher__Form">
-        <div className="Addvoucher__Form__part">
-          <div className="Addvoucher__Form__part__item">
-            <label className="Addvoucher__Form__part__item__label">मिति</label>
-            <Calendar
-              key={vdata.ndate}
+      <div className="Addvoucher__calendardiv">
+      <label className="Addvoucher__Form__part__item__label">मिति</label>
+      <Calendar
+              key={vdata.edate}
               onChange={handlesDate}
               theme="green"
-              language="en"              
-              className="Addvoucher__Form__part__item__input"
+              language="en"                            
               defaultDate={vdata.ndate}
-            />
+              className="Addvoucher__Form__part__item__input calendar"
+      />       
+      </div>
+      <form onSubmit={onSubmit} className="Addvoucher__Form">      
+        <div className="Addvoucher__Form__part"> 
+          <div className="Addvoucher__Form__part__item">         
           </div>
           <div className="Addvoucher__Form__part__item">
-            <label className="Addvoucher__Form__part__item__label">अंग्रेजी मिति</label>
+          <label className="Addvoucher__Form__part__item__label">अंग्रेजी मिति</label>
             <input
               type="text"
               name="edate"
               className="Addvoucher__Form__part__item__input"
-              defaultValue={vdata.edate}
-              readOnly
+              value={vdata.edate}
+              onChange={handleChange}
+              readOnly              
             />
+           
           </div>
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">फाँट</label>

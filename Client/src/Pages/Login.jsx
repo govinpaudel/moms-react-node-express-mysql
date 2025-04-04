@@ -133,6 +133,9 @@ const Login = () => {
         <h5 className="login__form-outer__footer-text">
           <Link to="/register">Not A User ? Please register.</Link>
         </h5>
+        <h5 className="login__form-outer__footer-text">
+          <Link to="/resetpassword">Forgot Password ? Please reset</Link>
+        </h5>
       </div>
     </section>
   );

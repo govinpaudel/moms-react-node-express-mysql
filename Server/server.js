@@ -18,8 +18,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(morgan('dev'));
 
-
-
 // lets handle request coming from frontend
 app.use('/auth', authRoute);
 app.use('/voucher', voucherRoute);

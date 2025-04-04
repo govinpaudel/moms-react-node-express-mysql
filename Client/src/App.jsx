@@ -24,6 +24,8 @@ import ListFants from './Pages/Admin/ListFants';
 import ListStaffs from './Pages/Admin/ListStaffs';
 import ListNapas from './Pages/Admin/ListNapas';
 import ListParms from './Pages/Admin/ListParms';
+import ChangePassword from './Pages/ChangePassword';
+import ResetPassword from './Pages/ResetPassword';
 function App() {
   return (
     <>
@@ -49,6 +51,7 @@ function App() {
               <Route path='misilsearch' element={<MisilSearch />} />
               <Route path='kittasearch' element={<KittaSearch />} />
               <Route path='bargikaran' element={<Bargikaran />} />
+              <Route path='changepassword' element={<ChangePassword/>}/>              
               <Route path='logout' element={<Logout />} />
             </Route>
             {/* App Routes Ends */}
@@ -65,6 +68,7 @@ function App() {
             {/* Admin Route Ends */}
           </Route>
           <Route path='/register' element={<Register />} />
+          <Route path='/resetpassword' element={<ResetPassword />} />
           <Route path='/login' element={<Login />} />
         </Routes>
       </div>
