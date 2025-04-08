@@ -154,8 +154,7 @@ const dototal =()=>{
               <th>मिति</th>
               <th>शिर्षक</th>
               <th>गा.पा । न.पा</th>
-              <th>फाँट</th>
-              <th>कर्मचारी</th>
+              <th>फाँट</th>              
               <th>भौचर नं</th>
               <th>जम्मा गर्ने</th>
               <th>रकम</th>
@@ -171,8 +170,7 @@ const dototal =()=>{
                     <td>{data.ndate}</td>
                     <td>{data.sirshak_name}</td>
                     <td>{data.napa_name}</td>
-                    <td>{data.fant_name}</td>
-                    <td>{data.staff_name}</td>
+                    <td>{data.fant_name}</td>                    
                     <td>{data.voucherno}</td>
                     <td>{data.deposited_by}</td>
                     <td>{data.amount}</td>

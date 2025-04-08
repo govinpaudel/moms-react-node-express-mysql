@@ -1,0 +1,10 @@
+drop table if EXISTS brg_ofc;
+create table brg_ofc as (select distinct office_id,office_name from bargikaran order by office_id,office_name);
+drop table if EXISTS brg_ofc_np;
+create table brg_ofc_np as (select distinct office_id,office_name,napa_id,napa_name from bargikaran order by office_id,office_name,napa_id,napa_name);
+drop table if EXISTS brg_ofc_np_gb;
+create table brg_ofc_np_gb as (select distinct office_id,office_name,napa_id,napa_name,gabisa_id,gabisa_name from bargikaran order by office_id,office_name,napa_id,napa_name,gabisa_id,gabisa_name);
+drop table if EXISTS brg_ofc_np_gb_wd;
+create table brg_ofc_np_gb_wd as (select distinct office_id,office_name,napa_id,napa_name,gabisa_id,gabisa_name,ward_no from bargikaran order by office_id,office_name,napa_id,napa_name,gabisa_id,gabisa_name,ward_no);
+drop table if EXISTS brg_ofc_np_gb_wd_st;
+create table brg_ofc_np_gb_wd_st as (select distinct office_id,office_name,napa_id,napa_name,gabisa_id,gabisa_name,ward_no,sheet_no from bargikaran order by office_id,office_name,napa_id,napa_name,gabisa_id,gabisa_name,ward_no,sheet_no);

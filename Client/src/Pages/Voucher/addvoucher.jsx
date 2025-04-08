@@ -55,11 +55,13 @@ const Addvoucher = () => {
     setparams(response.data.data.params);
   };
 
-
-
-
   const checkVoucher = (e) => {
-    console.log(e);
+    if(!loggedUser.isvoucherchecked){
+      console.log("voucher not checked");
+      return true;
+    }
+    else{
+      console.log(e);
     console.log(params);
     let a = e.length;
     let b = e;
@@ -75,6 +77,7 @@ const Addvoucher = () => {
       console.log("voucher not ok");
       return false;
     }
+    }    
   };
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -87,11 +90,7 @@ const Addvoucher = () => {
     if (vdata.fant_id == 0) {
       toast.warning("कृपया फाँट चयन गर्नुहोस् ।");
       return;
-    }
-    if (vdata.staff_id == 0) {
-      toast.warning("कृपया कर्मचारी चयन गर्नुहोस् ।");
-      return;
-    }
+    }   
     if (vdata.sirshak_id == 0) {
       toast.warning("कृपया शिर्षक चयन गर्नुहोस् ।");
       return;
@@ -141,9 +140,7 @@ const Addvoucher = () => {
       />       
       </div>
       <form onSubmit={onSubmit} className="Addvoucher__Form">      
-        <div className="Addvoucher__Form__part"> 
-          <div className="Addvoucher__Form__part__item">         
-          </div>
+        <div className="Addvoucher__Form__part">           
           <div className="Addvoucher__Form__part__item">
           <label className="Addvoucher__Form__part__item__label">अंग्रेजी मिति</label>
             <input
@@ -176,30 +173,6 @@ const Addvoucher = () => {
                 : null}
             </select>
           </div>
-          <div className="Addvoucher__Form__part__item">
-            <label className="Addvoucher__Form__part__item__label">कर्मचारी</label>
-            <select
-              name="staff_id"
-              className="Addvoucher__Form__part__item__input"
-              value={vdata.staff_id}
-              onChange={handleChange}
-            >
-              <option value="0">छान्नुहोस्</option>
-              {staffs
-                ? staffs.map((item) => {
-                  return (
-                    <option key={item.id} value={item.id}>
-                      {item.staff_name}
-                    </option>
-                  );
-                })
-                : null}
-            </select>
-          </div>
-        </div>
-        {/* first row ends */}
-        <div className="Addvoucher__Form__part">
-        
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">शिर्षक</label>
             <select
@@ -240,6 +213,12 @@ const Addvoucher = () => {
             </select>
           </div>
 
+        </div>
+        {/* first row ends */}
+        <div className="Addvoucher__Form__part">
+        
+        
+        
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">जम्मा गर्ने व्यक्तिको नाम</label>
             <input
@@ -262,10 +241,7 @@ const Addvoucher = () => {
               onChange={handleChange}
             />
           </div>
-        </div>
-        {/* second row ends */}
 
-        <div className="Addvoucher__Form__part">
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">रकम</label>
             <input
@@ -282,6 +258,9 @@ const Addvoucher = () => {
             <label className="Addvoucher__Form__part__item__label">रकम अक्षरमा</label>
             <h6 className="Addvoucher__Form__part__item__input">{convertToWords(vdata.amount)}</h6>
           </div>
+        </div>
+        {/* second row ends */}
+        <div className="Addvoucher__Form__part">          
           <div className="Addvoucher__Form__part__item">
             <input
               type="submit"

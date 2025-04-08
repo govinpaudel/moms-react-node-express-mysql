@@ -1,5 +1,4 @@
 .list {
-
     &__outerdiv {
         margin: 0 auto;
         width: 800px;
@@ -67,4 +66,10 @@
       &:hover{
         border-color: var(--yellow-theme-main-color);
       }
+}
+
+.table-800{
+    width: 800px;
+    margin: 0 auto;
+    text-align: center;
 }

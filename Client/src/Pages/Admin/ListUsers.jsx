@@ -11,6 +11,7 @@ const ListUsers = () => {
   const changeStatus=async(id,status)=>{
     const data = {
       office_id: loggedUser.office_id,
+      updated_by_user_id:loggedUser.id,
       user_id:id,
       status:status
     }
@@ -62,7 +63,7 @@ const ListUsers = () => {
         <th>ईमेल</th>
         <th>सम्पर्क नं</th>
         <th>अवस्था</th>
-       
+        <th>कृयाकलाप</th>
         </tr>
         </thead>
         <tbody>
@@ -73,9 +74,12 @@ const ListUsers = () => {
             <td>{item.engname}</td>
             <td>{item.email}</td>
             <td>{item.contactno}</td>
-            <td className={item.isactive?'activeuser':'inactiveuser'}><span className="userstatus" onClick={()=>{
+            <td> {item.isactive?"सक्रिय" : "निष्कृय" }</td>
+            <td>
+              <button className={ item.isactive?'listvoucher__list__delbtn':'listvoucher__list__editbtn'} onClick={()=>{
               changeStatus(item.id,item.isactive);
-            }}>{item.isactive?"सक्रिय" : "निष्कृय" }</span></td>
+            }}>{item.isactive?"निष्कृय पार्नुहोस्" : "सकृय पार्नुहोस्" }</button>
+            </td>
           </tr>
           }):null
           }        

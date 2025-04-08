@@ -78,7 +78,7 @@ useEffect(() => {
     <section id="Vouchermonthly" className="Vouchermonthly">
        <PageHeaderComponent
        officeText={`(${loggedUser.office_name})`}
-        headerText="कार्यालयको मासिक प्रतिवेदन"
+        headerText="को मासिक प्रतिवेदन"
         icon={<BsInfoCircleFill size={40} />}
       />
       <div className="Vouchermonthly__month">

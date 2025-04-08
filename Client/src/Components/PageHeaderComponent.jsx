@@ -7,7 +7,7 @@ const PageHeaderComponent = (props) => {
     <div className="wrapper">
       <h4>{officeText}</h4>
       <h2>{headerText}</h2>
-      <span>{icon}</span>
+      <span className="no-print">{icon}</span>
     </div>
   );
 };

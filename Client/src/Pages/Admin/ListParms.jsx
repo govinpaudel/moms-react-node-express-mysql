@@ -108,13 +108,13 @@ const OnSubmit=async(e)=>{
                 </div>
             </form>
         </div>
-      <table>
+      <table className='table-800'>
         <thead>
           <tr>
         <th>भौचर शरु अंक</th>
         <th>भौचर लम्बाई</th>        
         <th>अवस्था</th>
-        <th>कृयाकलाप</th>
+        <th colSpan={2}>कृयाकलाप</th>
         </tr>
         </thead>
         <tbody>
@@ -122,14 +122,15 @@ const OnSubmit=async(e)=>{
             return  <tr key={i}>
             <td>{item.vstart}</td>
             <td>{item.vlength}</td>
-            <td className={item.isactive?'activeuser':'inactiveuser'}>
-            {item.isactive?"सक्रिय" : "निष्कृय" }  </td>            
-            <td className={item.isactive?'activeuser':'inactiveuser'}><span className="userstatus" onClick={()=>{
-              changeStatus(item.id,item.isactive);
-            }}>{item.isactive?"निस्कृय पार्नुहोस्" : "सकृय पार्नुहोस्" }</span>
+            <td>
+            {item.isactive?"सक्रिय" : "निष्कृय" }</td>            
+            <td>
             <button className='editbtn' onClick={()=>{
-                loadEditData(item.id);
-            }}>संशोधन गर्नुहोस्</button></td>
+               loadEditData(item.id);
+            }}>संशोधन गर्नुहोस्</button> 
+            <button className='editbtn' onClick={()=>{
+               changeStatus(item.id,item.isactive) 
+            }}>{item.isactive?"निस्कृय पार्नुहोस्" : "सकृय पार्नुहोस्" }</button></td>
           </tr>
           }):null
           }        

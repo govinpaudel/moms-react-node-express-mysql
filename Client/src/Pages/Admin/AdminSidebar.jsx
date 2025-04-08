@@ -8,10 +8,9 @@ const AdminSidebar = () => {
       {id:1,path:'/home/',name:'GoBackToHome'},
         {id:2,path:'/admin/listusers',name:'ListUsers'},
         {id:3,path:'/admin/listfants',name:'ListFants'},
-        {id:4,path:'/admin/liststaffs',name:'ListStaffs'},
-        {id:5,path:'/admin/listnapas',name:'ListNapas'},
-        {id:6,path:'/admin/listparms',name:'ListParms'},
-        {id:7,path:'/admin/logout',name:'Logout'},
+        {id:4,path:'/admin/listnapas',name:'ListNapas'},
+        {id:5,path:'/admin/listparms',name:'ListParms'},
+        {id:6,path:'/admin/logout',name:'Logout'},
     ]
   return (
     <section id='AdminSidebar' className='AdminSidebar'>

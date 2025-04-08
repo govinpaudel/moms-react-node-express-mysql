@@ -5,7 +5,7 @@ const MainHeaderComponent = (props) => {
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const { headerText} = props;
   return (
-    <div className="wrapper">
+    <div className="wrapper no-print">
       <h2>{headerText}</h2>     
       <h3>{loggedUser?loggedUser.office_name:null}</h3>  
       <h4>({loggedUser?loggedUser.state_name:null})</h4>  

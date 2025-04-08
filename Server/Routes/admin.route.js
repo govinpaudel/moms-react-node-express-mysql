@@ -20,8 +20,8 @@ router.post('/changeUserStatus', (req, res) => {
     let user=req.body;
     console.log(user);
     if(user.status==1){
-        let query="update users set isactive=0 where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.user_id], (err, users) => {
+        let query="update users set isactive=0,updated_by_user_id=? where office_id=? and id=?";
+        connection.query(query,[user.updated_by_user_id,user.office_id,user.user_id], (err, users) => {
         if (err) { return; }
         return res.status(200).json({
             status:true,
@@ -31,8 +31,8 @@ router.post('/changeUserStatus', (req, res) => {
         })
     }
     else{
-        let query="update users set isactive=1 where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.user_id], (err, users) => {
+        let query="update users set isactive=1,updated_by_user_id=? where office_id=? and id=?";
+        connection.query(query,[user.updated_by_user_id,user.office_id,user.user_id], (err, users) => {
         if (err) { return; }
         return res.status(200).json({
             status:true,
@@ -291,8 +291,8 @@ router.post('/addOrUpdateNapas', (req, res) => {
 
     }
     else{
-        let query="update voucher_napa set napa_name=?,display_order=? where napa_id=?";
-        connection.query(query,[user.napa_name,user.display_order,user.id], (err, results) => {
+        let query="update voucher_napa set napa_name=?,display_order=? where napa_id=? and office_id=?";
+        connection.query(query,[user.napa_name,user.display_order,user.napa_id,user.office_id], (err, results) => {
             if (err) { 
                 console.log(err);
                 return; }
@@ -374,7 +374,7 @@ router.post('/addOrUpdateParms', (req, res) => {
             })    }
 
     else{
-        let query="update voucher_parameter set vstart=?,vlength,display_order=? where id=?";
+        let query="update voucher_parameter set vstart=?,vlength=? where id=?";
         connection.query(query,[user.vstart,user.vlength,user.id], (err, results) => {
             if (err) { 
                 console.log(err);

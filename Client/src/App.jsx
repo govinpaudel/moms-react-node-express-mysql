@@ -13,19 +13,19 @@ import Bargikaran from './Pages/Bargikaran/bargikaran';
 import VoucherSummary from './Pages/Voucher/VoucherSummary';
 import VoucherMonthly from './Pages/Voucher/VoucherMonthly';
 import VoucherFant from './Pages/Voucher/VoucherFant';
-import Editvoucher from './Pages/Voucher/editvoucher';
+import Editvoucher from './Pages/Voucher/Editvoucher';
 import Voucherdetails from './Pages/Voucher/Voucherdetails';
 import ListPoka from './Pages/Misil/ListPoka';
 import AddPoka from './Pages/Misil/AddPoka';
 import AddMisil from './Pages/Misil/AddMisil';
 import Admin from './Pages/Admin/Admin';
 import ListUsers from './Pages/Admin/ListUsers';
-import ListFants from './Pages/Admin/ListFants';
-import ListStaffs from './Pages/Admin/ListStaffs';
 import ListNapas from './Pages/Admin/ListNapas';
 import ListParms from './Pages/Admin/ListParms';
+import ListFants from './Pages/Admin/ListFants';
 import ChangePassword from './Pages/ChangePassword';
 import ResetPassword from './Pages/ResetPassword';
+
 function App() {
   return (
     <>
@@ -60,7 +60,7 @@ function App() {
             <Route path='' element={<ListUsers/>}/>
             <Route path='listusers' element={<ListUsers/>}/>
             <Route path='listfants' element={<ListFants/>}/>
-            <Route path='liststaffs' element={<ListStaffs/>}/>
+            
             <Route path='listnapas' element={<ListNapas/>}/>
             <Route path='listparms' element={<ListParms/>}/>
             <Route path='logout' element={<Logout />} />
