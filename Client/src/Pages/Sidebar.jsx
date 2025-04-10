@@ -65,6 +65,9 @@ const Sidebar = () => {
           <li >
             <NavLink to={"/admin"}>एडमिन प्यानल</NavLink>
           </li>
+          <li >
+            <NavLink to={"/superadmin"}>सुपर एडमिन प्यानल</NavLink>
+          </li>
         </ul>
       </div>
     </section>

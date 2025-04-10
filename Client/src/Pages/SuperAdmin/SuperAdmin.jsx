@@ -1,18 +1,18 @@
 import "../Home.scss";
 import { Outlet } from "react-router-dom";
+import SuperAdminSidebar from "./SuperAdminSidebar";
 import MainHeaderComponent from "../../Components/MainHeaderComponent";
-import AdminSidebar from "./AdminSidebar";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const Admin = () => {
+const SuperAdmin = () => {
   const loggedUser=JSON.parse(sessionStorage.getItem('loggedUser'));
   const navigate=useNavigate();
   const checkRole=()=>{
-    console.log("role",loggedUser)
-  if (loggedUser.role==2){
-    toast.warning("एडमिन प्रयोगकर्तालाई मात्र यो अख्तियारी उपलब्ध छ ।")
+    console.log("role",loggedUser.role)
+  if (loggedUser.role!=3){
+    toast.warning("सुपर एडमिन प्रयोगकर्तालाई मात्र यो अख्तियारी उपलब्ध छ ।")
     navigate('/home')
   }    
   }
@@ -25,7 +25,7 @@ const Admin = () => {
       <MainHeaderComponent
         headerText="मालपोत कार्यालय व्यवस्थापन प्रणाली" />
       <section id="home" className="home">
-        <div className="home__left"> <AdminSidebar /></div>
+        <div className="home__left"> <SuperAdminSidebar /></div>
         <div className="home__right">
           <Outlet />
         </div>
@@ -33,4 +33,4 @@ const Admin = () => {
   )
 }
 
-export default Admin
+export default SuperAdmin

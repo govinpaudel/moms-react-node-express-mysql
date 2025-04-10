@@ -1,9 +1,10 @@
 import React, { useState,useEffect } from 'react'
 import axios from 'axios';
+import "./List.scss";
 import { toast } from 'react-toastify';
-const ListUsers = () => {
+const ListAdminUsers = () => {
   const [data,setdata]=useState();
-  const Url = import.meta.env.VITE_API_URL + "admin/";
+  const Url = import.meta.env.VITE_API_URL + "superadmin/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
 
 
@@ -37,7 +38,7 @@ const ListUsers = () => {
     console.log("data sent", data);
     const response = await axios({
       method: "post",
-      url: Url + "listUsers",
+      url: Url + "listAdminUsers",
       data: data
     });
     console.log(response);
@@ -90,4 +91,4 @@ const ListUsers = () => {
   )
 }
 
-export default ListUsers
+export default ListAdminUsers

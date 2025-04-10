@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import PageHeaderComponent from '../Components/PageHeaderComponent'
 import { BsInfoCircleFill } from "react-icons/bs"
 import  "./Changepassword.scss";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
+import { useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 const ChangePassword = () => {
@@ -45,6 +46,10 @@ const ChangePassword = () => {
     const handleChange =(e)=>{
         setdata({...data,[e.target.name]:e.target.value})
     }
+    useEffect(() => {
+        document.title = "MOMS | पासवर्ड परिवर्तन";
+    }, [])
+    
 
     return (<section id='changepassword' className='changepassword'>
         <PageHeaderComponent

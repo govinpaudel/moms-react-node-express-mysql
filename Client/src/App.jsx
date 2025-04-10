@@ -25,6 +25,10 @@ import ListParms from './Pages/Admin/ListParms';
 import ListFants from './Pages/Admin/ListFants';
 import ChangePassword from './Pages/ChangePassword';
 import ResetPassword from './Pages/ResetPassword';
+import SuperAdmin from './Pages/SuperAdmin/SuperAdmin';
+import ListAdminUsers from './Pages/SuperAdmin/ListAdminUsers';
+import ListBadhfand from './Pages/SuperAdmin/ListBadhfand';
+import ListOffices from './Pages/SuperAdmin/ListOffices';
 
 function App() {
   return (
@@ -59,13 +63,20 @@ function App() {
             <Route path="/admin" element={<Admin />} >
             <Route path='' element={<ListUsers/>}/>
             <Route path='listusers' element={<ListUsers/>}/>
-            <Route path='listfants' element={<ListFants/>}/>
-            
+            <Route path='listfants' element={<ListFants/>}/>            
             <Route path='listnapas' element={<ListNapas/>}/>
             <Route path='listparms' element={<ListParms/>}/>
             <Route path='logout' element={<Logout />} />
             </Route>
             {/* Admin Route Ends */}
+
+            <Route path="/superadmin" element={<SuperAdmin />} >
+            <Route path='' element={<ListAdminUsers/>}/>
+            <Route path='listadminusers' element={<ListAdminUsers/>}/>
+            <Route path='listbadhfand' element={<ListBadhfand/>}/>
+            <Route path='listoffices' element={<ListOffices/>}/>
+            </Route>
+
           </Route>
           <Route path='/register' element={<Register />} />
           <Route path='/resetpassword' element={<ResetPassword />} />

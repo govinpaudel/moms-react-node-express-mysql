@@ -1,16 +1,15 @@
 import React from 'react';
-import "./AdminSidebar.scss";
+import "./SuperAdminSidebar.scss";
 import { NavLink } from 'react-router-dom';
 
 
-const AdminSidebar = () => {
+const SuperAdminSidebar = () => {
     const data=[
       {id:1,path:'/home/',name:'पछाडि जानुहोस्'},
-        {id:2,path:'/admin/listusers',name:'प्रयोगकर्ताहरु'},
-        {id:3,path:'/admin/listfants',name:'फाँटहरु'},
-        {id:4,path:'/admin/listnapas',name:'न.पा.हरु'},
-        {id:5,path:'/admin/listparms',name:'भौचर सेटअप'},
-        {id:6,path:'/admin/logout',name:'बाहिर जानुहोस्'},
+        {id:2,path:'/superadmin/listadminusers',name:'एडमिन प्रयोगकर्ताहरु'},   
+        {id:2,path:'/superadmin/listbadhfand',name:'बाडफाँड सेटअप'},      
+        {id:3,path:'/superadmin/listoffices',name:'कार्यालय सेटअप'},      
+        {id:4,path:'/admin/logout',name:'बाहिर जानुहोस्'},
     ]
   return (
     <section id='AdminSidebar' className='AdminSidebar'>
@@ -30,4 +29,4 @@ const AdminSidebar = () => {
   )
 }
 
-export default AdminSidebar
+export default SuperAdminSidebar

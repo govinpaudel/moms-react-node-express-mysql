@@ -1,9 +1,8 @@
-.login {
-
-    &__form-outer {
+.list {
+    &__outerdiv {
         margin: 0 auto;
         width: 800px;
-        height: 250px;
+        height: 150px;
         border: 1px solid var(--yellow-theme-main-color);
         border-radius: 15px;
 
@@ -12,36 +11,14 @@
             margin-bottom: 20px;
             text-align: center;
             color: var(--yellow-theme-main-color);
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 700;
             font-style: italic;
-        }
-
-        &__footer-text {
-            margin-top: 30px;
-            margin-bottom: 20px;
-            text-align: center;
-            color: var(--yellow-theme-main-color);
-            font-size: 16px;
-            font-weight: 700;
-            font-style: italic;
-            a {
-                text-decoration: none;
-                color: var(--yellow-theme-main-color);
-                border: 1px solid var(--yellow-theme-main-color);
-                padding: 10px;
-                border-radius: 25px;
-            }
-
-            a:hover {
-                color: var(--yellow-theme-background-color);
-                border: 1px solid var(--yellow-theme-background-color);
-                background-color: var(--yellow-theme-main-color);
-            }
-        }
+        }       
     }
 
-    &__form-inner {
+
+    &__form {
         margin-left: 20px;
         display: flex;
         text-align: center;
@@ -57,7 +34,6 @@
                 font-size: 17px;
                 background-color: var(--yellow-theme-background-color);
                 color: var(--yellow-theme-main-color);
-                font-family: kalimati;
             }
 
             &__button {
@@ -79,15 +55,21 @@
     }
 }
 
-@media only screen and (max-width:768px) {
-    .login {
-        &__form-outer {
-            width: 350px;
-            height: 400px;
-        }
+.editbtn{
+    padding: 2px 10px;
+      background-color: var(--yellow-theme-warning-button);
+      border-radius: 15px;
+      cursor: pointer;
+      text-align: center;
+      border-color: var(--yellow-theme-warning-button);
+      color: var(--yellow-theme-sub-text-color);
+      &:hover{
+        border-color: var(--yellow-theme-main-color);
+      }
+}
 
-        &__form-inner {
-            flex-direction: column;
-        }
-    }
+.table-800{
+    width: 800px;
+    margin: 0 auto;
+    text-align: center;
 }

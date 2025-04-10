@@ -45,8 +45,9 @@ const VoucherFant = () => {
   }
 
   useEffect(() => {
-    loadmonths()
-    loadfants()
+    loadmonths();
+    loadfants();
+    document.title = "MOMS | फाँट अनुसारको विवरण";
   }, [])
 
 

@@ -2,11 +2,17 @@ import React from 'react'
 import PageHeaderComponent from '../Components/PageHeaderComponent'
 import { BsInfoCircleFill } from "react-icons/bs"
 import "./ResetPassword.scss";
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 const ResetPassword = () => {
     const handleSubmit=async(e)=>{
-e.preventDefault();
+    e.preventDefault();
     }
+
+useEffect(() => {
+    document.title = "MOMS | पासवर्ड रिसेट";
+}, [])
+
 
 
     return (<section id='resetpassword' className='resetpassword'>
@@ -21,7 +27,7 @@ e.preventDefault();
            </form>
         </div>
         <h5 className="login__form-outer__footer-text">
-          <Link to="/login">Go Back</Link>
+          <Link to="/login">पछाडि जानुहोस्</Link>
         </h5>
 
 

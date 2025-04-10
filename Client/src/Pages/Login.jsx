@@ -69,7 +69,8 @@ const Login = () => {
     if (loggedUser) {
     }
   };
-  useEffect(() => {
+  useEffect(() => {   
+    document.title = "MOMS | प्रयोगकर्ता लगईन";
     loadAabas();
     checkLogin();
   }, []);
@@ -82,7 +83,7 @@ const Login = () => {
     <section id="login" className="login">
       <MainHeaderComponent headerText="मालपोत कार्यालय व्यवस्थापन प्रणाली"/>
       <div className="login__form-outer">
-        <h5 className="login__form-outer__header-text">Login Form</h5>
+        <h5 className="login__form-outer__header-text">लगईन फाराम</h5>
         <form className="login__form-inner" onSubmit={OnSubmit}>
           <div className="login__form-inner__item">
             <input
@@ -124,17 +125,17 @@ const Login = () => {
           <div className="login__form-inner__item">
             <input
               type="submit"
-              value="Login"
+              value="लगईन गर्नुहोस्"
               className="login__form-inner__item__button"
             />
           </div>
         </form>
 
         <h5 className="login__form-outer__footer-text">
-          <Link to="/register">Not A User ? Please register.</Link>
+          <Link to="/register">प्रयोगकर्ता होईन ? कृपया रजिष्टर गर्नुहोस्</Link>
         </h5>
         <h5 className="login__form-outer__footer-text">
-          <Link to="/resetpassword">Forgot Password ? Please reset</Link>
+          <Link to="/resetpassword">पासवर्ड बिर्सनुभयो ? कृपया रिसेट गर्नुहोस्</Link>
         </h5>
       </div>
     </section>

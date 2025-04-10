@@ -70,7 +70,7 @@ const Bargikaran = () => {
     });
   };
   useEffect(() => {
-    document.title = "वर्गिकरण खोजी";
+    document.title = "MOMS | वर्गिकरण खोजि";
     loadoffices();
   }, []);
   useEffect(() => {

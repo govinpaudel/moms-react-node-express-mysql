@@ -12,6 +12,7 @@ const bargikaranRoute=require('./Routes/bargikaran.route')
 const misilRoute=require('./Routes/misil.route');
 const kittaRoute=require('./Routes/kitta.route');
 const adminRoute=require('./Routes/admin.route');
+const superadminRoute=require('./Routes/superadmin.route');
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -25,7 +26,7 @@ app.use('/bargikaran',bargikaranRoute);
 app.use('/misil',misilRoute);
 app.use('/kitta',kittaRoute);
 app.use('/admin',adminRoute);
-
+app.use('/superadmin',superadminRoute);
 app.get('/', async (req, res, next) => { res.send("Hello from Main Server Page") })
 
 app.use((err, req, res, next) => {

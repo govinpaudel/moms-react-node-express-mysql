@@ -59,13 +59,14 @@ const Register = () => {
     }
   };
   useEffect(() => {
+    document.title = "MOMS | रजिष्ट्रेशन फाराम";
     loadOffices();
   }, []);
   return (
     <section id="register" className="register">
       <MainHeaderComponent headerText="मालपोत कार्यालय व्यवस्थापन प्रणाली"/>
       <div className="register__form-outer">
-        <h5 className="register__form-outer__header-text">Registration Form</h5>
+        <h5 className="register__form-outer__header-text">रजिष्ट्रेशन फाराम</h5>
         <form className="register__form-inner" onSubmit={OnSubmit}>
           <div className="register__form-inner__div">
           <div className="register__form-inner__div__item">
@@ -161,13 +162,13 @@ const Register = () => {
           <div className="register__form-inner__div__item">
             <input
               type="submit"
-              value="Register"
+              value="रजिष्ट्रर गर्नुहोस्"
               className="register__form-inner__div__item__button"
             />
           </div>
           <div className="register__form-inner__div__item">          
           <h6 className="register__form-outer__footer-text">
-          <Link to="/login">Already registered? Please login</Link>
+          <Link to="/login">प्रयोगकर्ता हो ? कृपया लगईन गर्नुहोस्</Link>
         </h6>
           </div>
           </div>          

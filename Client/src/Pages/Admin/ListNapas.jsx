@@ -88,6 +88,7 @@ const OnSubmit=async(e)=>{
 
   useEffect(() => {
     loadData();
+    document.title = "MOMS | न.पा.हरु";
   }, [])
   
   

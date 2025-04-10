@@ -31,7 +31,8 @@ const VoucherMonthly = () => {
 
 
 useEffect(() => {
-  loadmonth()
+  loadmonth();
+  document.title = "MOMS | महिना अनुसारको विवरण";
 }, [])
   
 

@@ -82,6 +82,7 @@ const Listvoucher = () => {
   };
   
   useEffect(() => {
+    document.title = "MOMS | आजका भौचरहरु";
     loadVouchers();
   }, []);
   return (
@@ -92,7 +93,7 @@ const Listvoucher = () => {
         icon={<BsInfoCircleFill size={40} />}
       />
       <div className="listvoucher__adddiv">
-        <div className="listvoucher__adddiv__search">
+        <div className="listvoucher__adddiv__search no-print">
           <input
             type="text"
             className="listvoucher__adddiv__search__input"
@@ -104,7 +105,7 @@ const Listvoucher = () => {
           />
         </div>
         <NavLink to={"/home/addvoucher"}>
-          <div className="listvoucher__adddiv__addbtn">
+          <div className="listvoucher__adddiv__addbtn no-print">
             <span> ( + )भौचर दर्ता गर्नुहोस्</span>
           </div>
         </NavLink>
@@ -135,7 +136,7 @@ const Listvoucher = () => {
               <th>भौचर नं</th>
               <th>जम्मा गर्ने</th>
               <th>रकम</th>
-              <th colSpan={2}>कृयाकलाप</th>
+              <th className="no-print" colSpan={2}>कृयाकलाप</th>
             </tr>
           </thead>
           <tbody>
@@ -151,7 +152,7 @@ const Listvoucher = () => {
                     <td>{data.voucherno}</td>
                     <td>{data.deposited_by}</td>
                     <td>{data.amount}</td>
-                    <td>
+                    <td className="no-print">
                       <button
                         className="listvoucher__list__editbtn"
                         onClick={() => navigate("/home/editvoucher",{state:{id:data.id}})}

@@ -48,7 +48,8 @@ const Voucherdetails = () => {
     }
   } 
   useEffect(() => {    
-    loadfants()
+    loadfants();
+    document.title = "MOMS | भौचर अनुसारको विवरण";
   }, [])
 
 const dototal =()=>{

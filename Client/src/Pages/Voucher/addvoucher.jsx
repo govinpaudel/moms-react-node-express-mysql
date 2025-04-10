@@ -15,8 +15,7 @@ const Addvoucher = () => {
     id: 0,
     ndate: "",
     edate: "",
-    fant_id: 0,
-    staff_id: 0,
+    fant_id: 0,    
     sirshak_id: 0,
     napa_id: 0,
     voucherno: "",
@@ -24,8 +23,7 @@ const Addvoucher = () => {
     deposited_by: "",
   };
   const [sirshaks, setsirshaks] = useState();
-  const [fants, setfants] = useState();
-  const [staffs, setstaffs] = useState();
+  const [fants, setfants] = useState();  
   const [napas, setnapas] = useState();
   const [params, setparams] = useState();
   const [vdata, setVdata] = useState(initialdata);
@@ -50,8 +48,7 @@ const Addvoucher = () => {
     console.log(response.data.data);
     setsirshaks(response.data.data.sirshaks);
     setfants(response.data.data.fants);
-    setnapas(response.data.data.napas);
-    setstaffs(response.data.data.staffs);
+    setnapas(response.data.data.napas);    
     setparams(response.data.data.params);
   };
 
@@ -120,6 +117,7 @@ const Addvoucher = () => {
   useEffect(() => {
     setVdata(initialdata);
     getVoucherMaster();
+    document.title = "MOMS | भौचर दर्ता फाराम";
   }, []);
 
   return (
