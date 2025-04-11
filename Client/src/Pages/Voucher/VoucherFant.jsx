@@ -164,15 +164,23 @@ const VoucherFant = () => {
       <table className="Vouchermonthly__table">
         <thead>
           <tr>
+          <th>महिना</th>
+          <th>फाँट</th>
             <th>शिर्षक</th>
             <th>रकम</th>
           </tr>
         </thead>
         <tbody>
           {summary ? summary.map((item, i) => {
-            return <tr key={i}><td>{item.sirshak_name}</td><td>{Math.round(item.amount)}</td></tr>
+            return <tr key={i}>
+              <td>{item.month_name}</td>
+              <td>{item.fant_name}</td>
+            <td>{item.sirshak_name}</td>
+            <td>{Math.round(item.amount)}</td></tr>
           }) : null}
           <tr><td>जम्मा</td>
+          <td></td>
+          <td></td>
             <td>{total}</td></tr>
         </tbody>
       </table>
