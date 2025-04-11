@@ -135,7 +135,7 @@ const VoucherFant = () => {
                 value={item.mid}
                 onClick={handlemonth}
               />
-              <h4>{item.mname}</h4>
+              <h4>{`${item.mid}-${item.mname}`}</h4>
             </div>
           );
         }) : null}

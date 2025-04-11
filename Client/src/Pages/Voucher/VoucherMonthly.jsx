@@ -93,7 +93,7 @@ useEffect(() => {
                 value={item.mid}
                 onClick={handleclick}
               />
-              <h4>{item.mname}</h4>
+              <h4>{`${item.mid} - ${item.mname}`}</h4>
             </div>
           );
         })}
