@@ -88,14 +88,8 @@ const Bargikaran = () => {
     loaddata();
   }, [data.kitta_no])
   
-
-
-
-
-
-
-
   const loaddata = async () => {
+    setDetails([]);
     if(data.office_id==0){
      toast.warning("कृपया कार्यालय छान्नुहोस् ।");
      return;     
@@ -111,6 +105,9 @@ const Bargikaran = () => {
      if(data.ward_no==0){
       toast.warning("कृपया वडा छान्नुहोस् ।");
       return;     
+     }     
+     if(data.kitta_no.trim().length==0){
+      return;
      }
     const response = await axios({
       method: "post",

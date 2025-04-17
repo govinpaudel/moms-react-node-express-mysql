@@ -128,6 +128,7 @@ const VoucherFant = () => {
         {mdata ? mdata.map((item, i) => {
           return (
             <div className="Vouchermonthly__month__item" key={i}>
+              <h4>{item.mid}</h4>
               <input
                 className="Vouchermonthly__month__item__box"
                 type="checkbox"
@@ -135,7 +136,7 @@ const VoucherFant = () => {
                 value={item.mid}
                 onClick={handlemonth}
               />
-              <h4>{`${item.mid}-${item.mname}`}</h4>
+              <h4>{item.mname}</h4>
             </div>
           );
         }) : null}

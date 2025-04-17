@@ -86,6 +86,7 @@ useEffect(() => {
         {mdata.map((item, i) => {
           return (
             <div className="Vouchermonthly__month__item" key={i}>
+              <h4>{item.mid}</h4>
               <input
                 className="Vouchermonthly__month__item__box"
                 type="checkbox"
@@ -93,7 +94,7 @@ useEffect(() => {
                 value={item.mid}
                 onClick={handleclick}
               />
-              <h4>{`${item.mid} - ${item.mname}`}</h4>
+              <h4>{item.mname}</h4>
             </div>
           );
         })}
