@@ -136,6 +136,45 @@ router.post('/VoucherByDate', (req, res) => {
         ) 
     }   
 })
+router.post('/VoucherSumByDate', (req, res) => {
+    let user = req.body;
+    console.log(user);
+    let keys = user.fant_id
+    let fants = keys.map((it) => {return `'${it}'`})
+    console.log(fants);
+    console.log(fants.length);
+    if(fants.length==0){
+    let query="select a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,sum(a.amount) as amount from voucher a\
+    where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
+    group by a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction\
+    order by a.edate_transaction,a.ndate_transaction";
+    connection.query(query, [user.office_id,user.start_date,user.end_date], (err, data) => {
+        if (err) { 
+            console.log(err);
+            return;            
+        }
+        return res.status(200).json({message: "डाटा सफलतापुर्वक प्राप्त भयो", data:data});
+    }
+    ) 
+
+    }
+    else{
+        let query=`select a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,sum(a.amount) as amount from voucher a\
+        where a.office_id=? and a.fant_id in (${fants}) and  a.edate_transaction >=? and a.edate_transaction<=?\
+        group by a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction\
+        order by a.edate_transaction,a.ndate_transaction`
+        connection.query(query, [user.office_id,user.start_date,user.end_date], (err, data) => {
+            if (err) { 
+                console.log(err);
+                return;            
+            }
+            return res.status(200).json({message: "डाटा सफलतापुर्वक प्राप्त भयो", data:data});
+        }
+        ) 
+    }   
+})
+
+
 router.post('/VoucherFant', (req, res) => {
     let user = req.body;
     console.log(user);
@@ -296,7 +335,6 @@ router.get('/getVoucherDetailsById/:id', (req, res) => {
         }
     })
 })
-
 router.post('/deleteVoucherById',(req,res)=>{
     let user = req.body;
     console.log("got from client",user);    

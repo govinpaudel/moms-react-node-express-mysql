@@ -85,7 +85,9 @@ const Bargikaran = () => {
   }, [data.gabisa_id])
   
   useEffect(() => {
-    loaddata();
+    let timer = setTimeout(() => {
+    loaddata();},1500);
+    return () => clearTimeout(timer)
   }, [data.kitta_no])
   
   const loaddata = async () => {

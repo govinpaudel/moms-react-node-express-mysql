@@ -59,10 +59,13 @@ const Listvoucher = () => {
 
   }
 
-
-  const SearchVoucher = (e) => {    
-      loadSingleVoucher();
+  const SearchVoucher = (e) => { 
+    let timer = setTimeout(() => {     
+      loadSingleVoucher();      
+      }, 1500)
+      return () => clearTimeout(timer)
       }
+
   const loadSingleVoucher = async () => {
     if (svoucherno.length > 0) {
       const data = {

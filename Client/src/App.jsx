@@ -29,6 +29,7 @@ import SuperAdmin from './Pages/SuperAdmin/SuperAdmin';
 import ListAdminUsers from './Pages/SuperAdmin/ListAdminUsers';
 import ListBadhfand from './Pages/SuperAdmin/ListBadhfand';
 import ListOffices from './Pages/SuperAdmin/ListOffices';
+import Voucherdaily from './Pages/Voucher/Voucherdaily';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
               <Route path='addvoucher' element={<Addvoucher />} />
               <Route path='editvoucher' element={<Editvoucher />} />
               <Route path='vouchermonthly' element={<VoucherMonthly />} />
+              <Route path='voucherdaily' element={<Voucherdaily />} />
               <Route path='voucherfant' element={<VoucherFant />} />
               <Route path='vouchersummary' element={<VoucherSummary />} />
               <Route path='voucherdetails' element={<Voucherdetails />} />
