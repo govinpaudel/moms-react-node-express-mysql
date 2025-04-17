@@ -46,6 +46,26 @@ const ListAdminUsers = () => {
 
   }
 
+  const resetPassword=async(id)=>{
+    const data={
+      updated_by_user_id:loggedUser.id,      
+      user_id:id
+    }
+    console.log("data sent", data);
+    const response = await axios({
+      method: "post",
+      url: Url + "resetPassword",
+      data: data
+    });
+    console.log(response);  
+    if(response.data.status){
+     toast.success(response.data.message);     
+    }
+    else{
+      toast.warning(response.data.message);
+    }
+  }
+
   useEffect(() => {
     loadData();
     document.title = "MOMS | प्रयोगकर्ताहरु";
@@ -64,7 +84,7 @@ const ListAdminUsers = () => {
         <th>ईमेल</th>
         <th>सम्पर्क नं</th>
         <th>अवस्था</th>
-        <th>कृयाकलाप</th>
+        <th colSpan={2}>कृयाकलाप</th>
         </tr>
         </thead>
         <tbody>
@@ -80,6 +100,12 @@ const ListAdminUsers = () => {
               <button className={ item.isactive?'listvoucher__list__delbtn':'listvoucher__list__editbtn'} onClick={()=>{
               changeStatus(item.id,item.isactive);
             }}>{item.isactive?"निष्कृय पार्नुहोस्" : "सकृय पार्नुहोस्" }</button>
+            </td>
+            <td>
+            <button className='listvoucher__list__editbtn' onClick={()=>{
+              resetPassword(item.id);
+            }}>रिसेट गर्नुहोस्
+            </button>
             </td>
           </tr>
           }):null
