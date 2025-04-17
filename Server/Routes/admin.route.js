@@ -2,6 +2,7 @@ const express = require('express')
 const connection = require('../Libraries/connection')
 const router = express.Router();
 const date = require('date-and-time')
+const bcrypt = require('bcryptjs')
 router.get('/', (req, res, next) => { res.send("Hello from Admin Route page") })
 // user routes starts
 router.post('/listUsers', (req, res) => {
@@ -42,6 +43,26 @@ router.post('/changeUserStatus', (req, res) => {
         })
     }
    
+})
+router.post('/resetPassword', (req, res) => {
+    let user=req.body;
+    console.log(user);
+    const hash = bcrypt.hashSync("123456", 10);  
+    console.log(hash) ;
+    let query="update users set password=?,updated_by_user_id=? where office_id=? and id=?";
+    connection.query(query,[hash,user.updated_by_user_id,user.office_id,user.user_id],(err,results)=>{
+        if (!err){               
+            return res.status(200).json({
+                status:true,
+                message: "प्रयोगकर्ताको पासवर्ड 123456 अपडेट भयो",
+                data:results
+            }) 
+        }
+            else{
+                console.log(err);
+            }        
+
+    })    
 })
 // fant routes starts
 router.post('/listFants', (req, res) => {

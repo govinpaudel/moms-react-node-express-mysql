@@ -1,23 +1,16 @@
 import { convertToWords } from "../../Utils/Utils";
-import {format} from 'date-fns';
-import Calendar from '@sbmdkl/nepali-datepicker-reactjs';
-import '@sbmdkl/nepali-datepicker-reactjs/dist/index.css';
-import "./Addvoucher.scss";
+import Calendar from "@sbmdkl/nepali-datepicker-reactjs";
+import "@sbmdkl/nepali-datepicker-reactjs/dist/index.css";
+import {useLocation, useNavigate} from 'react-router-dom';
+import "./addvoucher.scss";
 import { toast } from "react-toastify";
 import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
-import { NavLink, useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import {adToBs,bsToAd} from '@sbmdkl/nepali-date-converter'
-const edate=new Date().toISOString().slice(0, 10);
-console.log("ENGLISH DATE AAYEKO",edate);  
-const ndate=adToBs(edate);
-console.log("NEPALI DATE AAYEKO",ndate);
-const Editvoucher = () => {
-
+import { NavLink } from "react-router-dom"
+const Editvoucherold = () => {
   const initialdata = {
     id: 0,    
     ndate_voucher:ndate,
@@ -31,42 +24,24 @@ const Editvoucher = () => {
     amount: "",
     deposited_by: "",
   };
-  
+
   const [sirshaks, setsirshaks] = useState();
-  const [fants, setfants] = useState();
+  const [fants, setfants] = useState();  
   const [napas, setnapas] = useState();
   const [params, setparams] = useState();
-  const [vdata, setVdata] = useState(initialdata);  
+  const [vdata, setVdata] = useState(initialdata);
   const Url = import.meta.env.VITE_API_URL + "voucher/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const navigate = useNavigate();
   const location = useLocation();
-
   const handleChange = (e) => {
-    setVdata({ ...vdata, [e.target.name]: e.target.value });
+    setVdata({ ...vdata, [e.target.name]: e.target.value });    
   };
-
-  const handlesVoucherDate = ({ bsDate, adDate }) => {
-    vdata.ndate_voucher = bsDate;
-    vdata.edate_voucher = adDate;
-   
+  const handlesDate = ({ bsDate, adDate }) => {
+    console.log("date is changed");
+    vdata.ndate = bsDate;
+    vdata.edate = adDate;
   };
-
-  const handlesTransactionDate = ({ bsDate, adDate }) => {
-    vdata.ndate_transaction = bsDate;
-    vdata.edate_transaction = adDate;    
-  };
-  
-  // useEffect(() => {  
-  //   const bsDate = adToBs(vdata.edate);
-	//   console.log("DATE CHANGE BHAYO",bsDate);
-  //   vdata.ndate=bsDate;
-  // }, [vdata.edate])
-  
-
-
-
-
   const getVoucherMaster = async () => {
     const response = await axios({
       method: "post",
@@ -79,57 +54,53 @@ const Editvoucher = () => {
     setsirshaks(response.data.data.sirshaks);
     setfants(response.data.data.fants);
     setnapas(response.data.data.napas);
+    setstaffs(response.data.data.staffs);
     setparams(response.data.data.params);
   };
 
-  const getVoucherDetailsById=async()=>{
-    let url=Url+"getVoucherDetailsById/"+location.state.id;
-    console.log(url);
-      const response= await axios({
-        method:"get",
-        url:url
-      })
-      console.log(response.data.data[0]);
-      setVdata(response.data.data[0]);
-   }
+ const getVoucherDetailsById=async()=>{
+  let url=Url+"getVoucherDetailsById/"+location.state.id;
+  console.log(url);
+    const response= await axios({
+      method:"get",
+      url:url
+    })
+    console.log(response.data.data[0]);
+    setVdata(response.data.data[0]);
+ }
+
 
   const checkVoucher = (e) => {
-    if (!loggedUser.isvoucherchecked) {
-      console.log("voucher not checked");
+    console.log(e);
+    console.log(params);
+    let a = e.length;
+    let b = e;
+    let c = b.toString();
+    let d = c.substring(0, 1);
+    let f = d.toString() + a.toString();
+    console.log(f);
+    let status = params.find((temp) => temp.parm == f);
+    if (status) {
+      console.log("voucher ok");
       return true;
-    }
-    else {
-      console.log(e);
-      console.log(params);
-      let a = e.length;
-      let b = e;
-      let c = b.toString();
-      let d = c.substring(0, 1);
-      let f = d.toString() + a.toString();
-      console.log(f);
-      let status = params.find((temp) => temp.parm == f);
-      if (status) {
-        console.log("voucher ok");
-        return true;
-      } else {
-        console.log("voucher not ok");
-        return false;
-      }
+    } else {
+      console.log("voucher not ok");
+      return false;
     }
   };
   const onSubmit = async (event) => {
     event.preventDefault();
-    console.log(vdata);
-    const myArray = vdata.ndate_transaction.split("-");
+    const myArray = vdata.ndate.split("-");
     vdata.office_id = loggedUser.office_id;
     vdata.aaba_id = loggedUser.aabaid;
-    vdata.created_by_user_id = loggedUser.id;
-    vdata.month_id = myArray[1];
-    const vstatus = checkVoucher(vdata.voucherno);
+    vdata.created_by_user_id = loggedUser.id;    
+    vdata.month_id = myArray[1];    
+    const vstatus = checkVoucher(vdata.voucherno);    
     if (vdata.fant_id == 0) {
       toast.warning("कृपया फाँट चयन गर्नुहोस् ।");
       return;
     }
+   
     if (vdata.sirshak_id == 0) {
       toast.warning("कृपया शिर्षक चयन गर्नुहोस् ।");
       return;
@@ -157,65 +128,44 @@ const Editvoucher = () => {
     }
   };
   useEffect(() => {
+    console.log(location.state.id);
+    console.log("useeffect called")
     setVdata(initialdata);
     getVoucherMaster();
-    document.title = "MOMS | भौचर दर्ता फाराम";
     getVoucherDetailsById();
-    const edate_voucher=format(new Date(vdata.edate_voucher), 'MM/dd/yyyy')
-    setVdata({...vdata,"edate_voucher":edate_voucher})
-    console.log(vdata)     
-    console.log("hello date",format(new Date(vdata.edate_voucher), 'MM/dd/yyyy'));
   }, []);
 
   return (
     <section id="Addvoucher" className="Addvoucher">
       <PageHeaderComponent
-        headerText="भौचर दर्ता फाराम"
+        headerText="भौचर संशोधन फाराम"
         icon={<BsInfoCircleFill size={40} />}
-      /> 
-      {loggedUser.usenepcalendar ?
-      <div className="Addvoucher__calendardiv">
-  <div className="Addvoucher__calendardiv__datediv">
-        <label className="Addvoucher__Form__part__item__label">बैंक दाखिला मिति : </label>
-        <Calendar
-          key={vdata.edate_voucher}
-          onChange={handlesVoucherDate}
-          theme="green"
-          language="en"
-          defaultDate={vdata.ndate_voucher}
-          className="Addvoucher__Form__part__item__input calendar"
-          maxDate={ndate}          
-        />
-        </div>
-        <div className="Addvoucher__calendardiv__datediv">
-        <label className="Addvoucher__Form__part__item__label">कार्यालयमा कारोबार मिति :</label>
-        <Calendar
-          key={vdata.edate_transaction}
-          onChange={handlesTransactionDate}
-          theme="green"
-          language="en"
-          defaultDate={vdata.ndate_transaction}
-          className="Addvoucher__Form__part__item__input calendar"
-          maxDate={ndate}          
-        />
-        </div>
+      />
+     
+    <div className="Addvoucher__calendardiv">
+    <label className="Addvoucher__Form__part__item__label">मिति</label>
+            <Calendar
+              key={vdata.ndate}
+              onChange={handlesDate}
+              theme="green"
+              language="en"
+              className="Addvoucher__Form__part__item__input"
+              defaultDate={vdata.ndate}
+            />
+    </div>
 
-      </div>
-      :
-      <div className="Addvoucher__calendardiv">
-<div className="Addvoucher__calendardiv__datediv">
-<label className="Addvoucher__Form__part__item__label">बैंक दाखिला मिति :</label>
-<input type="date" max={edate} onChange={handleChange} name="edate_voucher" value={vdata.edate_voucher} className="Addvoucher__Form__part__item__input calendar" />
-</div>
-<div className="Addvoucher__calendardiv__datediv">
-<label className="Addvoucher__Form__part__item__label">कार्यालयमा कारोबार मिति :</label>
-<input type="date" max={edate} onChange={handleChange} name="edate_transaction" value={vdata.edate_transaction} className="Addvoucher__Form__part__item__input calendar" />
-</div>
-</div>
-}
-    
       <form onSubmit={onSubmit} className="Addvoucher__Form">
         <div className="Addvoucher__Form__part">         
+          <div className="Addvoucher__Form__part__item">
+            <label className="Addvoucher__Form__part__item__label">अंग्रेजी मिति</label>
+            <input
+              type="text"
+              name="edate"
+              className="Addvoucher__Form__part__item__input"
+              value={vdata.edate}
+              readOnly
+            />
+          </div>
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">फाँट</label>
             <select
@@ -275,10 +225,10 @@ const Editvoucher = () => {
                 : null}
             </select>
           </div>
-
         </div>
-        {/* first row ends */}
         <div className="Addvoucher__Form__part">
+         
+
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">जम्मा गर्ने व्यक्तिको नाम</label>
             <input
@@ -301,7 +251,6 @@ const Editvoucher = () => {
               onChange={handleChange}
             />
           </div>
-
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">रकम</label>
             <input
@@ -312,16 +261,16 @@ const Editvoucher = () => {
               onChange={handleChange}
               required
             />
-
+            
           </div>
-          
-        </div>
-        {/* second row ends */}
-        <div className="Addvoucher__Form__part">
-        <div className="Addvoucher__Form__part__item">
+          <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">रकम अक्षरमा</label>
-            <h6 className="Addvoucher__Form__part__item__input">{convertToWords(vdata.amount)}</h6>
+            <h6 className="Addvoucher__Form__part__item__input">{convertToWords(vdata.amount)}</h6>            
           </div>
+        </div>
+
+        <div className="Addvoucher__Form__part">
+         
           <div className="Addvoucher__Form__part__item">
             <input
               type="submit"
@@ -331,15 +280,14 @@ const Editvoucher = () => {
           </div>
           <div className="Addvoucher__Form__part__item">
             <NavLink to={"/home/listvoucher"}>
-              <input
-                type="cancel"
-                className="Addvoucher__Form__part__item__button"
-                value="रद्द गर्नुहोस्"
-              />
+            <input
+              type="cancel"
+              className="Addvoucher__Form__part__item__button"
+              value="रद्द गर्नुहोस्"
+            />
             </NavLink>
           </div>
         </div>
-        {/* third row ends */}
       </form>
 
       {/* create voucher form ends */}
@@ -347,4 +295,4 @@ const Editvoucher = () => {
   );
 };
 
-export default Editvoucher;
+export default Editvoucherold;

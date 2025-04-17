@@ -152,7 +152,8 @@ const dototal =()=>{
           <thead>
             <tr>
               <th>क्र.सं</th>
-              <th>मिति</th>
+              <th>बैंक दाखिला मिति</th>
+              <th>कारोबार मिति</th>
               <th>शिर्षक</th>
               <th>गा.पा । न.पा</th>
               <th>फाँट</th>              
@@ -168,11 +169,12 @@ const dototal =()=>{
                 return (
                   <tr key={i}>
                     <td>{i + 1}</td>
-                    <td>{data.ndate}</td>
+                    <td>{data.ndate_voucher}</td>
+                    <td>{data.ndate_transaction}</td>
                     <td>{data.sirshak_name}</td>
                     <td>{data.napa_name}</td>
-                    <td>{data.fant_name}</td>                    
-                    <td>{data.voucherno}</td>
+                    <td>{data.fant_name}</td> 
+                    <td onClick={() => navigate("/home/editvoucher",{state:{id:data.id}})}>{data.voucherno}</td>
                     <td>{data.deposited_by}</td>
                     <td>{data.amount}</td>
                     {/* <td>

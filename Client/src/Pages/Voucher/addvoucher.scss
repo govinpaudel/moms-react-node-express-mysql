@@ -8,14 +8,15 @@
 
     &__part {
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
+      margin-bottom: 10px;
 
       &__item {
         display: flex;
         flex-direction: column;
         width: 250px;
         justify-content: space-around;
-       
+
         &__button {
           margin-top: 20px;
           padding: 10px 20px;
@@ -29,17 +30,15 @@
           color: var(--yellow-theme-sub-text-color);
           font-size: 16px;
         }
-
         &__input {
-
           padding: 5px 40px 5px 15px;
           border: 1px solid var(--yellow-theme-sub-text-color) !important;
           border-radius: 25px;
-          width: 100%;          
+          width: 100%;
           font-size: 17px;
           background-color: var(--yellow-theme-background-color);
           color: var(--yellow-theme-main-color);
-
+          cursor: pointer;
         }
       }
 
@@ -47,9 +46,17 @@
     }
 
   }
-  &__calendardiv{
-    margin-left: 10px;
-    width: 400px;
+
+  &__calendardiv {
+    display: flex;      
+    justify-content: space-between;
+    &__datediv{
+      display: flex;
+      flex-direction: column;
+    }
   }
 }
 
+.calendar{
+  width: 500px;
+}

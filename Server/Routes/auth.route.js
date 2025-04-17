@@ -42,7 +42,7 @@ router.post('/register', async (req, res, next) => {
 })
 router.post('/login', async (req, res, next) => {
     let user = req.body
-    const query = "select a.*,b.state_id,b.office_name,b.isvoucherchecked,c.state_name,d.role_name from users a\
+    const query = "select a.*,b.state_id,b.office_name,b.isvoucherchecked,b.usenepcalendar,c.state_name,d.role_name from users a\
     inner join offices b on a.office_id=b.id\
     inner join user_roles d on a.role=d.id\
     inner join states c on b.state_id=c.id where a.username=?"
@@ -80,7 +80,6 @@ router.post('/login', async (req, res, next) => {
         }
     })
 })
-
 router.post('/changepassword', (req, res) => {
     const user = req.body;
     console.log(user);
@@ -114,8 +113,6 @@ router.post('/changepassword', (req, res) => {
 
     })
 })
-
-
 router.post('/refresh-token', async (req, res, next) => {
     try {
         const { oldrefreshToken } = req.body        
@@ -150,7 +147,6 @@ router.get('/getAllAabas', async (req, res, next) => {
         next(err)
     }    
 })
-
 router.post('/getSidebarlist', async (req, res, next) => {
     let user=req.body;
     console.log(user);

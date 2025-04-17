@@ -5,6 +5,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
+import { toast } from "react-toastify";
 const Listvoucher = () => {
   const navigate = useNavigate();
   const Url = import.meta.env.VITE_API_URL + "voucher/";
@@ -34,6 +35,31 @@ const Listvoucher = () => {
       }
     }
   });
+
+  const deleteVoucher= async(e)=>{
+    console.log(loggedUser.role);
+    if(loggedUser.role==2){
+      toast.warning("यो सुविधा व्यवस्थापक लाई मात्र उपलब्ध छ")
+      return;
+    }
+    const yes=confirm("के तपाई यो भौचर हटाउन चहानुहुन्छ ?")
+    if(yes){
+      const data = { id:e,
+        user_id:loggedUser.id
+       };
+      const response = await axios({
+        method: "post",
+        url: Url + "deleteVoucherById",
+        data: data,
+      });
+      if(response.data.status==true){
+        toast.success(`भौचर नं ${e} सफलतापुर्वक हटाईयो`)
+      }
+    }
+
+  }
+
+
   const SearchVoucher = (e) => {    
       loadSingleVoucher();
       }
@@ -129,7 +155,8 @@ const Listvoucher = () => {
           <thead>
             <tr>
               <th>क्र.सं</th>
-              <th>मिति</th>
+              <th>बैंक दाखिला मिति</th>
+              <th>कारोबार मिति</th>
               <th>शिर्षक</th>
               <th>गा.पा । न.पा</th>
               <th>फाँट</th>              
@@ -145,7 +172,8 @@ const Listvoucher = () => {
                 return (
                   <tr key={i}>
                     <td>{i + 1}</td>
-                    <td>{data.ndate}</td>
+                    <td>{data.ndate_voucher}</td>
+                    <td>{data.ndate_transaction}</td>
                     <td>{data.sirshak_name}</td>
                     <td>{data.napa_name}</td>
                     <td>{data.fant_name}</td>                   
@@ -159,7 +187,9 @@ const Listvoucher = () => {
                       >
                         संशोधन
                       </button>
-                      <button className="listvoucher__list__delbtn">हटाउनुहोस्</button>
+                      <button className="listvoucher__list__delbtn"
+                      onClick={()=>deleteVoucher(data.id)}
+                      >हटाउनुहोस्</button>
                     </td>
                   </tr>
                 );

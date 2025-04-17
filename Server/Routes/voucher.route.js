@@ -55,7 +55,8 @@ router.post('/VoucherMonthly', (req, res) => {
     inner join voucher_badhfadh d on a.aaba_id=d.aaba_id and a.sirshak_id=d.sirshak_id and c.state_id=d.state_id\
     inner join voucher_napa e on a.napa_id=e.id and a.office_id=e.office_id\
     where a.aaba_id=? and a.office_id=? and a.month_id in (${months}) and a.sirshak_id=2\
-    group by a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,a.napa_id,e.napa_name`;
+    group by a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,a.napa_id,e.napa_name \
+    order by a.napa_id,e.napa_name`;
     let query4=`select a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,sum(a.amount) as amount,sum(a.amount*(d.sanchitkosh)/100) as sanchitkosh,sum(a.amount*(d.pardesh)/100) as pardesh,sum(a.amount*(d.isthaniye)/100) as isthaniye,sum(a.amount*(d.sangh)/100) as sangh from voucher a\
     inner join voucher_sirshak b on a.sirshak_id=b.id\
     inner join offices c on c.id=a.office_id \
@@ -102,12 +103,12 @@ router.post('/VoucherByDate', (req, res) => {
     console.log(fants);
     console.log(fants.length);
     if(fants.length==0){
-    let query="select a.edate,a.ndate,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,a.deposited_by from voucher a\
+    let query="select a.id,a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,a.deposited_by from voucher a\
     inner join voucher_sirshak b on a.sirshak_id=b.id\
     inner join voucher_fant c on a.fant_id=c.id\
     inner join voucher_napa d on a.napa_id=d.id and a.office_id=d.office_id\
-    where a.office_id=? and  a.edate >=? and a.edate<=?\
-    order by edate,ndate,voucherno";
+    where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
+    order by edate_transaction,ndate_transaction,voucherno";
     connection.query(query, [user.office_id,user.start_date,user.end_date], (err, data) => {
         if (err) { 
             console.log(err);
@@ -119,12 +120,12 @@ router.post('/VoucherByDate', (req, res) => {
 
     }
     else{
-        let query=`select a.id,a.edate,a.ndate,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,a.deposited_by from voucher a\
+        let query=`select a.id,a.ndate_voucher,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,a.deposited_by from voucher a\
         inner join voucher_sirshak b on a.sirshak_id=b.id\
         inner join voucher_fant c on a.fant_id=c.id\
         inner join voucher_napa d on a.napa_id=d.id and a.office_id=d.office_id\        
-        where a.office_id=? and a.fant_id in (${fants}) and  a.edate >=? and a.edate<=?\
-        order by edate,ndate,voucherno`;
+        where a.office_id=? and a.fant_id in (${fants}) and  a.edate_transaction >=? and a.edate_transaction<=?\
+        order by edate_transaction,ndate_transaction,voucherno`;
         connection.query(query, [user.office_id,user.start_date,user.end_date], (err, data) => {
             if (err) { 
                 console.log(err);
@@ -193,7 +194,7 @@ router.post('/getTodaysVoucher', (req, res) => {
     const now = new Date();
     const value = date.format(now, 'YYYY-MM-DD');
     console.log("current date and time : " + value)
-    squery = "SELECT a.id,a.ndate,a.voucherno,a.sirshak_id,a.amount,DATE_FORMAT(a.created_at,'%Y-%m-%d') as created_at,a.created_by_user_id,a.deposited_by,b.sirshak_name,c.napa_name,e.fant_name,f.nepname from voucher a\
+    squery = "SELECT a.id,a.ndate_voucher,a.ndate_transaction,a.voucherno,a.sirshak_id,a.amount,DATE_FORMAT(a.created_at,'%Y-%m-%d') as created_at,a.created_by_user_id,a.deposited_by,b.sirshak_name,c.napa_name,e.fant_name,f.nepname from voucher a\
         INNER JOIN voucher_sirshak b on\
         a.sirshak_id=b.id \
         inner join voucher_napa c on\
@@ -220,7 +221,7 @@ router.post('/loadSingleVoucher', (req, res) => {
     const now = new Date();
     const value = date.format(now, 'YYYY-MM-DD');
     console.log("current date and time : " + value)
-    squery = "SELECT a.id,a.ndate,a.voucherno,a.sirshak_id,a.amount,DATE_FORMAT(a.created_at,'%Y-%m-%d') as created_at,a.created_by_user_id,a.deposited_by,b.sirshak_name,c.napa_name,e.fant_name,f.nepname from voucher a\
+    squery = "SELECT a.id,a.ndate_transaction,a.ndate_voucher,a.voucherno,a.sirshak_id,a.amount,DATE_FORMAT(a.created_at,'%Y-%m-%d') as created_at,a.created_by_user_id,a.deposited_by,b.sirshak_name,c.napa_name,e.fant_name,f.nepname from voucher a\
         INNER JOIN voucher_sirshak b on\
         a.sirshak_id=b.id \
         inner join voucher_napa c on\
@@ -241,14 +242,13 @@ router.post('/loadSingleVoucher', (req, res) => {
         }
     })
 })
-
 //add or edit voucher
 router.post('/addOrUpdateVoucher', (req, res) => {
     let user = req.body;
     console.log("got from client",user);
     if (user.id > 0) {
-        uquery = "update voucher set aaba_id=?,office_id=?,edate=?,ndate=?,month_id=?,sirshak_id=?,fant_id=?,napa_id=?,voucherno=?,amount=?,updated_by_user_id=?,deposited_by=UPPER(?) where id=?"
-        connection.query(uquery, [user.aaba_id, user.office_id, user.edate, user.ndate, user.month_id, user.sirshak_id, user.fant_id, user.napa_id, user.voucherno, user.amount, user.created_by_user_id, user.deposited_by, user.id], (err, results) => {
+        uquery = "update voucher set aaba_id=?,office_id=?,edate_voucher=?,ndate_voucher=?,edate_transaction=?,ndate_transaction=?,month_id=?,sirshak_id=?,fant_id=?,napa_id=?,voucherno=?,amount=?,updated_by_user_id=?,deposited_by=UPPER(?) where id=?"
+        connection.query(uquery, [user.aaba_id, user.office_id, user.edate_voucher, user.ndate_voucher,user.edate_transaction,user.ndate_transaction, user.month_id, user.sirshak_id, user.fant_id, user.napa_id, user.voucherno, user.amount, user.created_by_user_id, user.deposited_by, user.id], (err, results) => {
             if (!err) {
                 return res.status(200).json({ status: true, action: "success", message: "भौचर नं " + user.voucherno + " सफलतापुर्वक संशोधन भयो ।" })
             }
@@ -265,8 +265,8 @@ router.post('/addOrUpdateVoucher', (req, res) => {
         connection.query(checkquery, [user.office_id, user.voucherno], (err, results) => {
             console.log("results",results);
             if (results.length <= 0) {
-                iquery = "insert into voucher(aaba_id,office_id,edate,ndate,month_id,sirshak_id,fant_id,napa_id,voucherno,amount,deposited_by,created_by_user_id) values(?,?,?,?,?,?,?,?,?,?,UPPER(?),?)"
-                connection.query(iquery, [user.aaba_id, user.office_id, user.edate, user.ndate, user.month_id, user.sirshak_id, user.fant_id, user.napa_id, user.voucherno, user.amount,user.deposited_by, user.created_by_user_id], (err, results) => {
+                iquery = "insert into voucher(aaba_id,office_id,edate_voucher,ndate_voucher,edate_transaction,ndate_transaction,month_id,sirshak_id,fant_id,napa_id,voucherno,amount,deposited_by,created_by_user_id) values(?,?,?,?,?,?,?,?,?,?,?,?,UPPER(?),?)"
+                connection.query(iquery, [user.aaba_id, user.office_id, user.edate_voucher, user.ndate_voucher,user.edate_transaction,user.ndate_transaction, user.month_id, user.sirshak_id, user.fant_id, user.napa_id, user.voucherno, user.amount,user.deposited_by, user.created_by_user_id], (err, results) => {
                     if (!err) {
                         return res.status(200).json({ status: true, action: "success", message: "भौचर नं " + user.voucherno + " सफलतापुर्वक दर्ता भयो ।" })
                     }else{
@@ -284,7 +284,6 @@ router.post('/addOrUpdateVoucher', (req, res) => {
 
 
 })
-
 router.get('/getVoucherDetailsById/:id', (req, res) => {
     console.log(req.params.id);
     query = "select * from voucher where id=? ";
@@ -297,6 +296,30 @@ router.get('/getVoucherDetailsById/:id', (req, res) => {
         }
     })
 })
+
+router.post('/deleteVoucherById',(req,res)=>{
+    let user = req.body;
+    console.log("got from client",user);    
+    let query=`insert into voucher_deleted(id,aaba_id,office_id,edate_voucher,ndate_voucher,edate_transaction,ndate_transaction,month_id,sirshak_id,fant_id,napa_id,voucherno,amount,deposited_by,created_by_user_id,created_at,updated_by_user_id,updated_at,deleted_by_user_id) (select a.*,'${user.user_id}' as deleted_by_user_id from voucher a where id=${user.id})`;
+    console.log(query);
+    connection.query(query,(err,results)=>{
+        if(err){
+            console.log(err);
+            return;
+        }
+        let query1=`delete from voucher where id='${user.id}'`;
+        connection.query(query1,(err,results)=>{
+            if(err){
+                console.log(err);
+            return;
+            }
+            else{
+                return res.status(200).json({ status: true,message: "भौचर सफलतापुर्क हटाईयो ।" });
+            }})       
+
+    })
+})
+
 
 
 module.exports = router;
