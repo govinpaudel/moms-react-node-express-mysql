@@ -55,8 +55,9 @@ const Voucherdaily = () => {
 const dototal =()=>{
     var x =0;
     repdata.forEach((a) => {      
-      console.log(x);
-      x=x+ parseInt(a.amount);
+      if(a.sirshak_id==99){
+        x=x+ parseInt(a.amount);
+      }      
     })
     settotal(x);
   }
