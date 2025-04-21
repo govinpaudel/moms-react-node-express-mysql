@@ -61,14 +61,13 @@ const Listvoucher = () => {
 
   
 useEffect(() => {
+  if (svoucherno.length > 0) {
   let timer = setTimeout(() => {     
     loadSingleVoucher();      
     }, 2000)
     return () => clearTimeout(timer)
+  }
 }, [svoucherno])
-
-
-
 
   const loadSingleVoucher = async () => {
     if (svoucherno.length > 0) {
