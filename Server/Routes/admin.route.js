@@ -47,14 +47,15 @@ router.post('/changeUserStatus', (req, res) => {
 router.post('/resetPassword', (req, res) => {
     let user=req.body;
     console.log(user);
-    const hash = bcrypt.hashSync("123456", 10);  
+    const newpassword='User@123$';
+    const hash = bcrypt.hashSync(newpassword, 10);  
     console.log(hash) ;
     let query="update users set password=?,updated_by_user_id=? where office_id=? and id=?";
     connection.query(query,[hash,user.updated_by_user_id,user.office_id,user.user_id],(err,results)=>{
         if (!err){               
             return res.status(200).json({
                 status:true,
-                message: "प्रयोगकर्ताको पासवर्ड 123456 अपडेट भयो",
+                message: `प्रयोगकर्ताको पासवर्ड ${newpassword} अपडेट भयो`,
                 data:results
             }) 
         }

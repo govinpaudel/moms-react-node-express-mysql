@@ -32,6 +32,7 @@ function signRefreshToken(userid) {
     })
 }
 function verifyAccesstoken(req, res, next) {
+    console.log(req.headers['authorization']);
     if (!req.headers['authorization']) return next(createError.Unauthorized())
     const authHeader = req.headers['authorization']
     const bearerToken = authHeader.split(' ')

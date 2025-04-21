@@ -59,12 +59,16 @@ const Listvoucher = () => {
 
   }
 
-  const SearchVoucher = (e) => { 
-    let timer = setTimeout(() => {     
-      loadSingleVoucher();      
-      }, 1500)
-      return () => clearTimeout(timer)
-      }
+  
+useEffect(() => {
+  let timer = setTimeout(() => {     
+    loadSingleVoucher();      
+    }, 2000)
+    return () => clearTimeout(timer)
+}, [svoucherno])
+
+
+
 
   const loadSingleVoucher = async () => {
     if (svoucherno.length > 0) {
@@ -126,8 +130,7 @@ const Listvoucher = () => {
           <input
             type="text"
             className="listvoucher__adddiv__search__input"
-            placeholder="खोजीको लागि भौचर नं प्रविष्ट गर्नुहोस् ।"
-            onKeyUp={SearchVoucher}
+            placeholder="खोजीको लागि भौचर नं प्रविष्ट गर्नुहोस् ।"            
             onChange={(e) => {
               setsvoucherno(e.target.value)
             }}

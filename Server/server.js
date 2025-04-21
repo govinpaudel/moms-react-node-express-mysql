@@ -13,15 +13,17 @@ const misilRoute=require('./Routes/misil.route');
 const kittaRoute=require('./Routes/kitta.route');
 const adminRoute=require('./Routes/admin.route');
 const superadminRoute=require('./Routes/superadmin.route');
+const requestIp =require("request-ip");
+
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(morgan('dev'));
-
+app.use(requestIp.mw());
 // lets handle request coming from frontend
 app.use('/auth', authRoute);
-app.use('/voucher', voucherRoute);
+app.use('/voucher',voucherRoute);
 app.use('/bargikaran',bargikaranRoute);
 app.use('/misil',misilRoute);
 app.use('/kitta',kittaRoute);

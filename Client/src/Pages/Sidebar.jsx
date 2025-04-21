@@ -59,14 +59,18 @@ const Sidebar = () => {
         <li >
             <NavLink to={"/home/changepassword"}>पासवर्ड परिवर्तन</NavLink>
           </li>
-          <li >
-            <NavLink to={"/home/logout"}>लगआउट</NavLink>
-          </li>
+         {loggedUser.role==1?   
           <li >
             <NavLink to={"/admin"}>एडमिन प्यानल</NavLink>
           </li>
+          :null}
+           {loggedUser.role==3?   
           <li >
             <NavLink to={"/superadmin"}>सुपर एडमिन प्यानल</NavLink>
+          </li>
+          :null}         
+          <li >
+            <NavLink to={"/home/logout"}>लगआउट</NavLink>
           </li>
         </ul>
       </div>

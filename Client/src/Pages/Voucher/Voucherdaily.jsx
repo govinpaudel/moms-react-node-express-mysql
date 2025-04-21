@@ -97,7 +97,7 @@ const dototal =()=>{
   return <section id="Voucherdetails" className="Voucherdetails">
     <PageHeaderComponent
       officeText={`(${loggedUser.office_name})`}
-      headerText="भौचर अुनसारको प्रतिवेदन"
+      headerText="दैनिक भौचर प्रतिवेदन"
       icon={<BsInfoCircleFill size={40} />}
     />
 <div className="Vouchermonthly__month">
@@ -151,9 +151,9 @@ const dototal =()=>{
         <table className="listvoucher__list__table">
           <thead>
             <tr>
-              <th>क्र.सं</th>
-              <th>बैंक दाखिला मिति</th>
-              <th>कारोबार मिति</th>             
+              <th>क्र.सं</th>              
+              <th>कारोबार मिति</th>
+              <th>शिर्षक</th>
               <th>रकम</th>              
             </tr>
           </thead>
@@ -163,8 +163,9 @@ const dototal =()=>{
                 return (
                   <tr key={i}>
                     <td>{i + 1}</td>
-                    <td>{data.ndate_voucher}</td>
-                    <td>{data.ndate_transaction}</td>                   
+                    
+                    <td>{data.ndate_transaction}</td>
+                    <td>{data.sirshak_name}</td>
                     <td>{data.amount}</td>                   
                   </tr>
                 );

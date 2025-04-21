@@ -42,6 +42,8 @@ router.post('/register', async (req, res, next) => {
 })
 router.post('/login', async (req, res, next) => {
     let user = req.body
+    console.log(user);
+    console.log(req.clientIp);
     const query = "select a.*,b.state_id,b.office_name,b.isvoucherchecked,b.usenepcalendar,c.state_name,d.role_name from users a\
     inner join offices b on a.office_id=b.id\
     inner join user_roles d on a.role=d.id\
