@@ -348,7 +348,7 @@ router.get('/getVoucherDetailsById/:id', (req, res) => {
 router.post('/deleteVoucherById',(req,res)=>{
     let user = req.body;
     console.log("got from client",user);    
-    let query=`insert into voucher_deleted(id,aaba_id,office_id,edate_voucher,ndate_voucher,edate_transaction,ndate_transaction,month_id,sirshak_id,fant_id,napa_id,voucherno,amount,deposited_by,created_by_user_id,created_at,updated_by_user_id,updated_at,created_by_ip,updated_by_ip,deleted_by_ip,deleted_by_user_id) (select a.*,'${req.clientIp}' as deleted_by_ip,'${user.user_id}' as deleted_by_user_id from voucher a where id=${user.id})`;
+    let query=`insert into voucher_deleted(id,aaba_id,office_id,edate_voucher,ndate_voucher,edate_transaction,ndate_transaction,month_id,sirshak_id,fant_id,napa_id,voucherno,amount,deposited_by,created_at,created_by_user_id,created_by_ip,updated_at,updated_by_user_id,updated_by_ip,deleted_by_user_id,deleted_by_ip) (select a.*,'${user.user_id}' as deleted_by_user_id,'${req.clientIp}' as deleted_by_ip from voucher a where id=${user.id})`;
     console.log(query);
     connection.query(query,(err,results)=>{
         if(err){

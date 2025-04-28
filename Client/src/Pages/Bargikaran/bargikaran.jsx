@@ -86,7 +86,7 @@ const Bargikaran = () => {
   
   useEffect(() => {
     let timer = setTimeout(() => {
-    loaddata();},1500);
+    loaddata();},1000);
     return () => clearTimeout(timer)
   }, [data.kitta_no])
   

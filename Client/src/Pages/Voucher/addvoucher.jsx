@@ -4,19 +4,18 @@ import '@sbmdkl/nepali-datepicker-reactjs/dist/index.css';
 import "./Addvoucher.scss";
 import { toast } from "react-toastify";
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import axios from "axios";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import {adToBs,bsToAd} from '@sbmdkl/nepali-date-converter'
-const edate=new Date().toISOString().slice(0, 10);
-  console.log("ENGLISH DATE AAYEKO",edate);  
-  const ndate=adToBs(edate);
-  console.log("NEPALI DATE AAYEKO",ndate);
+import {adToBs,bsToAd} from '@sbmdkl/nepali-date-converter';
 const Addvoucher = () => {
-  
+const edate=new Date().toISOString().slice(0, 10);
+console.log("ENGLISH DATE AAYEKO",edate);  
+const ndate=adToBs(edate);
+console.log("NEPALI DATE AAYEKO",ndate);  
 
   const initialdata = {
     id: 0,    
@@ -31,6 +30,12 @@ const Addvoucher = () => {
     amount: "",
     deposited_by: "",
   };
+
+  const fant_idref= useRef()
+  const sirshak_idref=useRef()
+  const napa_idref=useRef()
+  const vouchernoref=useRef()
+  
   
   const [sirshaks, setsirshaks] = useState();
   const [fants, setfants] = useState();
@@ -115,18 +120,26 @@ const Addvoucher = () => {
     vdata.month_id = myArray[1];
     const vstatus = checkVoucher(vdata.voucherno);
     if (vdata.fant_id == 0) {
+      fant_idref.current.focus()
+      fant_idref.current.style.color="blue";
       toast.warning("कृपया फाँट चयन गर्नुहोस् ।");
       return;
     }
     if (vdata.sirshak_id == 0) {
+      sirshak_idref.current.focus()
+      sirshak_idref.current.style.color="blue";
       toast.warning("कृपया शिर्षक चयन गर्नुहोस् ।");
       return;
     }
     if (vdata.sirshak_id == 2 && vdata.napa_id == 0) {
+      napa_idref.current.focus()
+      napa_idref.current.style.color="blue";
       toast.warning("कृपया रजिष्ट्रेशन शुल्क मा न.पा अनिवार्य चयन गर्नुहोस् ।");
       return;
     }
     if (!vstatus) {
+      vouchernoref.current.focus()
+      vouchernoref.current.style.color="blue";
       toast.warning("कृपया भौचर नं जाँच गर्नुहोस् ।");
       return;
     }
@@ -201,7 +214,7 @@ const Addvoucher = () => {
         <div className="Addvoucher__Form__part">         
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">फाँट</label>
-            <select
+            <select ref={fant_idref}
               name="fant_id"
               className="Addvoucher__Form__part__item__input"
               value={vdata.fant_id}
@@ -221,7 +234,7 @@ const Addvoucher = () => {
           </div>
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">शिर्षक</label>
-            <select
+            <select ref={sirshak_idref}
               name="sirshak_id"
               className="Addvoucher__Form__part__item__input"
               value={vdata.sirshak_id}
@@ -241,7 +254,8 @@ const Addvoucher = () => {
           </div>
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">न.पाः</label>
-            <select
+            <select 
+            ref={napa_idref}
               name="napa_id"
               className="Addvoucher__Form__part__item__input"
               value={vdata.napa_id}
@@ -276,6 +290,7 @@ const Addvoucher = () => {
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">भौचर नं</label>
             <input
+            ref={vouchernoref}
               type="text"
               name="voucherno"
               className="Addvoucher__Form__part__item__input"

@@ -46,7 +46,7 @@ router.post('/getpoka',(req,res)=>{
     console.log(user.miti.length);
     console.log(user.minum.length);
     if(user.miti.length>0 && user.minum.length>0 ){
-        let query1="select b.aaba_id,c.aaba_name,b.office_id,b.misil_type_id,d.misil_type_name,a.miti,a.minum,b.misil_poka_name,a.nibedakname,a.jaggadhaniname from misil a\
+        let query1="select a.*,b.id as pokaid,b.misil_poka_name,d.misil_type_name from misil a\
         inner join misil_pokas b on a.poka_id=b.id\
         inner join aabas c on b.aaba_id=c.id\
         inner join misil_type d on b.misil_type_id=d.id\
@@ -66,7 +66,7 @@ router.post('/getpoka',(req,res)=>{
 
     }
     else if(user.miti.length>0 && user.minum.length==0){
-        let query1="select b.aaba_id,c.aaba_name,b.office_id,b.misil_type_id,d.misil_type_name,a.miti,a.minum,b.misil_poka_name,a.nibedakname,a.jaggadhaniname from misil a\
+        let query1="select a.*,b.id as pokaid,b.misil_poka_name,d.misil_type_name from misil a\
         inner join misil_pokas b on a.poka_id=b.id\
         inner join aabas c on b.aaba_id=c.id\
         inner join misil_type d on b.misil_type_id=d.id\
@@ -84,7 +84,7 @@ router.post('/getpoka',(req,res)=>{
         })
     }
     else if(user.miti.length==0 && user.minum.length>0){
-        let query1="select b.aaba_id,c.aaba_name,b.office_id,b.misil_type_id,d.misil_type_name,a.miti,a.minum,b.misil_poka_name,a.nibedakname,a.jaggadhaniname from misil a\
+        let query1="select a.*,b.id as pokaid,b.misil_poka_name,d.misil_type_name from misil a\
         inner join misil_pokas b on a.poka_id=b.id\
         inner join aabas c on b.aaba_id=c.id\
         inner join misil_type d on b.misil_type_id=d.id\

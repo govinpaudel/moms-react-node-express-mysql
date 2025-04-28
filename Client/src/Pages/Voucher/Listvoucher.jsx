@@ -54,6 +54,7 @@ const Listvoucher = () => {
       });
       if(response.data.status==true){
         toast.success(`भौचर नं ${e} सफलतापुर्वक हटाईयो`)
+        loadTodayVouchers();
       }
     }
 
@@ -64,8 +65,11 @@ useEffect(() => {
   if (svoucherno.length > 0) {
   let timer = setTimeout(() => {     
     loadSingleVoucher();      
-    }, 2000)
+    }, 1000)
     return () => clearTimeout(timer)
+  }
+  else{
+    loadTodayVouchers();
   }
 }, [svoucherno])
 
