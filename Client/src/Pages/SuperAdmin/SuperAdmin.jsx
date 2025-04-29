@@ -1,4 +1,4 @@
-import "../Home.scss";
+import "./SuperAdmin.scss";
 import { Outlet } from "react-router-dom";
 import SuperAdminSidebar from "./SuperAdminSidebar";
 import MainHeaderComponent from "../../Components/MainHeaderComponent";
@@ -13,7 +13,7 @@ const SuperAdmin = () => {
     console.log("role",loggedUser.role)
   if (loggedUser.role!=3){
     toast.warning("सुपर एडमिन प्रयोगकर्तालाई मात्र यो अख्तियारी उपलब्ध छ ।")
-    navigate('/home')
+    navigate('/apphome')
   }    
   }
   useEffect(() => {

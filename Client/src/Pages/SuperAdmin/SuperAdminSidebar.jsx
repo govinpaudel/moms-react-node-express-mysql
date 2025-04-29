@@ -5,11 +5,11 @@ import { NavLink } from 'react-router-dom';
 
 const SuperAdminSidebar = () => {
     const data=[
-      {id:1,path:'/home/',name:'पछाडि जानुहोस्'},
+      {id:1,path:'/apphome/',name:'पछाडि जानुहोस्'},
         {id:2,path:'/superadmin/listadminusers',name:'एडमिन प्रयोगकर्ताहरु'},   
         {id:2,path:'/superadmin/listbadhfand',name:'बाडफाँड सेटअप'},      
         {id:3,path:'/superadmin/listoffices',name:'कार्यालय सेटअप'},      
-        {id:4,path:'/admin/logout',name:'बाहिर जानुहोस्'},
+        {id:4,path:'/superadmin/logout',name:'बाहिर जानुहोस्'},
     ]
   return (
     <section id='AdminSidebar' className='AdminSidebar'>

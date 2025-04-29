@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 
 const AdminSidebar = () => {
     const data=[
-      {id:1,path:'/home/',name:'पछाडि जानुहोस्'},
+      {id:1,path:'/apphome/',name:'पछाडि जानुहोस्'},
         {id:2,path:'/admin/listusers',name:'प्रयोगकर्ताहरु'},
         {id:3,path:'/admin/listfants',name:'फाँटहरु'},
         {id:4,path:'/admin/listnapas',name:'न.पा.हरु'},

@@ -139,7 +139,7 @@ useEffect(() => {
             }}
           />
         </div>
-        <NavLink to={"/home/addvoucher"}>
+        <NavLink to={"/voucher/addvoucher"}>
           <div className="listvoucher__adddiv__addbtn no-print">
             <span> ( + )भौचर दर्ता गर्नुहोस्</span>
           </div>
@@ -192,7 +192,7 @@ useEffect(() => {
                     <td className="no-print">
                       <button
                         className="listvoucher__list__editbtn"
-                        onClick={() => navigate("/home/editvoucher",{state:{id:data.id}})}
+                        onClick={() => navigate("/voucher/editvoucher",{state:{id:data.id}})}
                       >
                         संशोधन
                       </button>

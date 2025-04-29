@@ -1,4 +1,4 @@
-import "../Home.scss";
+import "./Admin.scss";
 import { Outlet } from "react-router-dom";
 import MainHeaderComponent from "../../Components/MainHeaderComponent";
 import AdminSidebar from "./AdminSidebar";
@@ -13,7 +13,7 @@ const Admin = () => {
     console.log("role",loggedUser)
   if (loggedUser.role==2){
     toast.warning("एडमिन प्रयोगकर्तालाई मात्र यो अख्तियारी उपलब्ध छ ।")
-    navigate('/home')
+    navigate('/apphome')
   }    
   }
   useEffect(() => {

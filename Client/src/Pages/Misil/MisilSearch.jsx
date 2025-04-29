@@ -4,11 +4,6 @@ import "./MisilSearch.scss";
 import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
-
-
-
-
-
 const MisilSearch = () => { 
   const [types, setTypes] = useState([]);
   const [aabas, setAabas] = useState([]);  
@@ -160,7 +155,7 @@ const MisilSearch = () => {
         </div>
       </div>
       <div className="main-div">
-        <table className="listtable">
+        <table className="listvoucher__list__table">
           <thead>
             <tr>
               <th>मिसिल प्रकार</th>

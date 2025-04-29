@@ -1,9 +1,9 @@
 
-import "./Home.scss";
+import "./BargikaranHome.scss";
 import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import MainHeaderComponent from "../Components/MainHeaderComponent";
-const Home = () => {
+import Sidebar from "./BargikaranSidebar";
+import MainHeaderComponent from "../../Components/MainHeaderComponent";
+const BargikaranHome = () => {
   return (
     <>
       <MainHeaderComponent
@@ -17,4 +17,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default BargikaranHome

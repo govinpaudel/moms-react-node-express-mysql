@@ -330,7 +330,7 @@ const Editvoucher = () => {
             />
           </div>
           <div className="Addvoucher__Form__part__item">
-            <NavLink to={"/home/listvoucher"}>
+            <NavLink to={"/voucher/listvoucher"}>
               <input
                 type="cancel"
                 className="Addvoucher__Form__part__item__button"

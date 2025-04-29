@@ -39,7 +39,6 @@ router.get('/getAabaByOffice/:officeid/:typeid', (req, res)=>{
     })
 }) 
 
-
 router.post('/getpoka',(req,res)=>{
     let user=req.body;
     console.log(user);
@@ -104,4 +103,26 @@ router.post('/getpoka',(req,res)=>{
 
     }
 })
+
+router.post('/getPokasByOffice', (req, res) => {
+    let user = req.body;
+    console.log(user)
+    var query = "SELECT a.*,b.misil_type_name,c.aaba_name,d.nepname FROM misil_pokas a\
+    inner join misil_type b on\
+    a.misil_type_id=b.id\
+    inner join aabas c on c.id=a.aaba_id\
+    inner join users d on a.created_by_user_id=d.id\
+    where a.office_id=?\
+    order by created_at desc";
+    connection.query(query, [user.office_id], (err, results) => {
+        if (!err) {
+            return res.status(200).json({ data: results });
+        }
+        else {
+            return res.status(400).json(err);
+        }
+    })
+})
+
+
 module.exports = router;;

@@ -1,0 +1,22 @@
+.home {
+    display: flex;  
+    &__left {
+      width: 12%;
+    }  
+    &__right {
+      width: 88%;
+      margin-left: 20px;
+    }
+  }
+
+  @media print {
+    .home{
+      &__left {
+        width: 2%;
+      } 
+      &__right {
+        width: 98%;
+        margin-left: 0;
+      }
+    }
+  }

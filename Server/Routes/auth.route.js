@@ -152,12 +152,12 @@ router.get('/getAllAabas', async (req, res, next) => {
 router.post('/getSidebarlist', async (req, res, next) => {
     let user=req.body;
     console.log(user);
-    let query = "select a.user_id,b.type,b.name,b.path from user_modules a\
+    let query = "select a.user_id,b.module,b.name,b.path from user_modules a\
     inner join modules b\
     on a.module_id=b.id\
-    where a.user_id=? order by b.type,b.display_order";
+    where a.user_id=? and b.module=? order by b.module,b.display_order";
     try {
-        connection.query(query,[user.user_id], (err, result) => {
+        connection.query(query,[user.user_id,user.module], (err, result) => {
             if (err) next(err.message)
             res.send({ data: result })
         })

@@ -15,7 +15,7 @@ const Login = () => {
 
   useEffect(() => {
     if(loggedUser){
-      navigate("/home");
+      navigate("/apphome");
     }
   }, []);  
 
@@ -42,7 +42,7 @@ const Login = () => {
         sessionStorage.setItem("refresh_token", JSON.stringify(response.data.refresh_token));
         sessionStorage.setItem("loggedUser", JSON.stringify(data1));
         toast.success(response.data.message);
-        navigate("/home");
+        navigate("/apphome");
       } else {
         console.log("data",response.data.status)
         toast.warning(response.data.message);
