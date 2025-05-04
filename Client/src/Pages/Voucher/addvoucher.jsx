@@ -152,7 +152,7 @@ console.log("NEPALI DATE AAYEKO",ndate);
     if (res.data.status == true) {
       toast.success(res.data.message);
       setVdata(initialdata);
-      navigate("/home/listvoucher");
+      navigate("/voucher/listvoucher");
     } else {
       toast.warning(res.data.message);
     }

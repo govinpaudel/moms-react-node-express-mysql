@@ -151,7 +151,7 @@ const Editvoucher = () => {
     if (res.data.status == true) {
       toast.success(res.data.message);
       setVdata(initialdata);
-      navigate("/home/listvoucher");
+      navigate("/voucher/listvoucher");
     } else {
       toast.warning(res.data.message);
     }
@@ -170,7 +170,7 @@ const Editvoucher = () => {
   return (
     <section id="Addvoucher" className="Addvoucher">
       <PageHeaderComponent
-        headerText="भौचर दर्ता फाराम"
+        headerText="भौचर संशोधन फाराम"
         icon={<BsInfoCircleFill size={40} />}
       /> 
       {loggedUser.usenepcalendar ?

@@ -104,7 +104,7 @@ useEffect(() => {
           </button>
         </div>
       </div>      
-      <table className="Vouchermonthly__table">
+      <table className="listvoucher__list__table">
         <thead>
           <tr>
             <th>शिर्षक</th> 
@@ -123,7 +123,7 @@ useEffect(() => {
           <tr><td colSpan={2}><hr className="line"/></td></tr> 
         </tbody>
         </table>       
-        <table className="Vouchermonthly__table">
+        <table className="listvoucher__list__table">
           <tbody>         
           <tr>
             <th>स्थानियमा जाने</th>
@@ -139,7 +139,7 @@ useEffect(() => {
           <tr><td colSpan={2}><hr className="line"/></td></tr> 
           </tbody> 
           </table>          
-          <table className="Vouchermonthly__table">
+          <table className="listvoucher__list__table">
           <tbody>
           <tr>
             <th>प्रदेशमा जाने</th> <th>रकम</th>      
@@ -157,11 +157,15 @@ useEffect(() => {
             <td>जम्मा प्रदेशमा जाने</td>
             <td>{summary[0] ? Math.round(summary[0].pardesh): 0}</td>
           </tr>
-          <tr><td colSpan={2}><hr className="line"/></td></tr>  
+          <tr><td colSpan={2}><hr className="line"/></td></tr>
+          <tr>
+            <td>जम्मा बाँडफाँड हुने</td>
+            <td>{summary[0] ? Math.round(parseInt(summary[0].pardesh)+parseInt(summary[0].isthaniye)): 0}</td>
+          </tr>
           </tbody>
             </table>
            
-          <table className="Vouchermonthly__table">
+          <table className="listvoucher__list__table">
           <tbody>
           <tr>
             <td>संघमा जाने</td>

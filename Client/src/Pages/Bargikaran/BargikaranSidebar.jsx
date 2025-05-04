@@ -29,8 +29,8 @@ const BargikaranSidebar = () => {
   return (
     <section id="sidebar" className="sidebar no-print">
       <div className="sidebar__menus">
-        <h5 className="sidebar__menus__menu-text">({loggedUser.username} )| {loggedUser.role_name}</h5>
-        <h6 className="sidebar__menus__menu-text">कृयाकलाप</h6>
+        <h5 className="sidebar__menus__menu-text">{loggedUser.role_name}</h5>
+        <h6 className="sidebar__menus__menu-text">( {loggedUser.username} )</h6>
         <ul>
         <li>
           <NavLink to={'/apphome'}>पछाडि जानुहोस्</NavLink>

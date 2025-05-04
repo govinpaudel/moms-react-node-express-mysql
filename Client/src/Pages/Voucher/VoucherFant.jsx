@@ -162,7 +162,7 @@ const VoucherFant = () => {
           </button>
         </div>
       </div>
-      <table className="Vouchermonthly__table">
+      <table className="listvoucher__list__table">
         <thead>
           <tr>
           <th>महिना</th>

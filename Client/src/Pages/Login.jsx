@@ -5,26 +5,34 @@ import "./Login.scss";
 import { toast } from "react-toastify";
 import MainHeaderComponent from "../Components/MainHeaderComponent";
 const Login = () => {
+  const initialdata={
+    username:"",
+    password:"",
+    aabaid:0
+  }
   const [aabas, setaabas] = useState([]);
   const [defaaba, setdefaaba] = useState();
+  const [formData,setFormData]=useState(initialdata);
   const Url = import.meta.env.VITE_API_URL + "auth/";
   console.log("url came", Url);
   const loggedUser = sessionStorage.getItem("loggedUser");
   const navigate = useNavigate();
-
-
+  const handleChange=(e)=>{    
+    if(e.target.name==='aabaid'){
+      setdefaaba(e.target.value);
+    }
+    setFormData({...formData,[e.target.name]:e.target.value,aabaid:defaaba});
+    console.log(formData);
+  }
   useEffect(() => {
     if(loggedUser){
       navigate("/apphome");
     }
   }, []);  
 
-
-  const OnSubmit = async (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const data = Object.fromEntries(formData);
-    if (data.username.length == 0 || data.password.length == 0) {
+  const OnSubmit = async (e) => {
+    e.preventDefault();   
+    if (formData.username.length == 0 || formData.password.length == 0) {
       toast.warning("Please fill the form");
       return;
     }
@@ -32,11 +40,11 @@ const Login = () => {
       const response = await axios({
         method: "post",
         url: Url + "login",
-        data: data,
+        data: formData,
       });
       console.log("response",response);
       if (response.data.status == 200) {
-        let data1={...response.data.data,"aabaid":data.aabaid}   
+        let data1={...response.data.data,"aabaid":formData.aabaid}   
         console.log("data1",data1)            
         sessionStorage.setItem("access_token", JSON.stringify(response.data.access_token));
         sessionStorage.setItem("refresh_token", JSON.stringify(response.data.refresh_token));
@@ -48,7 +56,8 @@ const Login = () => {
         toast.warning(response.data.message);
       }
     } catch (error) {
-      toast.warning(error.response.data.message);
+      console.log(error);
+      toast.warning(error.response?.data.message);
     }
   };
 
@@ -75,9 +84,10 @@ const Login = () => {
     checkLogin();
   }, []);
   useEffect(() => {
-    aabas.forEach((season) => {
-      season.is_current == 1 ? setdefaaba(season.id) : null;
+    aabas.forEach((item) => {
+      item.is_current == 1 ? setdefaaba(item.id) : null;
     });
+    formData.aabaid=defaaba;
   }, [aabas]);
   return (
     <section id="login" className="login">
@@ -93,6 +103,7 @@ const Login = () => {
               autoComplete="off"
               placeholder="Username"
               required
+              onChange={handleChange}
             />
           </div>
           <div className="login__form-inner__item">
@@ -103,10 +114,11 @@ const Login = () => {
               autoComplete="off"
               placeholder="password"
               required
+              onChange={handleChange}
             />
           </div>
           <div className="login__form-inner__item">
-            <select
+            <select onChange={handleChange}
               className="login__form-inner__item__input"
               name="aabaid"
               value={defaaba}

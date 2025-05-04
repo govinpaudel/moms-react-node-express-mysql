@@ -1,16 +1,15 @@
 
-import "./MisilHome.scss";
+import "./GuthiHome.scss";
 import { Outlet } from "react-router-dom";
 import MainHeaderComponent from "../../Components/MainHeaderComponent";
-import MisilSidebar from "./MisilSidebar";
-const MisilHome = () => {
-  
+import GuthiSidebar from "./GuthiSidebar";
+const GuthiHome = () => {
   return (
     <>
       <MainHeaderComponent
         headerText="मिसिल व्यवस्थापन प्रणाली" />
       <section id="home" className="home">
-        <div className="home__left"> <MisilSidebar /></div>
+        <div className="home__left"> <GuthiSidebar /></div>
         <div className="home__right">
           <Outlet />
         </div>
@@ -18,4 +17,4 @@ const MisilHome = () => {
   )
 }
 
-export default MisilHome;
+export default GuthiHome;

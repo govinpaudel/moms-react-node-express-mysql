@@ -6,7 +6,7 @@ insert into user_modules(user_id,office_id,module_id,isactive)(SELECT DISTINCT
 	1 as isactive
 FROM
 	users,
-modules where modules.id in(1,2,3,4,5,6,7,8,9));
+modules where modules.id in(1,3,4,5,6,7,9));
 
 
 

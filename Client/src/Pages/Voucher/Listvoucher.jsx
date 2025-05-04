@@ -78,7 +78,7 @@ useEffect(() => {
       const data = {
         office_id: loggedUser.office_id,
         aaba_id: loggedUser.aabaid,
-        voucherno: svoucherno,
+        voucherno: svoucherno.trim(),
       };
       const response = await axios({
         method: "post",

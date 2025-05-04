@@ -1,11 +1,8 @@
 .misilsearch {
     &__outer {
-
-
         &__form {
             display: flex;
             justify-content: space-around;
-
             &__item {
                 &__input {
                     padding: 5px 40px 5px 15px;
@@ -16,7 +13,6 @@
                     background-color: var(--yellow-theme-background-color);
                     color: var(--yellow-theme-main-color);
                 }
-
                 &__button {
                     text-align: center;
                     background-color: var(--yellow-theme-main-color);

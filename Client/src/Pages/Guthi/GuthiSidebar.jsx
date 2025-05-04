@@ -1,26 +1,23 @@
 import { NavLink } from "react-router-dom";
-import "./VoucherSidebar.scss";
+import "./GuthiSidebar.scss";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const VoucherSidebar = () => {
+const GuthiSidebar = () => {
   const Url = import.meta.env.VITE_API_URL + "auth/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
-  const [data, setdata] = useState([])  
+  const [data, setdata] = useState([]) 
   const loadsidebardata = async () => {
-    console.log("getting sidebar list")
     const response = await axios({
       method: "post",
       url: Url + "getSidebarlist",
       data: {
         user_id: loggedUser.id,
-        module:'Voucher'
+        module:'Guthi'
       }
-    });    
-    console.log(response.data.data)
+    });
     setdata(response.data.data);
-   
-    
+    console.log(response.data.data)   
 
   }
 
@@ -35,19 +32,18 @@ const VoucherSidebar = () => {
         <h5 className="sidebar__menus__menu-text">{loggedUser.role_name}</h5>
         <h6 className="sidebar__menus__menu-text">( {loggedUser.username} )</h6>
         <ul>
-          <li>
+        <li>
           <NavLink to={'/apphome'}>पछाडि जानुहोस्</NavLink>
-          </li>        
+          </li> 
           {data?data.map((item, i) => {
             return (
               <li key={i}>
                 <NavLink to={item.path}>{item.name}</NavLink>
               </li>
             );
-          }):null}       
-                
+          }):null}            
           <li >
-            <NavLink to={"/logout"}>लगआउट</NavLink>
+            <NavLink to={"/home/logout"}>लगआउट</NavLink>
           </li>
         </ul>
       </div>
@@ -55,4 +51,4 @@ const VoucherSidebar = () => {
   );
 };
 
-export default VoucherSidebar;
+export default GuthiSidebar;

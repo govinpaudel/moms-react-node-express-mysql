@@ -17,6 +17,9 @@ const AppHome = () => {
             <div className='apphome__list__item'>
             <NavLink to={'/misil'}>मिसिल व्यवस्थापन प्रणाली</NavLink>
             </div>
+            <div className='apphome__list__item'>
+            <NavLink to={'/guthi'}>गुठी तिरो व्यवस्थापन प्रणाली</NavLink>
+            </div>
         </div>
         <div className='apphome__list'>
             <div className='apphome__list__item'>
@@ -28,18 +31,10 @@ const AppHome = () => {
             <div className='apphome__list__item'>
             <NavLink to={'/changepassword'} >पासर्वड परिवर्तन</NavLink>
             </div>
-        </div>
-        <div className='apphome__list'>
             <div className='apphome__list__item'>
             <NavLink to={'/logout'}>लगआउट</NavLink>
             </div>
-            <div className='apphome__list__item'>
-            <NavLink>   </NavLink>
-            </div>
-            <div className='apphome__list__item'>
-            <NavLink>   </NavLink>
-            </div>
-        </div>
+        </div>       
     </section>
   )
 }

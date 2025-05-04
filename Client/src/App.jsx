@@ -32,6 +32,8 @@ import AppHome from './Pages/AppHome';
 import VoucherHome from './Pages/Voucher/VoucherHome';
 import BargikaranHome from './Pages/Bargikaran/BargikaranHome';
 import MisilHome from './Pages/Misil/MisilHome';
+import GuthiHome from './Pages/Guthi/GuthiHome';
+import ViewPoka from './Pages/Misil/ViewPoka';
 
 function App() {
   return (
@@ -44,7 +46,7 @@ function App() {
             <Route path="/apphome" element={<AppHome />} />
             <Route path='changepassword' element={<ChangePassword />} />
             {/* Voucher routes starts */}
-            <Route path='voucher' element={<VoucherHome />} >
+            <Route path='voucher' element={<VoucherHome />} >            
             <Route path='' element={<Listvoucher />} />
               <Route path='listvoucher' element={<Listvoucher />} />
               <Route path='addvoucher' element={<Addvoucher />} />
@@ -63,16 +65,21 @@ function App() {
             </Route>
             {/* bargikaran route ends */}
             {/* Misil route Starts */}
-            <Route path='misil' element={<MisilHome />} >
-            <Route path='' element={<MisilSearch />} />
-            <Route path='misilsearch' element={<MisilSearch />} />
+            <Route path='misil' element={<MisilHome />} > 
+            <Route path='' element={<ListPoka />} />           
             <Route path='listpoka' element={<ListPoka />} />
+            <Route path='misilsearch' element={<MisilSearch />} />            
             <Route path='addpoka' element={<AddPoka />} />
+            <Route path='viewpoka' element={<ViewPoka />} />
             </Route>
             {/* Misil route Ends */}
+          {/* Guthi Route Starts  */}
+          <Route path="guthi" element={<GuthiHome/>}>
+
+          </Route>
+            {/* Guthi Route ends */}
             {/* Admin Route Starts */}
-            <Route path="/admin" element={<Admin />} >
-              <Route path='' element={<ListUsers />} />
+            <Route path="/admin" element={<Admin />} >              
               <Route path='listusers' element={<ListUsers />} />
               <Route path='listfants' element={<ListFants />} />
               <Route path='listnapas' element={<ListNapas />} />
@@ -81,8 +88,7 @@ function App() {
             </Route>
             {/* Admin Route Ends */}
             {/* Super Admin Route Starts */}
-            <Route path="/superadmin" element={<SuperAdmin />} >
-              <Route path='' element={<ListAdminUsers />} />
+            <Route path="/superadmin" element={<SuperAdmin />} >              
               <Route path='listadminusers' element={<ListAdminUsers />} />
               <Route path='listbadhfand' element={<ListBadhfand />} />
               <Route path='listoffices' element={<ListOffices />} />

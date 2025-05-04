@@ -144,6 +144,7 @@ router.post('/VoucherSumByDate', (req, res) => {
     console.log(fants);
     console.log(fants.length);
     if(fants.length==0){
+    console.log("no fant selected");
     let query="(select a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,sum(a.amount) as amount from voucher a\
     inner join voucher_sirshak b on a.sirshak_id=b.id\
     where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
@@ -165,15 +166,16 @@ router.post('/VoucherSumByDate', (req, res) => {
 
     }
     else{
+        console.log("fants selected");
         let query=`(select a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,sum(a.amount) as amount from voucher a\
         inner join voucher_sirshak b on a.sirshak_id=b.id\
         where a.fant_id in (${fants}) and a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
         group by a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name)\
         UNION ALL\
-        (select a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,99 as sirshak_id,CONCAT(a.ndate_transaction,' को जम्मा') as sirshak_name,sum(a.amount) as amount from voucher a\
+        (select a.edate_transaction,a.ndate_transaction,99 as sirshak_id,CONCAT(a.ndate_transaction,' को जम्मा') as sirshak_name,sum(a.amount) as amount from voucher a\
         inner join voucher_sirshak b on a.sirshak_id=b.id\
         where a.fant_id in (${fants}) and a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
-        group by a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction)\
+        group by a.edate_transaction,a.ndate_transaction)\
         order by edate_transaction`;
         connection.query(query, [user.office_id,user.start_date,user.end_date,user.office_id,user.start_date,user.end_date], (err, data) => {
             if (err) { 
