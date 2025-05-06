@@ -14,21 +14,15 @@ const Login = () => {
   const [defaaba, setdefaaba] = useState();
   const [formData,setFormData]=useState(initialdata);
   const Url = import.meta.env.VITE_API_URL + "auth/";
-  console.log("url came", Url);
   const loggedUser = sessionStorage.getItem("loggedUser");
   const navigate = useNavigate();
+
   const handleChange=(e)=>{    
     if(e.target.name==='aabaid'){
       setdefaaba(e.target.value);
     }
-    setFormData({...formData,[e.target.name]:e.target.value,aabaid:defaaba});
-    console.log(formData);
+    setFormData({...formData,[e.target.name]:e.target.value});   
   }
-  useEffect(() => {
-    if(loggedUser){
-      navigate("/apphome");
-    }
-  }, []);  
 
   const OnSubmit = async (e) => {
     e.preventDefault();   
@@ -36,7 +30,8 @@ const Login = () => {
       toast.warning("Please fill the form");
       return;
     }
-    try {
+    try {     
+      console.log("Data Sent to server",formData);
       const response = await axios({
         method: "post",
         url: Url + "login",
@@ -44,7 +39,7 @@ const Login = () => {
       });
       console.log("response",response);
       if (response.data.status == 200) {
-        let data1={...response.data.data,"aabaid":formData.aabaid}   
+        let data1={...response.data.data,"aabaid":defaaba}   
         console.log("data1",data1)            
         sessionStorage.setItem("access_token", JSON.stringify(response.data.access_token));
         sessionStorage.setItem("refresh_token", JSON.stringify(response.data.refresh_token));
@@ -76,13 +71,26 @@ const Login = () => {
   };
   const checkLogin = () => {
     if (loggedUser) {
+      navigate("/apphome");
     }
   };
+
+  const loadDefaaba=()=>{
+    aabas.forEach((item) => {
+      item.is_current == 1 ? setdefaaba(item.id): null;
+    });    
+  }; 
+  
+
   useEffect(() => {   
     document.title = "MOMS | प्रयोगकर्ता लगईन";
     loadAabas();
+    loadDefaaba();
     checkLogin();
   }, []);
+
+
+
   useEffect(() => {
     aabas.forEach((item) => {
       item.is_current == 1 ? setdefaaba(item.id) : null;
