@@ -76,7 +76,7 @@ const ListUsers = () => {
 
   return (
     <section id="listusers" className='listusers'>
-      <table>
+      <table className='listvoucher__list__table'>
         <thead>
           <tr>
         <th>प्रयोगकर्ताको नाम</th>

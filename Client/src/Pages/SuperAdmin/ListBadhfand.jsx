@@ -220,7 +220,7 @@ const handlechange=(e)=>{
       </div>
 
 
-      <table>
+      <table className='listvoucher__list__table'>
         <thead>
           <tr>
         <th>आ.व.</th>

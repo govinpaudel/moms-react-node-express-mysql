@@ -111,7 +111,7 @@ const OnSubmit=async(e)=>{
                 </div>
             </form>
         </div>
-      <table className='table-800'>
+      <table className='listvoucher__list__table table-800'>
         <thead>
           <tr>
         <th>फाँटको नाम</th>
