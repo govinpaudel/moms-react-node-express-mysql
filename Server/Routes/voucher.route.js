@@ -170,7 +170,7 @@ router.post('/VoucherSumByDate', (req, res) => {
         let query=`(select a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,sum(a.amount) as amount from voucher a\
         inner join voucher_sirshak b on a.sirshak_id=b.id\
         where a.fant_id in (${fants}) and a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
-        group by a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name)\
+        group by a.edate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name)\
         UNION ALL\
         (select a.edate_transaction,a.ndate_transaction,99 as sirshak_id,CONCAT(a.ndate_transaction,' को जम्मा') as sirshak_name,sum(a.amount) as amount from voucher a\
         inner join voucher_sirshak b on a.sirshak_id=b.id\

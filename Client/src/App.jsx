@@ -14,8 +14,6 @@ import VoucherFant from './Pages/Voucher/VoucherFant';
 import Editvoucher from './Pages/Voucher/Editvoucher';
 import Voucherdetails from './Pages/Voucher/Voucherdetails';
 import ListPoka from './Pages/Misil/ListPoka';
-import AddPoka from './Pages/Misil/AddPoka';
-import AddMisil from './Pages/Misil/AddMisil';
 import Admin from './Pages/Admin/Admin';
 import ListUsers from './Pages/Admin/ListUsers';
 import ListNapas from './Pages/Admin/ListNapas';
@@ -69,7 +67,7 @@ function App() {
             <Route path='' element={<ListPoka />} />           
             <Route path='listpoka' element={<ListPoka />} />
             <Route path='misilsearch' element={<MisilSearch />} />            
-            <Route path='addpoka' element={<AddPoka />} />
+            
             <Route path='viewpoka' element={<ViewPoka />} />
             </Route>
             {/* Misil route Ends */}

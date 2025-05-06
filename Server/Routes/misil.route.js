@@ -139,6 +139,37 @@ router.post('/getPokaById', (req, res) => {
         }
     })
 })
+router.post('/getPokaDetailsById', (req, res) => {
+    let user = req.body;
+    console.log(user)
+    var query = "SELECT a.*,b.misil_type_name,c.aaba_name,d.nepname,e.minum,e.miti,e.nibedakname,e.nibedakaddress,e.jaggadhaniname,e.jaggadhaniaddress,e.id as misil_id FROM misil_pokas a\
+    inner join misil_type b on  a.misil_type_id=b.id \
+    inner join aabas c on c.id=a.aaba_id \
+    inner join users d on a.created_by_user_id=d.id \
+	inner join misil e on a.id=e.poka_id\
+    where a.id=?";
+    connection.query(query, [user.id], (err, results) => {
+        if (!err) {
+            return res.status(200).json({ data: results });
+        }
+        else {
+            return res.status(400).json(err);
+        }
+    })
+})
+router.post('/getMisilById', (req, res) => {
+    let user = req.body;
+    console.log(user)
+    var query = "select * from misil where id=?";
+    connection.query(query, [user.id], (err, results) => {
+        if (!err) {
+            return res.status(200).json({ data: results });
+        }
+        else {
+            return res.status(400).json(err);
+        }
+    })
+})
 router.get('/getAllAabas', (req, res) => {
     var query = "select * from aabas";
     connection.query(query, (err, results) => {
@@ -229,7 +260,67 @@ router.post('/getPokaForEdit', (req, res) => {
 
     })
 })
+router.post('/AddOrUpdateMisil', (req, res) => {
+    let user = req.body
+    console.log(user);
+    if (user.id > 0) {
+        var uquery = "update misil set miti=?,minum=?,nibedakname=?,nibedakaddress=?,jaggadhaniname=?,jaggadhaniaddress=?,updated_by_user_id=? where id=?";
+        connection.query(uquery, [user.miti, user.minum, user.nibedakname, user.nibedakaddress, user.jaggadhaniname, user.jaggadhaniaddress, user.userid, user.id],
+            (err, results) => {
+                if (!err) {
+                    return res.status(200).json({ message: "मिसिल सफलतापूर्वक संशोधन भयो", status: true });
+                }
+                else {
+                    console.log(err);
+                    return res.status(200).json({ message: err, status: false });
+                }
+            })
+    }
+    else {
+        var iquery = "insert into misil(poka_id,miti,minum,nibedakname,nibedakaddress,jaggadhaniname,jaggadhaniaddress,created_by_user_id) values(?,?,?,?,?,?,?,?)"
+        connection.query(iquery, [user.poka_id, user.miti, user.minum, user.nibedakname, user.nibedakaddress, user.jaggadhaniname, user.jaggadhaniaddress, user.remarks, user.userid],
+            (err, results) => {
+                if (!err) {
+                    var uquery="update misil_pokas set misilcount=misilcount+1 where id=?";
+                    connection.query(uquery,[user.poka_id],(err,results)=>{
+                        if(!err){
+                            return res.status(200).json({ message: "मिसिल सफलतापूर्वक दर्ता भयो", status: true });
+                        }
+                        else{
+                            console.log(err);
+                            return res.status(200).json({ message: err, status: false });
+                        }
+                    })
+                    
+                }
+                else {
+                    console.log(err);
+                    return res.status(200).json({ message: err, status: false });
+                }
+            })
+    }
 
-
-
+})
+router.post('/deleteMisilById',(req,res)=>{
+    let user = req.body;
+    console.log("got from client",user);   
+        let query1=`delete from misil where id='${user.id}'`;
+        connection.query(query1,(err,results)=>{
+            if(err){
+                console.log(err);
+            return;
+            }
+            else{
+                let uquery="update misil_pokas set misilcount=misilcount-1 where id=?"
+                connection.query(uquery,[user.poka_id],(err,results)=>{
+                    if(!err){
+                        return res.status(200).json({ status: true,message: "मिसिल सफलतापुर्क हटाईयो ।" });
+                    }
+                    else{
+                        console.log(err);
+                    }
+                })
+                
+            }})      
+})
 module.exports = router;;
