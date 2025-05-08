@@ -32,6 +32,19 @@ router.post('/Fantlist', (req, res) => {
         })
     })
 });
+router.post('/Userlist', (req, res) => {
+    let user = req.body;
+    let query = "select DISTINCT a.created_by_user_id as uid,b.nepname as uname from voucher a\
+    inner join users b on a.created_by_user_id=b.id\
+    where a.office_id=? and aaba_id=? order by uid"
+    connection.query(query, [user.office_id, user.aaba_id], (err, users) => {
+        if (err) { return; }
+        return res.status(200).json({
+            message: "डाटा सफलतापुर्वक प्राप्त भयो",
+            users: users
+        })
+    })
+});
 router.post('/VoucherMonthly', (req, res) => {
     let user = req.body;
     console.log(user);
@@ -57,7 +70,7 @@ router.post('/VoucherMonthly', (req, res) => {
     inner join voucher_badhfadh d on a.aaba_id=d.aaba_id and f.id=d.acc_sirshak_id and c.state_id=d.state_id\
     inner join voucher_napa e on a.napa_id=e.id and a.office_id=e.office_id\
     where a.aaba_id=${user.aaba_id} and a.office_id=${user.office_id} and a.month_id in(${months}) and a.sirshak_id=2
-    group by a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,f.acc_sirshak_name,a.napa_id,e.napa_name     order by a.napa_id,e.napa_name`; 
+    group by a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,f.acc_sirshak_name,a.napa_id,e.napa_name     order by a.napa_id,e.napa_name`;
     let query4 = `select a.aaba_id,a.office_id,f.id,f.acc_sirshak_name,sum(a.amount) as amount,sum(a.amount*(d.sanchitkosh)/100) as sanchitkosh,sum(a.amount*(d.pardesh)/100) as pardesh,sum(a.amount*(d.isthaniye)/100) as isthaniye,sum(a.amount*(d.sangh)/100) as sangh from voucher a\
     inner join voucher_sirshak b on a.sirshak_id=b.id\
     inner join voucher_acc_sirshak f on f.id=b.acc_sirshak_id\
@@ -80,20 +93,20 @@ router.post('/VoucherMonthly', (req, res) => {
                 console.log(err);
             }
             console.log('result2', summary);
-            console.log('query3',query3);
-            connection.query(query3,(err, isthaniye) => {
+            console.log('query3', query3);
+            connection.query(query3, (err, isthaniye) => {
                 if (err) {
                     return;
                     console.log(err);
                 }
-                console.log('result3',isthaniye)
+                console.log('result3', isthaniye)
                 console.log('query4', query4);
                 connection.query(query4, (err, pardesh) => {
                     if (err) {
                         return;
                         console.log(err);
                     }
-                    console.log('result4',pardesh);
+                    console.log('result4', pardesh);
                     return res.status(200).json({
                         message: "डाटा सफलतापुर्वक प्राप्त भयो", data: {
                             registration: registration,
@@ -193,6 +206,65 @@ router.post('/VoucherSumByDate', (req, res) => {
         where a.fant_id in (${fants}) and a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
         group by a.edate_transaction,a.ndate_transaction)\
         order by edate_transaction`;
+        connection.query(query, [user.office_id, user.start_date, user.end_date, user.office_id, user.start_date, user.end_date], (err, data) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data });
+        }
+        )
+    }
+})
+router.post('/VoucherSumByDateUser', (req, res) => {
+    let user = req.body;
+    console.log(user);
+    let keys = user.user_id
+    let users = keys.map((it) => { return `'${it}'` })
+    console.log(users);
+    console.log(users.length);
+    if (users.length == 0) {
+    console.log("no user selected");
+    let query = "(select a.edate_transaction,a.ndate_transaction,a.created_by_user_id,d.nepname,a.sirshak_id,b.sirshak_name,c.acc_sirshak_name,sum(a.amount) as amount from voucher a\
+    inner join voucher_sirshak b on a.sirshak_id=b.id\
+    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
+	inner join users d on a.created_by_user_id=d.id\
+    where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
+    group by a.edate_transaction,a.ndate_transaction,a.created_by_user_id,a.sirshak_id,b.sirshak_name)\
+    UNION ALL\
+    (select a.edate_transaction,a.ndate_transaction,a.created_by_user_id,d.nepname,99 as sirshak_id,CONCAT(a.ndate_transaction,' ',d.nepname,'  को जम्मा') as sirshak_name,'' as acc_sirshak_name,sum(a.amount) as amount from voucher a\
+    inner join voucher_sirshak b on a.sirshak_id=b.id\
+    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
+	inner join users d on a.created_by_user_id=d.id\
+    where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
+    group by a.edate_transaction,a.ndate_transaction,a.created_by_user_id)\
+    order by edate_transaction,created_by_user_id";
+        connection.query(query, [user.office_id, user.start_date, user.end_date, user.office_id, user.start_date, user.end_date], (err, data) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data });
+        }
+        )
+
+    }
+    else {
+        console.log("users selected");
+        let query = `(select a.edate_transaction,a.ndate_transaction,a.created_by_user_id,d.nepname,a.sirshak_id,b.sirshak_name,c.acc_sirshak_name,sum(a.amount) as amount from voucher a\
+    inner join voucher_sirshak b on a.sirshak_id=b.id\
+    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
+	inner join users d on a.created_by_user_id=d.id\
+    where a.created_by_user_id in (${users}) and a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
+    group by a.edate_transaction,a.ndate_transaction,a.created_by_user_id,a.sirshak_id,b.sirshak_name)\
+    UNION ALL\
+    (select a.edate_transaction,a.ndate_transaction,a.created_by_user_id,d.nepname,99 as sirshak_id,CONCAT(a.ndate_transaction,' ',d.nepname,'  को जम्मा') as sirshak_name,'' as acc_sirshak_name,sum(a.amount) as amount from voucher a\
+    inner join voucher_sirshak b on a.sirshak_id=b.id\
+    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
+	inner join users d on a.created_by_user_id=d.id\
+    where  a.created_by_user_id in (${users}) and a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
+    group by a.edate_transaction,a.ndate_transaction,a.created_by_user_id)\
+    order by edate_transaction,created_by_user_id`;
         connection.query(query, [user.office_id, user.start_date, user.end_date, user.office_id, user.start_date, user.end_date], (err, data) => {
             if (err) {
                 console.log(err);

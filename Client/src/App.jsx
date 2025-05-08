@@ -32,6 +32,7 @@ import BargikaranHome from './Pages/Bargikaran/BargikaranHome';
 import MisilHome from './Pages/Misil/MisilHome';
 import GuthiHome from './Pages/Guthi/GuthiHome';
 import ViewPoka from './Pages/Misil/ViewPoka';
+import Voucheruser from './Pages/Voucher/VoucherUser';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
               <Route path='vouchermonthly' element={<VoucherMonthly />} />
               <Route path='voucherdaily' element={<Voucherdaily />} />
               <Route path='voucherfant' element={<VoucherFant />} />
+              <Route path='voucheruser' element={<Voucheruser />} />
               <Route path='vouchersummary' element={<VoucherSummary />} />
               <Route path='voucherdetails' element={<Voucherdetails />} />
             </Route>
