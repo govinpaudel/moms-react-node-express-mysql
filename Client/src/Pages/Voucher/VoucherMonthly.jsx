@@ -147,7 +147,7 @@ useEffect(() => {
           {pardesh ?
             pardesh.map((item,i)=>{
               return <><tr key={i}>
-                <td>{item.sirshak_name}</td>
+                <td>{item.acc_sirshak_name}</td>
                 <td>{Math.round(item.pardesh)}</td>
               </tr>              
               </>

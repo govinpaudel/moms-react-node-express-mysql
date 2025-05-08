@@ -76,8 +76,12 @@ const ViewPoka = () => {
         console.log(misil);
     }
     const changeFormat =(e)=>{
-        console.log(e.target.value);
+        const x=e.target.value;
+        const y=x.replaceAll('.','-')
+        const z=y.replaceAll('/','-')
+        setmisil({...misil,miti:z})
     }
+
  const handleEdit = async(e)=>{
     setshow(true);
     console.log(e)

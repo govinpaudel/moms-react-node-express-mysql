@@ -168,7 +168,9 @@ console.log("NEPALI DATE AAYEKO",ndate);
       <PageHeaderComponent
         headerText="भौचर दर्ता फाराम"
         icon={<BsInfoCircleFill size={40} />}
-      /> 
+      />
+       <label className="Addvoucher__Form__part__item__label">कृपया बैंक भौचर प्रविष्ट गर्दा LRIMS मा गरेको कारोबारको आधारमा दर्ता गर्नु होला ।
+        जस्तै लिखत पारित, धितो रोक्का, ठाडो रोक्का, प्रतिलिपि, नामसारी , संशोधन आदि </label>
       {loggedUser.usenepcalendar ?
       <div className="Addvoucher__calendardiv">
   <div className="Addvoucher__calendardiv__datediv">

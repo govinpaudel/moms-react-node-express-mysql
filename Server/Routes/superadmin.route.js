@@ -84,12 +84,13 @@ router.post('/listBadhfandByStates', (req, res) => {
     else{
         states=["'0'"]
     }     
-    let query=`select a.*,b.state_name,c.aaba_name,d.sirshak_name from voucher_badhfadh a\
+    let query=`select a.*,b.state_name,c.aaba_name,d.acc_sirshak_name from voucher_badhfadh a\
     inner join states b on a.state_id=b.id\
     inner join aabas c on a.aaba_id=c.id \
-    inner join voucher_sirshak d on a.sirshak_id=d.id\
+    inner join voucher_acc_sirshak d on a.sirshak_id=d.id\
     where\
     a.aaba_id=? and a.state_id in (${states})`;
+    console.log(query);
     connection.query(query,[user.aaba_id], (err, badhfand) => {
         if (err) { 
             console.log(err);

@@ -239,7 +239,7 @@ const handlechange=(e)=>{
             return  <tr key={i}>
             <td>{item.aaba_name}</td>
             <td>{item.state_name}</td>
-            <td>{item.sirshak_name}</td>
+            <td>{item.acc_sirshak_name}</td>
             <td>{item.sangh}</td>
             <td>{item.pardesh}</td>
             <td>{item.isthaniye}</td>

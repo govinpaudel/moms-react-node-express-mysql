@@ -154,7 +154,8 @@ const dototal =()=>{
             <tr>
               <th>क्र.सं</th>              
               <th>कारोबार मिति</th>
-              <th>शिर्षक</th>
+              <th>कारोबार शिर्षक</th>
+              <th>लेखा शिर्षक</th>
               <th>रकम</th>              
             </tr>
           </thead>
@@ -167,6 +168,7 @@ const dototal =()=>{
                     
                     <td>{data.ndate_transaction}</td>
                     <td>{data.sirshak_name}</td>
+                    <td>{data.acc_sirshak_name}</td>
                     <td>{data.amount}</td>                   
                   </tr>
                 );

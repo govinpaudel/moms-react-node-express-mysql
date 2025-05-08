@@ -174,18 +174,10 @@ const dototal =()=>{
                     <td>{data.sirshak_name}</td>
                     <td>{data.napa_name}</td>
                     <td>{data.fant_name}</td> 
-                    <td onClick={() => navigate("/home/editvoucher",{state:{id:data.id}})}>{data.voucherno}</td>
+                    <td onClick={() => navigate("/voucher/editvoucher",{state:{id:data.id}})}>{data.voucherno}</td>
                     <td>{data.deposited_by}</td>
                     <td>{data.amount}</td>
-                    {/* <td>
-                      <button
-                        className="listvoucher__list__editbtn no-print"
-                        onClick={() => navigate("/home/editvoucher",{state:{id:data.id}})}
-                      >
-                        संशोधन
-                      </button>
-                      <button className="listvoucher__list__delbtn no-print">हटाउनुहोस्</button>
-                    </td> */}
+                   
                   </tr>
                 );
               })
