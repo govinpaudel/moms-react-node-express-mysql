@@ -152,7 +152,7 @@ const dototal =()=>{
         <table className="listvoucher__list__table">
           <thead>
             <tr>
-              <th>क्र.सं</th>              
+                         
               <th>कारोबार मिति</th>
               <th>कारोबार शिर्षक</th>
               <th>लेखा शिर्षक</th>
@@ -163,9 +163,7 @@ const dototal =()=>{
             {repdata.length > 0 ? (
               repdata.map((data, i) => {
                 return (
-                  <tr key={i}>
-                    <td>{i + 1}</td>
-                    
+                  <tr key={i}> 
                     <td>{data.ndate_transaction}</td>
                     <td>{data.sirshak_name}</td>
                     <td>{data.acc_sirshak_name}</td>
