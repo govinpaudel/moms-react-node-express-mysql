@@ -129,10 +129,11 @@ router.post('/VoucherByDate', (req, res) => {
     console.log(fants);
     console.log(fants.length);
     if (fants.length == 0) {
-        let query = "select a.id,a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,a.deposited_by from voucher a\
+        let query = "select a.id,a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,e.nepname,a.deposited_by from voucher a\
     inner join voucher_sirshak b on a.sirshak_id=b.id\
     inner join voucher_fant c on a.fant_id=c.id\
     inner join voucher_napa d on a.napa_id=d.id and a.office_id=d.office_id\
+    inner join users e on e.id=a.created_by_user_id\
     where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
     order by edate_transaction,ndate_transaction,voucherno";
         connection.query(query, [user.office_id, user.start_date, user.end_date], (err, data) => {
@@ -146,10 +147,11 @@ router.post('/VoucherByDate', (req, res) => {
 
     }
     else {
-        let query = `select a.id,a.ndate_voucher,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,a.deposited_by from voucher a\
+        let query = `select a.id,a.ndate_voucher,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,e.nepname,a.deposited_by from voucher a\
         inner join voucher_sirshak b on a.sirshak_id=b.id\
         inner join voucher_fant c on a.fant_id=c.id\
-        inner join voucher_napa d on a.napa_id=d.id and a.office_id=d.office_id\        
+        inner join voucher_napa d on a.napa_id=d.id and a.office_id=d.office_id\
+        inner join users e on e.id=a.created_by_user_id\    
         where a.office_id=? and a.fant_id in (${fants}) and  a.edate_transaction >=? and a.edate_transaction<=?\
         order by edate_transaction,ndate_transaction,voucherno`;
         connection.query(query, [user.office_id, user.start_date, user.end_date], (err, data) => {

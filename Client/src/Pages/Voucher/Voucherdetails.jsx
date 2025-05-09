@@ -160,7 +160,7 @@ const dototal =()=>{
               <th>भौचर नं</th>
               <th>जम्मा गर्ने</th>
               <th>रकम</th>
-              {/* <th colSpan={2} className="no-print">कृयाकलाप</th> */}
+              <th>प्रयोगकर्ता</th>
             </tr>
           </thead>
           <tbody>
@@ -177,7 +177,7 @@ const dototal =()=>{
                     <td onClick={() => navigate("/voucher/editvoucher",{state:{id:data.id}})}>{data.voucherno}</td>
                     <td>{data.deposited_by}</td>
                     <td>{data.amount}</td>
-                   
+                    <td>{data.nepname}</td>                   
                   </tr>
                 );
               })
@@ -190,7 +190,7 @@ const dototal =()=>{
                 </td>
               </tr>
             )}
-            <tr><td colSpan={9}>जम्मा रकम : {total}</td></tr>
+            <tr><td colSpan={10}>जम्मा रकम : {total}</td></tr>
           </tbody>
         </table>
       </div>
