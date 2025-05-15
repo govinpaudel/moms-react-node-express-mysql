@@ -117,7 +117,7 @@ const dototal =()=>{
         }) : null}        
       </div>
 
-    <div className="Voucherdetails__dateform">
+    <div className="Voucherdetails__dateform no-print">
       <div className="Voucherdetails__dateform__item">
         <label className="Voucherdetails__dateform__item__label">शुरु मिति</label>
         <Calendar
@@ -161,6 +161,8 @@ const dototal =()=>{
               <th>जम्मा गर्ने</th>
               <th>रकम</th>
               <th>प्रयोगकर्ता</th>
+              <th className="no-print">कृयाकलाप</th>
+
             </tr>
           </thead>
           <tbody>
@@ -177,7 +179,15 @@ const dototal =()=>{
                     <td onClick={() => navigate("/voucher/editvoucher",{state:{id:data.id}})}>{data.voucherno}</td>
                     <td>{data.deposited_by}</td>
                     <td>{data.amount}</td>
-                    <td>{data.nepname}</td>                   
+                    <td>{data.nepname}</td>
+                    <td className="no-print">
+                      <button
+                        className="listvoucher__list__editbtn"
+                        onClick={() => navigate("/voucher/editvoucher",{state:{id:data.id}})}
+                      >
+                        संशोधन
+                      </button>
+                      </td>                  
                   </tr>
                 );
               })

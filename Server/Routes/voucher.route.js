@@ -301,6 +301,28 @@ router.post('/VoucherFant', (req, res) => {
         return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data })
     })
 })
+router.post('/VoucherFantAnnual', (req, res) => {
+    let user = req.body;
+    console.log(user);   
+    let fantarray = user.fant_id
+    let fants = fantarray.map((it) => { return `'${it}'` })
+    console.log(fants);
+    let query1 = `select a.aaba_id,a.office_id,a.fant_id,c.fant_name,a.sirshak_id,b.sirshak_name,e.acc_sirshak_name,b.display_order,sum(a.amount)as amount from voucher a \
+                inner join voucher_sirshak b on a.sirshak_id=b.id\                
+                inner join voucher_fant c on a.fant_id=c.id\
+                inner join voucher_month d on a.month_id=d.id\
+                inner join voucher_acc_sirshak e on e.id=b.acc_sirshak_id\
+                where a.aaba_id=? and a.office_id=? and a.fant_id in (${fants})\
+                group by a.aaba_id,a.office_id,a.fant_id,c.fant_name,a.sirshak_id order by a.fant_id,b.display_order`;
+    connection.query(query1, [user.aaba_id, user.office_id], (err, data) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data })
+    })
+})
+
 router.post('/getVoucherMaster', (req, res) => {
     let user = req.body;
     console.log(user);

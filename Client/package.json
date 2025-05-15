@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@sbmdkl/nepali-date-converter": "^2.0.3",
-    "@sbmdkl/nepali-datepicker-reactjs": "^1.2.2",
+    "@sbmdkl/nepali-date-converter": "^2.0.4",
+    "@sbmdkl/nepali-datepicker-reactjs": "^1.2.3",
     "@tailwindcss/vite": "^4.1.3",
     "axios": "^1.8.4",
     "date-fns": "^4.1.0",

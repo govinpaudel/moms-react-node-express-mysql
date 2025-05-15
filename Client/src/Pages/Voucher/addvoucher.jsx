@@ -3,7 +3,6 @@ import Calendar from '@sbmdkl/nepali-datepicker-reactjs';
 import '@sbmdkl/nepali-datepicker-reactjs/dist/index.css';
 import "./Addvoucher.scss";
 import { toast } from "react-toastify";
-import React from "react";
 import { useState, useEffect,useRef } from "react";
 import axios from "axios";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
@@ -164,7 +163,7 @@ console.log("NEPALI DATE AAYEKO",ndate);
   }, []);
 
   return (
-    <section id="Addvoucher" className="Addvoucher">
+    <section id="Addvoucher" className="Addvoucher">     
       <PageHeaderComponent
         headerText="भौचर दर्ता फाराम"
         icon={<BsInfoCircleFill size={40} />}
