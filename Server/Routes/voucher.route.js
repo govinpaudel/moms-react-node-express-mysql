@@ -121,6 +121,42 @@ router.post('/VoucherMonthly', (req, res) => {
     })
 
 })
+router.post('/VoucherAccount', (req, res) => {
+    let user = req.body;
+    console.log(user);
+    let keys = user.month_id
+    let months = keys.map((it) => { return `'${it}'` })
+    console.log(months);
+    if(months.length>0){
+    let query1 = `select a.aaba_id,a.office_id,c.id,c.acc_sirshak_name,sum(amount) amount from voucher a\
+    inner join voucher_sirshak b on a.sirshak_id = b.id\
+    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
+    where aaba_id=${user.aaba_id} and office_id=${user.office_id} and month_id in (${months})\
+    group by aaba_id,office_id,id order by id`;
+    connection.query(query1, (err, data) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data })
+    })
+}
+else{
+let query1 = `select a.aaba_id,a.office_id,c.id,c.acc_sirshak_name,sum(amount) amount from voucher a\
+    inner join voucher_sirshak b on a.sirshak_id = b.id\
+    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
+    where aaba_id=${user.aaba_id} and office_id=${user.office_id}\
+    group by aaba_id,office_id,id order by id`;
+    connection.query(query1, (err, data) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data })
+    })
+}   
+
+})
 router.post('/VoucherByDate', (req, res) => {
     let user = req.body;
     console.log(user);
@@ -129,7 +165,7 @@ router.post('/VoucherByDate', (req, res) => {
     console.log(fants);
     console.log(fants.length);
     if (fants.length == 0) {
-        let query = "select a.id,a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,e.nepname,a.deposited_by from voucher a\
+        let query = "select a.id,a.month_id,a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,e.nepname,a.deposited_by from voucher a\
     inner join voucher_sirshak b on a.sirshak_id=b.id\
     inner join voucher_fant c on a.fant_id=c.id\
     inner join voucher_napa d on a.napa_id=d.id and a.office_id=d.office_id\
@@ -440,7 +476,7 @@ router.post('/addOrUpdateVoucher', (req, res) => {
                 })
             }
             else {
-                return res.status(200).json({ status: false, action: "warning", message: "भौचर नं‌ " + user.voucherno + " मितिः  " + results[0].ndate + " मा " + results[0].nepname + " बाट दर्ता भईसकेको छ ।" })
+                return res.status(200).json({ status: false, action: "warning", message: "भौचर नं‌ " + user.voucherno + " मितिः  " + results[0].ndate_voucher + " मा " + results[0].nepname + " बाट दर्ता भईसकेको छ ।" })
             }
         })
     }

@@ -154,6 +154,7 @@ const dototal =()=>{
               <th>क्र.सं</th>
               <th>बैंक दाखिला मिति</th>
               <th>कारोबार मिति</th>
+              <th>महिना</th>
               <th>शिर्षक</th>
               <th>गा.पा । न.पा</th>
               <th>फाँट</th>              
@@ -173,6 +174,7 @@ const dototal =()=>{
                     <td>{i + 1}</td>
                     <td>{data.ndate_voucher}</td>
                     <td>{data.ndate_transaction}</td>
+                    <td>{data.month_id}</td>
                     <td>{data.sirshak_name}</td>
                     <td>{data.napa_name}</td>
                     <td>{data.fant_name}</td> 

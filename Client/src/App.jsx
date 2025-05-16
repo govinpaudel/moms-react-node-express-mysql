@@ -34,6 +34,7 @@ import GuthiHome from './Pages/Guthi/GuthiHome';
 import ViewPoka from './Pages/Misil/ViewPoka';
 import Voucheruser from './Pages/Voucher/VoucherUser';
 import VoucherFantAnnual from './Pages/Voucher/VoucherFantAnnual';
+import VoucherAccount from './Pages/Voucher/VoucherAccount';
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
               <Route path='vouchersummary' element={<VoucherSummary />} />
               <Route path='voucherdetails' element={<Voucherdetails />} />
               <Route path='voucherfantannual' element={<VoucherFantAnnual />} />
+              <Route path='voucheraccount' element={<VoucherAccount />} />
             </Route>
             {/* Voucher routes ends */}
             {/* bargikaran route starts */}
