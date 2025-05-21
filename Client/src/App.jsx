@@ -35,6 +35,7 @@ import ViewPoka from './Pages/Misil/ViewPoka';
 import Voucheruser from './Pages/Voucher/VoucherUser';
 import VoucherFantAnnual from './Pages/Voucher/VoucherFantAnnual';
 import VoucherAccount from './Pages/Voucher/VoucherAccount';
+import CalcMainPage from './Pages/Calculator/CalcMainPage';
 
 function App() {
   return (
@@ -102,6 +103,7 @@ function App() {
           </Route>
           <Route path='/logout' element={<Logout />} />
           <Route path='/register' element={<Register />} />
+          <Route path='/calculator' element={<CalcMainPage />} />
           <Route path='/resetpassword' element={<ResetPassword />} />
           <Route path='/login' element={<Login />} />
         </Routes>

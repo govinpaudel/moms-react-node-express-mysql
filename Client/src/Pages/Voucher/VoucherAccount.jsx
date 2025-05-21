@@ -1,7 +1,6 @@
 import React, { useState,useEffect } from "react";
 import "./VoucherMonthly.scss";
 import axios from "axios";
-import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
 const VoucherAccount = () => {
@@ -10,7 +9,7 @@ const VoucherAccount = () => {
   const [mselected, setmselected] = useState([]);  
   const [summary,setsummary]=useState([{}]);  
   const [mdata,setmdata]=useState([]); 
-
+  const [total, settotal] = useState(0);  
   const loadmonth=async()=>{
     const data = {     
       office_id: loggedUser.office_id,
@@ -26,11 +25,23 @@ const VoucherAccount = () => {
     setmdata(response.data.months);
   }
 
+  const dototal =()=>{
+    var x =0;
+    summary.forEach((a) => {      
+      console.log(x);
+      x=x+ parseInt(a.amount);
+    })
+    settotal(x);
+  }
 
 useEffect(() => {
   loadmonth();
   document.title = "MOMS | महिना अनुसारको विवरण";
 }, [])  
+
+useEffect(()=>{
+ dototal();
+},[summary])
 
   const genReport = async () => {    
     setsummary([{}]);       
@@ -101,6 +112,10 @@ useEffect(() => {
           {summary?summary.map((item,i)=>{
             return <tr key={i}><td>{item.acc_sirshak_name}</td><td>{item.amount}</td></tr>
           }):null}
+          <tr>
+            <td>जम्मा रकम:</td>
+            <td>{total}</td>
+          </tr>
           </tbody>
           </table>
     </section>

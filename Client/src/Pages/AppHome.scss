@@ -15,6 +15,10 @@
                 border: 1px solid var(--yellow-theme-main-color);
                 width: 250px;
                 text-align: center;
+                &:hover{
+                    background-color: var(--yellow-theme-main-color);
+                    color: var(--yellow-theme-background-color);
+                }
             } 
         }
     }

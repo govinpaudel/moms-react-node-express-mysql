@@ -89,8 +89,6 @@ const Login = () => {
     checkLogin();
   }, []);
 
-
-
   useEffect(() => {
     aabas.forEach((item) => {
       item.is_current == 1 ? setdefaaba(item.id) : null;

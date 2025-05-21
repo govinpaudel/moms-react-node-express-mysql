@@ -1,0 +1,42 @@
+.maindiv{
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+.items{
+    display: flex;
+    flex-direction: column;
+    width: 100px;
+}
+.width900{    
+    width: 900px;
+    margin: 0 auto;
+    margin-top: 25px;
+    text-align: center;
+}
+
+.form-input{
+padding: 5px 10px 5px 10px;
+border: 1px solid var(--yellow-theme-sub-text-color) !important;
+border-radius: 5px;
+width: 100%;
+font-size: 12px;
+background-color: var(--yellow-theme-background-color);
+color: var(--yellow-theme-main-color);
+}
+.button {
+  padding: 0.5rem;
+  margin: 0 0.5rem;
+  border-radius: 0.5rem;
+  color: var(--yellow-theme-main-color);
+  font-size: 1.5rem;
+  border: 1px solid var(--yellow-theme-main-color);  
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--yellow-theme-main-color);
+    color: var(--yellow-theme-background-color);
+
+}
+}
