@@ -1,4 +1,4 @@
-import { convertToWords } from "../../Utils/Utils";
+import {convertToWords} from '../../Utils/convertToWords';
 import Calendar from '@sbmdkl/nepali-datepicker-reactjs';
 import '@sbmdkl/nepali-datepicker-reactjs/dist/index.css';
 import "./Addvoucher.scss";

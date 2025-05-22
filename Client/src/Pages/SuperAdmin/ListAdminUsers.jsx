@@ -7,7 +7,6 @@ const ListAdminUsers = () => {
   const Url = import.meta.env.VITE_API_URL + "superadmin/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
 
-
   const changeStatus=async(id,status)=>{
     const data = {
       office_id: loggedUser.office_id,
@@ -15,7 +14,7 @@ const ListAdminUsers = () => {
       user_id:id,
       status:status
     }
-    console.log("data sent", data);
+    console.log("data sent to changeuser status", data);
     const response = await axios({
       method: "post",
       url: Url + "changeUserStatus",
@@ -69,9 +68,7 @@ const ListAdminUsers = () => {
   useEffect(() => {
     loadData();
     document.title = "MOMS | प्रयोगकर्ताहरु";
-  }, [])
-  
-  
+  }, []) 
 
   return (
     <section id="listusers" className='listusers'>

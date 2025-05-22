@@ -36,8 +36,8 @@ router.post('/changeUserStatus', (req, res) => {
         })
     }
     else{
-        let query="update users set isactive=1,updated_by_user_id=? where office_id=? and id=?";
-        connection.query(query,[user.updated_by_user_id,user.office_id,user.user_id], (err, users) => {
+        let query="update users set isactive=1,updated_by_user_id=? where id=?";
+        connection.query(query,[user.updated_by_user_id,user.user_id], (err, users) => {
         if (err) { return; }
         return res.status(200).json({
             status:true,
@@ -69,8 +69,6 @@ router.post('/resetPassword', (req, res) => {
 
     })    
 })
-
-
 // Badhfand routes starts
 router.post('/listBadhfandByStates', (req, res) => {
     let user=req.body;

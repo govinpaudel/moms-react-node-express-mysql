@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ropaniToDaam } from '../../Utils/ropaniToDaam';
 import { daamToRopani } from '../../Utils/daamToRopani';
+import './DivideArea.scss';
 const DivideArea = () => {
   const [area, setArea] = useState('1-0-0-0')
   const [bhag, setBhag] = useState(1)
@@ -25,11 +26,15 @@ const DivideArea = () => {
     console.log('perbhag',perbhag);
     console.log('baaki',baaki)
     for (var i=0; i < bhag; i++) {
-      const y={      
+    const y={      
       data:daamToRopani(perbhag)
     }       
     x.push(y);
-    }    
+    }
+    const z={
+      data:'बाँकी ' +daamToRopani(baaki)
+    }
+    x.push(z)
     console.log(x);
     setData(x);
   }
@@ -39,7 +44,7 @@ const DivideArea = () => {
 
   return (
     <section className='addsubarea'>
-      <div className="add">
+      <div className="addition">
         <h1 className='heading'>क्षेत्रफल र भाग पृविष्ट गर्नुहोस्</h1>
         <table className='listvoucher__list__table'><thead><tr><th>रो.आ.पै.दा</th><th>भाग</th></tr></thead>
           <tbody>
