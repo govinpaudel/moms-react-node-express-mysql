@@ -30,7 +30,6 @@ import AppHome from './Pages/AppHome';
 import VoucherHome from './Pages/Voucher/VoucherHome';
 import BargikaranHome from './Pages/Bargikaran/BargikaranHome';
 import MisilHome from './Pages/Misil/MisilHome';
-import GuthiHome from './Pages/Guthi/GuthiHome';
 import ViewPoka from './Pages/Misil/ViewPoka';
 import Voucheruser from './Pages/Voucher/VoucherUser';
 import VoucherFantAnnual from './Pages/Voucher/VoucherFantAnnual';
@@ -73,16 +72,11 @@ function App() {
             <Route path='misil' element={<MisilHome />} > 
             <Route path='' element={<ListPoka />} />           
             <Route path='listpoka' element={<ListPoka />} />
-            <Route path='misilsearch' element={<MisilSearch />} />            
+            <Route path='misilsearch' element={<MisilSearch />} />      
             
             <Route path='viewpoka' element={<ViewPoka />} />
             </Route>
-            {/* Misil route Ends */}
-          {/* Guthi Route Starts  */}
-          <Route path="guthi" element={<GuthiHome/>}>
-
-          </Route>
-            {/* Guthi Route ends */}
+            {/* Misil route Ends */}          
             {/* Admin Route Starts */}
             <Route path="/admin" element={<Admin />} >              
               <Route path='listusers' element={<ListUsers />} />

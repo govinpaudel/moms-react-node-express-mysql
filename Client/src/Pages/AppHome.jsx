@@ -18,23 +18,10 @@ const AppHome = () => {
             <NavLink to={'/misil'}>मिसिल व्यवस्थापन प्रणाली</NavLink>
             </div>
             <div className='apphome__list__item'>
-            <NavLink to={'/guthi'}>गुठी तिरो व्यवस्थापन प्रणाली</NavLink>
-            </div>
-        </div>
-        <div className='apphome__list'>
-            <div className='apphome__list__item'>
-            <NavLink to={'/dartachalani'}>दर्ता चलानी प्रणाली</NavLink>
-            </div>
-            <div className='apphome__list__item'>
             <NavLink to={'/calculator'} >क्षेत्रफल क्यालकुलेटर</NavLink>
             </div>
-            <div className='apphome__list__item'>
-            <NavLink to={'/changepassword'} >पासर्वड परिवर्तन</NavLink>
-            </div>
-            <div className='apphome__list__item'>
-            <NavLink to={'/logout'}>लगआउट</NavLink>
-            </div>
-        </div>     
+        </div>
+        
  <div className='apphome__list'>
   <div className='apphome__list__item'>
             <NavLink to={'/admin'}>एडमिन प्यानल</NavLink>
