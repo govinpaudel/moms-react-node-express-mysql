@@ -29,6 +29,7 @@ import Voucherdaily from './Pages/Voucher/Voucherdaily';
 import AppHome from './Pages/AppHome';
 import VoucherHome from './Pages/Voucher/VoucherHome';
 import BargikaranHome from './Pages/Bargikaran/BargikaranHome';
+import BargikaranAdd from './Pages/Bargikaran/bargikaranAdd';
 import MisilHome from './Pages/Misil/MisilHome';
 import ViewPoka from './Pages/Misil/ViewPoka';
 import Voucheruser from './Pages/Voucher/VoucherUser';
@@ -66,6 +67,7 @@ function App() {
             <Route path='bargikaran' element={<BargikaranHome />} >
             <Route path='' element={<Bargikaran />} />
             <Route path='search' element={<Bargikaran />} />
+            <Route path='add' element={<BargikaranAdd />} />
             </Route>
             {/* bargikaran route ends */}
             {/* Misil route Starts */}
