@@ -43,7 +43,7 @@ const BargikaranSidebar = () => {
             );
           }):null}            
           <li >
-            <NavLink to={"/home/logout"}>लगआउट</NavLink>
+            <NavLink to={"/logout"}>लगआउट</NavLink>
           </li>
         </ul>
       </div>
