@@ -3,8 +3,10 @@ import { useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "./bargikaranAdd.scss";
+import { useNavigate } from "react-router-dom";
 
 const BargikaranAdd = () => {
+  const navigate =useNavigate();
   const Url = import.meta.env.VITE_API_URL + "bargikaran/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const initialdata = {
@@ -22,7 +24,13 @@ const BargikaranAdd = () => {
   const [napas, setNapas] = useState();
   const [gapas, setGapas] = useState();
   const [wards, setWards] = useState();
-
+  const checkRole = () => {
+    console.log("role", loggedUser)
+    if (loggedUser.role == 2) {
+      toast.warning("एडमिन प्रयोगकर्तालाई मात्र यो अख्तियारी उपलब्ध छ ।")
+      navigate('/bargikaran')
+    }
+  }
   const loadoffices = async () => {
     const response = await axios({
       method: "get",
@@ -69,6 +77,7 @@ const BargikaranAdd = () => {
   };
   useEffect(() => {
     document.title = "MOMS | वर्गिकरण थप गर्नुहोस्";
+    checkRole();
     loadoffices();
   }, []);
 
@@ -84,20 +93,20 @@ const BargikaranAdd = () => {
   }, [data.gabisa_id])
 
   async function processRequests(items) {
-  for (const item of items) {
-    data.kitta_no=item;
-    console.log("datasent",data);
-    const response = await axios({
-      method: "post",
-      url: Url + "savebargikaran",
-      data: data
-    });
-    if (response.data.status==true){
-      toast.success(response.data.message);
-    } 
+    for (const item of items) {
+      data.kitta_no = item;
+      console.log("datasent", data);
+      const response = await axios({
+        method: "post",
+        url: Url + "savebargikaran",
+        data: data
+      });
+      if (response.data.status == true) {
+        toast.success(response.data.message);
+      }
+    }
+
   }
- 
-}
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(data);
@@ -121,9 +130,9 @@ const BargikaranAdd = () => {
       return;
     }
     let text = data.kitta_no;
-    const myArray = text.split(",");    
+    const myArray = text.split(",");
     processRequests(myArray);
-    setData(initialdata);   
+    setData(initialdata);
   };
 
 
@@ -144,7 +153,7 @@ const BargikaranAdd = () => {
             className="bargikaranadd__form__form-item__input"
             onChange={handleChange}
             value={data.office_id}
-            >
+          >
             <option>कार्यालय छान्नुहोस्</option>
             {offices
               ? offices.map((data) => {
