@@ -95,8 +95,7 @@ const BargikaranAdd = () => {
     if (response.data.status==true){
       toast.success(response.data.message);
     } 
-  }
-  setData(initialdata);
+  } 
 }
 
 
@@ -124,7 +123,8 @@ const BargikaranAdd = () => {
     }
     let text = data.kitta_no;
     const myArray = text.split(",");    
-    processRequests(myArray);    
+    processRequests(myArray);
+    setData(initialdata);   
   };
 
 
