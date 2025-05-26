@@ -61,7 +61,6 @@ const BargikaranAdd = () => {
       setWards(response.data.data);
     }
   }
-
   const handleChange = (e) => {
     setData({
       ...data,
@@ -69,7 +68,7 @@ const BargikaranAdd = () => {
     });
   };
   useEffect(() => {
-    document.title = "MOMS | वर्गिकरण खोजि";
+    document.title = "MOMS | वर्गिकरण थप गर्नुहोस्";
     loadoffices();
   }, []);
 
@@ -83,6 +82,23 @@ const BargikaranAdd = () => {
   useEffect(() => {
     loadwards();
   }, [data.gabisa_id])
+
+  async function processRequests(items) {
+  for (const item of items) {
+    data.kitta_no=item;
+    console.log("datasent",data);
+    const response = await axios({
+      method: "post",
+      url: Url + "savebargikaran",
+      data: data
+    });
+    if (response.data.status==true){
+      toast.success(response.data.message);
+    } 
+  }
+  setData(initialdata);
+}
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -106,18 +122,14 @@ const BargikaranAdd = () => {
     if (data.kitta_no.trim().length == 0) {
       return;
     }
-    const response = await axios({
-      method: "post",
-      url: Url + "savebargikaran",
-      data: data,
-    });
-    console.log("sentData", data);
-    console.log("receivedData", response.data);
-    if (response.data.status == true) {
-      toast.success(response.data.message);
-      setData(initialdata);
-    }
+    let text = data.kitta_no;
+    const myArray = text.split(",");    
+    processRequests(myArray);    
   };
+
+
+
+
   return (
     <section id="bargikaran" className="bargikaranadd">
       <div className="bargikaranadd__heading">
