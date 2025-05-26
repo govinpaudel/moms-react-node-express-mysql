@@ -72,7 +72,7 @@ function App() {
             {/* bargikaran route ends */}
             {/* Misil route Starts */}
             <Route path='misil' element={<MisilHome />} > 
-            <Route path='' element={<ListPoka />} />           
+            <Route path='' element={<MisilSearch />} />           
             <Route path='listpoka' element={<ListPoka />} />
             <Route path='misilsearch' element={<MisilSearch />} />      
             
