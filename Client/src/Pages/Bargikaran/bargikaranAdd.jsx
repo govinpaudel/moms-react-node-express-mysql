@@ -12,7 +12,7 @@ const BargikaranAdd = () => {
     napa_id: 0,
     gabisa_id: 0,
     ward_no: 0,
-    kitta_no: 0,
+    kitta_no: '',
     bargikaran: '',
     remarks: '',
     user_id: loggedUser.id
@@ -96,7 +96,7 @@ const BargikaranAdd = () => {
       toast.success(response.data.message);
     } 
   }
-  setData(initialdata);   
+ 
 }
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -123,7 +123,7 @@ const BargikaranAdd = () => {
     let text = data.kitta_no;
     const myArray = text.split(",");    
     processRequests(myArray);
-    
+    setData(initialdata);   
   };
 
 
@@ -142,7 +142,9 @@ const BargikaranAdd = () => {
           <select
             name="office_id"
             className="bargikaranadd__form__form-item__input"
-            onChange={handleChange}>
+            onChange={handleChange}
+            value={data.office_id}
+            >
             <option>कार्यालय छान्नुहोस्</option>
             {offices
               ? offices.map((data) => {
@@ -160,6 +162,7 @@ const BargikaranAdd = () => {
             name="napa_id"
             className="bargikaranadd__form__form-item__input"
             onChange={handleChange}
+            value={data.napa_id}
           >
             <option>नगरपालिका छान्नुहोस्</option>
             {napas
@@ -178,6 +181,7 @@ const BargikaranAdd = () => {
             name="gabisa_id"
             className="bargikaranadd__form__form-item__input"
             onChange={handleChange}
+            value={data.gabisa_id}
           >
             <option>गा.वि.स छान्नुहोस्</option>
             {gapas
@@ -196,6 +200,7 @@ const BargikaranAdd = () => {
             name="ward_no"
             className="bargikaranadd__form__form-item__input"
             onChange={handleChange}
+            value={data.ward_no}
           >
             <option>वडा नं छान्नुहोस्</option>
             {wards
@@ -217,6 +222,7 @@ const BargikaranAdd = () => {
             placeholder="कित्ता नं प्रविष्ट गर्नुहोस्"
             onChange={handleChange}
             required
+            value={data.kitta_no}
           />
         </div>
         <div className="bargikaranadd__form__form-item">
@@ -227,6 +233,7 @@ const BargikaranAdd = () => {
             placeholder="वर्गिकरण प्रविष्ट गर्नुहोस्"
             onChange={handleChange}
             required
+            value={data.bargikaran}
           />
         </div>
         <div className="bargikaranadd__form__form-item">
@@ -237,6 +244,7 @@ const BargikaranAdd = () => {
             placeholder="कैफियत प्रविष्ट गर्नुहोस्"
             onChange={handleChange}
             required
+            value={data.remarks}
           />
         </div>
         <div className="bargikaranadd__form__form-item">
