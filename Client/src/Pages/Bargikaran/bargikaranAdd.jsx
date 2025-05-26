@@ -97,8 +97,6 @@ const BargikaranAdd = () => {
     } 
   } 
 }
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(data);
@@ -124,7 +122,7 @@ const BargikaranAdd = () => {
     let text = data.kitta_no;
     const myArray = text.split(",");    
     processRequests(myArray);
-    setData(initialdata);   
+    // setData(initialdata);   
   };
 
 
