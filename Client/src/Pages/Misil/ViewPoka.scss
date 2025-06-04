@@ -1,3 +1,7 @@
+.maindiv{
+  display: flex;
+  flex-direction: column;
+}
 .row{
     display: flex;
     justify-content: space-around;
