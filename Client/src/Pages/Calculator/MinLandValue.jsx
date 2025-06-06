@@ -89,7 +89,7 @@ const MinLandValue = () => {
     return (
         <section>
             <div className='maindiv width900'>
-                <form  className='maindiv width900' onSubmit={save}>
+                <form  className='maindiv width900 flex' onSubmit={save}>
                 <div className="items">
                     <label className="label">कित्ता नं</label>
                     <input type="number" name="kittano"  className="form-input" onChange={handleChange} value={data.kittano} min={1} required />
