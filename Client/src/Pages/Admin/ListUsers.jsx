@@ -79,6 +79,8 @@ const ListUsers = () => {
       <table className='listvoucher__list__table'>
         <thead>
           <tr>
+        <th>कार्यालय कोड</th>
+        <th>कार्यालयको नाम</th>    
         <th>प्रयोगकर्ताको नाम</th>
         <th>नाम नेपालीमा</th>
         <th>नाम अंग्रेजीमा</th>
@@ -91,6 +93,8 @@ const ListUsers = () => {
         <tbody>
           { data?data.map((item,i)=>{
             return  <tr key={i}>
+              <td>{item.office_id}</td>
+              <td>{item.office_name}</td>
             <td>{item.username}</td>
             <td>{item.nepname}</td>
             <td>{item.engname}</td>

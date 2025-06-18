@@ -8,7 +8,8 @@ router.get('/', (req, res, next) => { res.send("Hello from Admin Route page") })
 router.post('/listUsers', (req, res) => {
     let user=req.body;
     console.log(user);
-    let query="select * from users where office_id=? and role=2 order by id";
+    let query="select a.*,b.office_name from users a\
+    inner join offices b on a.office_id=b.id where a.role=2 and a.office_id=? order by a.office_id";
     connection.query(query,[user.office_id], (err, users) => {
     if (err) { return; }
     return res.status(200).json({

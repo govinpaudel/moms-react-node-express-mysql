@@ -15,7 +15,6 @@ const adminRoute=require('./Routes/admin.route');
 const superadminRoute=require('./Routes/superadmin.route');
 const requestIp =require("request-ip");
 
-
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -29,6 +28,7 @@ app.use('/misil',misilRoute);
 app.use('/kitta',kittaRoute);
 app.use('/admin',adminRoute);
 app.use('/superadmin',superadminRoute);
+app.use('/attendance',attendanceRoute);
 app.get('/', async (req, res, next) => { res.send("Hello from Main Server Page") })
 
 app.use((err, req, res, next) => {
