@@ -21,15 +21,14 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(requestIp.mw());
 // lets handle request coming from frontend
-app.use('/auth', authRoute);
-app.use('/voucher',voucherRoute);
-app.use('/bargikaran',bargikaranRoute);
-app.use('/misil',misilRoute);
-app.use('/kitta',kittaRoute);
-app.use('/admin',adminRoute);
-app.use('/superadmin',superadminRoute);
-app.use('/attendance',attendanceRoute);
-app.get('/', async (req, res, next) => { res.send("Hello from Main Server Page") })
+app.use('/api/auth', authRoute);
+app.use('/api/voucher',voucherRoute);
+app.use('/api/bargikaran',bargikaranRoute);
+app.use('/api/misil',misilRoute);
+app.use('/api/kitta',kittaRoute);
+app.use('/api/admin',adminRoute);
+app.use('/api/superadmin',superadminRoute);
+app.get('/api/', async (req, res, next) => { res.send("Hello from Main Server Page") })
 
 app.use((err, req, res, next) => {
     res.status(err.status || 500)

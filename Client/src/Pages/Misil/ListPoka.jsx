@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios';
 import "./listPoka.scss";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { Modal } from 'bootstrap';
 const ListPoka = () => {
-  const navigate =useNavigate();
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const initialdata = {
     id: 0,
@@ -21,6 +21,21 @@ const ListPoka = () => {
   const [misilTypes, setMisilTypes] = useState([]);
   const [formData, setFormData] = useState(initialdata);
   const Url = import.meta.env.VITE_API_URL + "misil/";
+  const modalRef = useRef(null);
+  const modalInstanceRef = useRef(null);
+  const openModal = () => {
+    setFormData(initialdata);
+   if (!modalInstanceRef.current) {
+      modalInstanceRef.current = new Modal(modalRef.current);
+    }
+    modalInstanceRef.current.show();
+  };
+  const closeModal = () => {    
+    modalInstanceRef.current?.hide();   
+  };
+
+  const navigate = useNavigate();
+
 
   const handlesubmit = async (e) => {
     e.preventDefault();
@@ -35,6 +50,7 @@ const ListPoka = () => {
       toast.success(response.data.message);
       loadPokas();
       setFormData(initialdata);
+      closeModal();
     }
 
   }
@@ -69,13 +85,12 @@ const ListPoka = () => {
   }
   const handleChange = (e) => {
     // console.log(e.target.value);
-    setFormData({ ...formData, [e.target.name]: e.target.value,created_by_user_id:loggedUser.id })
+    setFormData({ ...formData, [e.target.name]: e.target.value, created_by_user_id: loggedUser.id })
     // console.log(formData);
     if (e.target.name == 'aaba_id') {
       setdefaaba(e.target.value);
     }
   }
-
 
   const EditPoka = async (e) => {
     // console.log(e);
@@ -88,6 +103,7 @@ const ListPoka = () => {
       data: data
     })
     // console.log(response.data.data);
+    openModal();
     setFormData(response.data.data[0]);
     // console.log(formData);
   }
@@ -103,46 +119,62 @@ const ListPoka = () => {
       item.is_current == 1 ? setdefaaba(item.id) : null;
     });
   }, [aaba])
-
   return (
     <section className='mainsection'>
-      <div className="mainsection__formdiv">
-        <form className='mainsection__formdiv__form' onSubmit={handlesubmit}>
-          <div className='mainsection__formdiv__form__row'>
-            <div className="mainsection__formdiv__form__row__item">
-              <label className="mainsection__formdiv__form__row__item__label">आ.व.</label>
-              <select onChange={handleChange} name="aaba_id" className='mainsection__formdiv__form__row__item__input' value={defaaba}>
-                <option value="0">आ.व.</option>
-                {aaba ? aaba.map((item, i) => {
-                  return <option key={i} value={item.id}>{item.aaba_name}</option>
-                }) : null}
-              </select>
+      <div className="float-end">
+        <button className="btn btn-primary" onClick={openModal}>
+          <h3>पोका थप गर्नुहोस्</h3>
+        </button>
+      </div>
+      {/* modal form starts */}
+      <div className="modal fade" ref={modalRef} tabIndex="-1">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3 className="modal-title">पोका संशोधन तथा दर्ता फाराम</h3>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
             </div>
-            <div className="mainsection__formdiv__form__row__item">
-              <label className="mainsection__formdiv__form__row__item__label">मिसिल प्रकार</label>
-              <select onChange={handleChange} name="misil_type_id" className='mainsection__formdiv__form__row__item__input' value={formData.misil_type_id}>
-                <option value="0">मिसिल प्रकार छान्नुहोस्</option>
-                {misilTypes ? misilTypes.map(
-                  (item, i) => {
-                    return <option key={i} value={item.id}>{item.misil_type_name}</option>
-                  }) : null}
-              </select>
-            </div>
-            <div className="mainsection__formdiv__form__row__item">
-              <label className="mainsection__formdiv__form__row__item__label">फाँट</label>
-              <input type="text" onChange={handleChange} name="fant" className='mainsection__formdiv__form__row__item__input' required value={formData.fant} />
-            </div>
-            <div className="mainsection__formdiv__form__row__item">
-              <label className="mainsection__formdiv__form__row__item__label">कैफियत</label>
-              <input type="text" onChange={handleChange} name="remarks" className='mainsection__formdiv__form__row__item__input' required value={formData.remarks} />
-            </div>
-            <div className="mainsection__formdiv__form__row__item">
-              <label className="mainsection__formdiv__form__row__item__label">कृयाकलाप</label>
-              <input type="submit" value="सेभ" className='mainsection__formdiv__form__row__item__button' />
-            </div>
-
+            <form onSubmit={handlesubmit}>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label htmlFor="aaba_id" className="form-label">आ.व.</label>
+                  <select onChange={handleChange} name="aaba_id" className='form-control' value={defaaba}>
+                    <option value="0">आ.व.</option>
+                    {aaba ? aaba.map((item, i) => {
+                      return <option key={i} value={item.id}>{item.aaba_name}</option>
+                    }) : null}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="misil_type_id" className="form-label">मिसिल प्रकार</label>
+                  <select onChange={handleChange} name="misil_type_id" className='form-control' value={formData.misil_type_id}>
+                    <option value="0">मिसिल प्रकार छान्नुहोस्</option>
+                    {misilTypes ? misilTypes.map(
+                      (item, i) => {
+                        return <option key={i} value={item.id}>{item.misil_type_name}</option>
+                      }) : null}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="fant" className="form-label">फाँट</label>
+                  <input type="text" onChange={handleChange} name="fant" className='form-control' required value={formData.fant} />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">कैफियत</label>
+                  <input type="text" onChange={handleChange} name="remarks" className='form-control' required value={formData.remarks} />
+                </div>      
+              </div>
+              <div className="modal-footer">                
+                <input type="submit" value="सेभ गर्नुहोस्" className='btn btn-primary' />
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">रद्द गर्नुहोस्</button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
+      </div>
+      {/* modal form ends */}
+      <div className="mainsection__formdiv">
+
       </div>
       <table className='listvoucher__list__table'>
         <thead>
@@ -167,7 +199,7 @@ const ListPoka = () => {
               <td>{item.misilcount}</td>
               <td>{item.remarks}</td>
               <td>{item.nepname}</td>
-              <td><button className='mainsection__formdiv__form__row__item__buttonview' onClick={() => navigate("/misil/viewpoka",{state:{id:item.id}})}>हेर्नुहोस्</button><button className='mainsection__formdiv__form__row__item__buttonedit' onClick={() => {
+              <td><button className='mainsection__formdiv__form__row__item__buttonview' onClick={() => navigate("/misil/viewpoka", { state: { id: item.id } })}>हेर्नुहोस्</button><button className='mainsection__formdiv__form__row__item__buttonedit' onClick={() => {
                 EditPoka(item.id);
               }}>संशोधन</button></td>
               <td></td>

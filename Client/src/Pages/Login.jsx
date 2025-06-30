@@ -95,7 +95,8 @@ const Login = () => {
     });
     formData.aabaid=defaaba;
   }, [aabas]);
-  return (
+  return (  
+
     <section id="login" className="login">
       <MainHeaderComponent headerText="मालपोत कार्यालय व्यवस्थापन प्रणाली"/>
       <div className="login__form-outer">
@@ -107,7 +108,7 @@ const Login = () => {
               type="text"
               name="username"
               autoComplete="off"
-              placeholder="Username"
+              placeholder="प्रयोगकर्ताको नाम"
               required
               onChange={handleChange}
             />
@@ -118,7 +119,7 @@ const Login = () => {
               type="password"
               name="password"
               autoComplete="off"
-              placeholder="password"
+              placeholder="पासवर्ड"
               required
               onChange={handleChange}
             />

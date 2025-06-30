@@ -8,7 +8,7 @@ const MainHeaderComponent = (props) => {
     <div className="wrapper no-print">
       <h2>{headerText}</h2>     
       <h3>{loggedUser?loggedUser.office_name:null}</h3>  
-      <h4>({loggedUser?loggedUser.state_name:null})</h4>  
+      {loggedUser && <h4>({loggedUser.state_name})</h4>}
     </div>
   );
 };
