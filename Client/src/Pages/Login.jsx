@@ -76,9 +76,11 @@ const Login = () => {
   };
 
   const loadDefaaba=()=>{
+    if(aabas){
     aabas.forEach((item) => {
       item.is_current == 1 ? setdefaaba(item.id): null;
     });    
+  }
   }; 
   
 
@@ -90,13 +92,14 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
+    if(aabas){
     aabas.forEach((item) => {
       item.is_current == 1 ? setdefaaba(item.id) : null;
     });
+  }
     formData.aabaid=defaaba;
   }, [aabas]);
   return (  
-
     <section id="login" className="login">
       <MainHeaderComponent headerText="मालपोत कार्यालय व्यवस्थापन प्रणाली"/>
       <div className="login__form-outer">

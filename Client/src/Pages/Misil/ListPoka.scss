@@ -1,26 +1,27 @@
 .mainsection {
+  display: flex;
+  flex-direction: column;
+
+  &__formdiv {
     display: flex;
     flex-direction: column;
-  
-    &__formdiv {
+
+    &__form {
       display: flex;
-      flex-direction: column;
-  
-      &__form {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-        &__row{
+      justify-content: space-between;
+      margin-bottom: 10px;
+
+      &__row {
         display: flex;
         justify-content: space-around;
         gap: 10px;
-        
+
         &__item {
           display: flex;
           flex-direction: column;
           width: 200px;
           justify-content: space-around;
-  
+
           &__button {
             margin-top: 20px;
             padding: 10px 20px;
@@ -29,7 +30,8 @@
             cursor: pointer;
             text-align: center;
           }
-          &__buttonedit{            
+
+          &__buttonedit {
             padding: 2.5px 10px;
             background-color: var(--yellow-theme-main-color);
             border-radius: 15px;
@@ -37,18 +39,21 @@
             text-align: center;
             color: black;
           }
-          &__buttonview{            
+
+          &__buttonview {
             padding: 2.5px 10px;
-            background-color:skyblue;
+            background-color: skyblue;
             border-radius: 15px;
             cursor: pointer;
             text-align: center;
             color: black;
           }
+
           &__label {
             color: var(--yellow-theme-sub-text-color);
             font-size: 16px;
           }
+
           &__input {
             padding: 5px 40px 5px 15px;
             border: 1px solid var(--yellow-theme-sub-text-color) !important;
@@ -60,23 +65,32 @@
             cursor: pointer;
           }
         }
-    }
-  
-  
       }
-  
+
+
     }
-  
-    &__calendardiv {
-      display: flex;      
-      justify-content: space-between;
-      &__datediv{
-        display: flex;
-        flex-direction: column;
-      }
+
+  }
+
+  &__calendardiv {
+    display: flex;
+    justify-content: space-between;
+
+    &__datediv {
+      display: flex;
+      flex-direction: column;
     }
   }
-  
-  .calendar{
-    width: 500px;
-  }
+}
+
+.calendar {
+  width: 500px;
+}
+
+.form-label {
+  font-size: 2rem;
+}
+
+.form-control {
+  font-size: 2rem;
+}
