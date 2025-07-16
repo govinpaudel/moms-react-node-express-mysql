@@ -51,11 +51,11 @@ router.post('/VoucherMonthly', (req, res) => {
     let keys = user.month_id
     let months = keys.map((it) => { return `'${it}'` })
     console.log(months);
-    let query1 = `select a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,c.acc_sirshak_name,sum(amount) amount from voucher a\
+    let query1 = `select a.aaba_id,a.office_id,c.id as sirshak_id,c.acc_sirshak_name,sum(amount) amount from voucher a\
     inner join voucher_sirshak b on a.sirshak_id = b.id\
     inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
-    where aaba_id=${user.aaba_id} and office_id=${user.office_id} and month_id in (${months}) and sirshak_id=2\
-    group by aaba_id,office_id,sirshak_id`;
+    where aaba_id=${user.aaba_id} and office_id=${user.office_id} and month_id in (${months}) and c.id=2\
+    group by aaba_id,office_id,c.id`;
     let query2 = `select a.aaba_id,a.office_id,sum(a.amount) as amount,sum(a.amount*(e.sangh)/100) as sangh,sum(a.amount*(e.sanchitkosh)/100) as sanchitkosh,sum(a.amount*(e.pardesh)/100) as pardesh,sum(a.amount*(e.isthaniye)/100) as isthaniye from voucher a
     inner join voucher_sirshak b on a.sirshak_id = b.id
     inner join voucher_acc_sirshak c on c.id=b.acc_sirshak_id
@@ -63,14 +63,14 @@ router.post('/VoucherMonthly', (req, res) => {
     inner join voucher_badhfadh e on e.aaba_id=a.aaba_id and e.acc_sirshak_id=c.id and e.state_id=d.state_id
     where a.aaba_id=${user.aaba_id} and a.office_id=${user.office_id} and a.month_id in (${months})
     group by a.aaba_id,a.office_id`;
-    let query3 = `select a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,f.acc_sirshak_name,a.napa_id,e.napa_name,sum(a.amount) as amount,sum(a.amount*(d.sanchitkosh)/100) as sanchitkosh,sum(a.amount*(d.pardesh)/100) as pardesh,sum(a.amount*(d.isthaniye)/100) as isthaniye from voucher a\
+    let query3 = `select a.aaba_id,a.office_id,f.id as sirshak_id,f.acc_sirshak_name,a.napa_id,e.napa_name,sum(a.amount) as amount,sum(a.amount*(d.sanchitkosh)/100) as sanchitkosh,sum(a.amount*(d.pardesh)/100) as pardesh,sum(a.amount*(d.isthaniye)/100) as isthaniye from voucher a\
     inner join voucher_sirshak b on a.sirshak_id = b.id\
     inner join voucher_acc_sirshak f on f.id=b.acc_sirshak_id\
     inner join offices c on a.office_id=c.id\
     inner join voucher_badhfadh d on a.aaba_id=d.aaba_id and f.id=d.acc_sirshak_id and c.state_id=d.state_id\
     inner join voucher_napa e on a.napa_id=e.id and a.office_id=e.office_id\
-    where a.aaba_id=${user.aaba_id} and a.office_id=${user.office_id} and a.month_id in(${months}) and a.sirshak_id=2
-    group by a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,f.acc_sirshak_name,a.napa_id,e.napa_name     order by a.napa_id,e.napa_name`;
+    where a.aaba_id=${user.aaba_id} and a.office_id=${user.office_id} and a.month_id in(${months}) and f.id=2\
+    group by a.aaba_id,a.office_id,f.id,f.acc_sirshak_name,a.napa_id,e.napa_name  order by a.napa_id,e.napa_name`;
     let query4 = `select a.aaba_id,a.office_id,f.id,f.acc_sirshak_name,sum(a.amount) as amount,sum(a.amount*(d.sanchitkosh)/100) as sanchitkosh,sum(a.amount*(d.pardesh)/100) as pardesh,sum(a.amount*(d.isthaniye)/100) as isthaniye,sum(a.amount*(d.sangh)/100) as sangh from voucher a\
     inner join voucher_sirshak b on a.sirshak_id=b.id\
     inner join voucher_acc_sirshak f on f.id=b.acc_sirshak_id\

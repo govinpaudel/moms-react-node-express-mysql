@@ -113,7 +113,7 @@ useEffect(() => {
         </thead>
         <tbody>
           <tr>
-            <td>{regi[0] ? regi[0].sirshak_name : null}</td>
+            <td>{regi[0] ? regi[0].acc_sirshak_name : null}</td>
             <td>{regi[0] ? Math.round(regi[0].amount,2): null}</td>
           </tr>
           <tr>
