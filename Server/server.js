@@ -20,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(requestIp.mw());
+app.set('trust proxy', true);
 // lets handle request coming from frontend
 app.use('/api/auth', authRoute);
 app.use('/api/voucher',voucherRoute);

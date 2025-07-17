@@ -21,12 +21,20 @@ router.post('/register', async (req, res, next) => {
                 else {
                     const hash = bcrypt.hashSync(data.password, 10);
                     const query = "insert into users (username,email,password,nepname,engname,contactno,office_id,role,isactive) values(?,?,?,?,?,?,?,?,?)";
-                    connection.query(query, [data.username,data.email, hash, data.nepname, data.engname, data.contactno, data.officeid, "2", "0"], (err, result) => {
+                    connection.query(query, [data.username, data.email, hash, data.nepname, data.engname, data.contactno, data.officeid, "2", "0"], (err, result) => {
                         if (err) {
                             console.log(err);
                         }
                         else {
-                            return res.status(200).json({ status: true, message: `Userid ${data.username} is registered successfully.` })
+                            let query = 'insert into user_modules(user_id,office_id,module_id,isactive)\
+                            (SELECT DISTINCT users.id as user_id,users.office_id,modules.id as module_id,\
+	                        1 as isactive FROM users,modules where users.id=?);'
+                            connection.query(query, [result.insertId], (err, result) => {
+                                if (err) { console.log(err) }
+                                else {
+                                    return res.status(200).json({ status: true, message: `Userid ${data.username} is registered successfully.` })
+                                }
+                            })
                         }
                     });
                 }
@@ -74,7 +82,7 @@ router.post('/login', async (req, res, next) => {
                     return res.status(401).json({ status: 401, message: `प्रयोगकर्ता वा पासवर्ड मिलेन ।` })
                 }
             }
-            else (                
+            else (
                 next(err)
             )
         } catch (err) {
@@ -99,7 +107,7 @@ router.post('/changepassword', (req, res) => {
                     const uquery = "update users set password=? where id=?";
                     connection.query(uquery, [hashnewpassword, user.user_id], (err, results) => {
                         if (!err) {
-                            return res.status(200).json({ status:true, message: "पासवर्ड परिवर्तन सफल भयो ।" });
+                            return res.status(200).json({ status: true, message: "पासवर्ड परिवर्तन सफल भयो ।" });
                         }
                         else {
                             return res.status(500).json(err);
@@ -117,7 +125,7 @@ router.post('/changepassword', (req, res) => {
 })
 router.post('/refresh-token', async (req, res, next) => {
     try {
-        const { oldrefreshToken } = req.body        
+        const { oldrefreshToken } = req.body
         if (!oldrefreshToken) throw createError.BadRequest()
         const userid = await verifyRefreshtoken(oldrefreshToken)
         const accessToken = await signAccessToken(userid)
@@ -147,23 +155,23 @@ router.get('/getAllAabas', async (req, res, next) => {
         })
     } catch (err) {
         next(err)
-    }    
+    }
 })
 router.post('/getSidebarlist', async (req, res, next) => {
-    let user=req.body;
+    let user = req.body;
     console.log(user);
     let query = "select a.user_id,b.module,b.name,b.path from user_modules a\
     inner join modules b\
     on a.module_id=b.id\
     where a.user_id=? and b.module=? order by b.module,b.display_order";
     try {
-        connection.query(query,[user.user_id,user.module], (err, result) => {
+        connection.query(query, [user.user_id, user.module], (err, result) => {
             if (err) next(err.message)
             res.send({ data: result })
         })
     } catch (err) {
         next(err)
-    }    
+    }
 })
 
 module.exports = router

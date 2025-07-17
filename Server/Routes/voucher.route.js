@@ -4,7 +4,7 @@ const router = express.Router();
 const date = require('date-and-time')
 router.get('/', (req, res, next) => { res.send("Hello from voucher Route page") })
 
-router.post('/Monthlist', (req, res) => {
+router.post('/MonthlistByAaba', (req, res) => {
     let user = req.body;
     let query = "select DISTINCT a.month_id as mid,b.month_name as mname,b.month_order from voucher a\
     inner join voucher_month b on a.month_id=b.id\
@@ -18,12 +18,17 @@ router.post('/Monthlist', (req, res) => {
         })
     })
 })
-router.post('/Fantlist', (req, res) => {
+router.post('/FantlistByAabaMonth', (req, res) => {
     let user = req.body;
-    let query = "select DISTINCT a.fant_id as fid,b.fant_name as fname,b.display_order from voucher a\
+    console.log(user);
+    let keys = user.month_id
+    let months = keys.map((it) => { return `'${it}'` })
+    console.log(months);
+    let query = `select DISTINCT a.fant_id as fid,b.fant_name as fname,b.display_order from voucher a\
     inner join voucher_fant b on a.fant_id=b.id\
-    where a.office_id=? and aaba_id=?\
-    order by b.display_order"
+    where a.office_id=? and aaba_id=? and month_id in (${months})\
+    order by b.display_order`;
+    console.log(query);
     connection.query(query, [user.office_id, user.aaba_id], (err, fants) => {
         if (err) { return; }
         return res.status(200).json({
@@ -32,11 +37,34 @@ router.post('/Fantlist', (req, res) => {
         })
     })
 });
+router.post('/UserlistByAabaMonthFant', (req, res) => {
+    let user = req.body;
+    console.log('aayeko data',user);
+    let keys = user.month_id
+    let months = keys.map((it) => { return `'${it}'` })
+    console.log('months',months);
+    let keys1 = user.fant_id
+    let fants = keys1.map((it) => { return `'${it}'` })
+    console.log('fants',fants);
+    let query = `select DISTINCT a.created_by_user_id as uid,b.nepname as uname from voucher a\
+    inner join users b on a.created_by_user_id=b.id\
+    where a.office_id=? and a.aaba_id=? and a.month_id in (${months}) and a.fant_id in (${fants}) order by uid`
+    console.log(query);
+    connection.query(query, [user.office_id, user.aaba_id], (err, users) => {
+        if (err) { return; }
+        return res.status(200).json({
+            message: "डाटा सफलतापुर्वक प्राप्त भयो",
+            users: users
+        })
+    })
+});
 router.post('/Userlist', (req, res) => {
     let user = req.body;
-    let query = "select DISTINCT a.created_by_user_id as uid,b.nepname as uname from voucher a\
+    console.log('aayeko data',user);   
+    let query = `select DISTINCT a.created_by_user_id as uid,b.nepname as uname from voucher a\
     inner join users b on a.created_by_user_id=b.id\
-    where a.office_id=? and aaba_id=? order by uid"
+    where a.office_id=? and a.aaba_id=? order by uid`
+    console.log(query);
     connection.query(query, [user.office_id, user.aaba_id], (err, users) => {
         if (err) { return; }
         return res.status(200).json({
@@ -121,50 +149,14 @@ router.post('/VoucherMonthly', (req, res) => {
     })
 
 })
-router.post('/VoucherAccount', (req, res) => {
-    let user = req.body;
-    console.log(user);
-    let keys = user.month_id
-    let months = keys.map((it) => { return `'${it}'` })
-    console.log(months);
-    if(months.length>0){
-    let query1 = `select a.aaba_id,a.office_id,c.id,c.acc_sirshak_name,sum(amount) amount from voucher a\
-    inner join voucher_sirshak b on a.sirshak_id = b.id\
-    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
-    where aaba_id=${user.aaba_id} and office_id=${user.office_id} and month_id in (${months})\
-    group by aaba_id,office_id,id order by id`;
-    connection.query(query1, (err, data) => {
-        if (err) {
-            console.log(err);
-            return;
-        }
-        return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data })
-    })
-}
-else{
-let query1 = `select a.aaba_id,a.office_id,c.id,c.acc_sirshak_name,sum(amount) amount from voucher a\
-    inner join voucher_sirshak b on a.sirshak_id = b.id\
-    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
-    where aaba_id=${user.aaba_id} and office_id=${user.office_id}\
-    group by aaba_id,office_id,id order by id`;
-    connection.query(query1, (err, data) => {
-        if (err) {
-            console.log(err);
-            return;
-        }
-        return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data })
-    })
-}   
-
-})
 router.post('/VoucherByDate', (req, res) => {
     let user = req.body;
     console.log(user);
-    let keys = user.fant_id
-    let fants = keys.map((it) => { return `'${it}'` })
-    console.log(fants);
-    console.log(fants.length);
-    if (fants.length == 0) {
+    let keys = user.user_id
+    let users = keys.map((it) => { return `'${it}'` })
+    console.log(users);
+    console.log(users.length);
+    if (users.length == 0) {
         let query = "select a.id,a.month_id,a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,e.nepname,a.deposited_by from voucher a\
     inner join voucher_sirshak b on a.sirshak_id=b.id\
     inner join voucher_fant c on a.fant_id=c.id\
@@ -183,12 +175,12 @@ router.post('/VoucherByDate', (req, res) => {
 
     }
     else {
-        let query = `select a.id,a.ndate_voucher,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,e.nepname,a.deposited_by from voucher a\
+        let query = `select a.id,a.month_id,a.ndate_voucher,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,e.nepname,a.deposited_by from voucher a\
         inner join voucher_sirshak b on a.sirshak_id=b.id\
         inner join voucher_fant c on a.fant_id=c.id\
         inner join voucher_napa d on a.napa_id=d.id and a.office_id=d.office_id\
         inner join users e on e.id=a.created_by_user_id\    
-        where a.office_id=? and a.fant_id in (${fants}) and  a.edate_transaction >=? and a.edate_transaction<=?\
+        where a.office_id=? and a.created_by_user_id in (${users}) and  a.edate_transaction >=? and a.edate_transaction<=?\
         order by edate_transaction,ndate_transaction,voucherno`;
         connection.query(query, [user.office_id, user.start_date, user.end_date], (err, data) => {
             if (err) {
@@ -200,134 +192,24 @@ router.post('/VoucherByDate', (req, res) => {
         )
     }
 })
-router.post('/VoucherSumByDate', (req, res) => {
-    let user = req.body;
-    console.log(user);
-    let keys = user.fant_id
-    let fants = keys.map((it) => { return `'${it}'` })
-    console.log(fants);
-    console.log(fants.length);
-    if (fants.length == 0) {
-        console.log("no fant selected");
-        let query = "(select a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,c.acc_sirshak_name,sum(a.amount) as amount from voucher a\
-    inner join voucher_sirshak b on a.sirshak_id=b.id\
-    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
-    where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
-    group by a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name)\
-    UNION ALL\
-    (select a.edate_transaction,a.ndate_transaction,99 as sirshak_id,CONCAT(a.ndate_transaction,' को जम्मा') as sirshak_name,'' as acc_sirshak_name,sum(a.amount) as amount from voucher a\
-    inner join voucher_sirshak b on a.sirshak_id=b.id\
-    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
-    where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
-    group by a.edate_transaction,a.ndate_transaction)\
-    order by edate_transaction";
-        connection.query(query, [user.office_id, user.start_date, user.end_date, user.office_id, user.start_date, user.end_date], (err, data) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data });
-        }
-        )
-
-    }
-    else {
-        console.log("fants selected");
-        let query = `(select a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,c.acc_sirshak_name,sum(a.amount) as amount from voucher a\
-        inner join voucher_sirshak b on a.sirshak_id=b.id\
-        inner join voucher_acc_sirshak c on c.id=b.acc_sirshak_id\
-        where a.fant_id in (${fants}) and a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
-        group by a.edate_transaction,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,c.acc_sirshak_name)\
-        UNION ALL\
-        (select a.edate_transaction,a.ndate_transaction,99 as sirshak_id,CONCAT(a.ndate_transaction,' को जम्मा') as sirshak_name,'' as acc_sirshak_name,sum(a.amount) as amount from voucher a\
-        inner join voucher_sirshak b on a.sirshak_id=b.id\
-        where a.fant_id in (${fants}) and a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
-        group by a.edate_transaction,a.ndate_transaction)\
-        order by edate_transaction`;
-        connection.query(query, [user.office_id, user.start_date, user.end_date, user.office_id, user.start_date, user.end_date], (err, data) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data });
-        }
-        )
-    }
-})
-router.post('/VoucherSumByDateUser', (req, res) => {
-    let user = req.body;
-    console.log(user);
-    let keys = user.user_id
-    let users = keys.map((it) => { return `'${it}'` })
-    console.log(users);
-    console.log(users.length);
-    if (users.length == 0) {
-    console.log("no user selected");
-    let query = "(select a.edate_transaction,a.ndate_transaction,a.created_by_user_id,d.nepname,a.sirshak_id,b.sirshak_name,c.acc_sirshak_name,sum(a.amount) as amount from voucher a\
-    inner join voucher_sirshak b on a.sirshak_id=b.id\
-    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
-	inner join users d on a.created_by_user_id=d.id\
-    where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
-    group by a.edate_transaction,a.ndate_transaction,a.created_by_user_id,a.sirshak_id,b.sirshak_name)\
-    UNION ALL\
-    (select a.edate_transaction,a.ndate_transaction,a.created_by_user_id,d.nepname,99 as sirshak_id,CONCAT(a.ndate_transaction,' ',d.nepname,'  को जम्मा') as sirshak_name,'' as acc_sirshak_name,sum(a.amount) as amount from voucher a\
-    inner join voucher_sirshak b on a.sirshak_id=b.id\
-    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
-	inner join users d on a.created_by_user_id=d.id\
-    where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
-    group by a.edate_transaction,a.ndate_transaction,a.created_by_user_id)\
-    order by edate_transaction,created_by_user_id";
-        connection.query(query, [user.office_id, user.start_date, user.end_date, user.office_id, user.start_date, user.end_date], (err, data) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data });
-        }
-        )
-
-    }
-    else {
-        console.log("users selected");
-        let query = `(select a.edate_transaction,a.ndate_transaction,a.created_by_user_id,d.nepname,a.sirshak_id,b.sirshak_name,c.acc_sirshak_name,sum(a.amount) as amount from voucher a\
-    inner join voucher_sirshak b on a.sirshak_id=b.id\
-    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
-	inner join users d on a.created_by_user_id=d.id\
-    where a.created_by_user_id in (${users}) and a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
-    group by a.edate_transaction,a.ndate_transaction,a.created_by_user_id,a.sirshak_id,b.sirshak_name)\
-    UNION ALL\
-    (select a.edate_transaction,a.ndate_transaction,a.created_by_user_id,d.nepname,99 as sirshak_id,CONCAT(a.ndate_transaction,' ',d.nepname,'  को जम्मा') as sirshak_name,'' as acc_sirshak_name,sum(a.amount) as amount from voucher a\
-    inner join voucher_sirshak b on a.sirshak_id=b.id\
-    inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id\
-	inner join users d on a.created_by_user_id=d.id\
-    where  a.created_by_user_id in (${users}) and a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?\
-    group by a.edate_transaction,a.ndate_transaction,a.created_by_user_id)\
-    order by edate_transaction,created_by_user_id`;
-        connection.query(query, [user.office_id, user.start_date, user.end_date, user.office_id, user.start_date, user.end_date], (err, data) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data });
-        }
-        )
-    }
-})
 router.post('/VoucherFant', (req, res) => {
     let user = req.body;
-    console.log(user);
+    console.log('maindata',user);
     let montharray = user.month_id
     let months = montharray.map((it) => { return `'${it}'` })
-    console.log(months);
+    console.log('months',months);
     let fantarray = user.fant_id
     let fants = fantarray.map((it) => { return `'${it}'` })
-    console.log(fants);
+    console.log('fants',fants);
+    let userarray = user.user_id
+    let users = userarray.map((it) => { return `'${it}'` })
+    console.log('users',users);
     let query1 = `select a.aaba_id,a.office_id,a.month_id,d.month_name,d.month_order,a.fant_id,c.fant_name,a.sirshak_id,b.sirshak_name,e.acc_sirshak_name,b.display_order,sum(a.amount)as amount from voucher a \
                 inner join voucher_sirshak b on a.sirshak_id=b.id\                
                 inner join voucher_fant c on a.fant_id=c.id\
                 inner join voucher_month d on a.month_id=d.id\
                 inner join voucher_acc_sirshak e on e.id=b.acc_sirshak_id\
-                where a.aaba_id=? and a.office_id=? and a.fant_id in (${fants}) and month_id in(${months})\
+                where a.aaba_id=? and a.office_id=? and a.fant_id in (${fants}) and a.month_id in(${months}) and a.created_by_user_id in (${users})\
                 group by a.aaba_id,a.office_id,a.month_id,a.fant_id,c.fant_name,a.sirshak_id order by d.month_order,a.fant_id,b.display_order`;
     connection.query(query1, [user.aaba_id, user.office_id], (err, data) => {
         if (err) {
@@ -337,28 +219,6 @@ router.post('/VoucherFant', (req, res) => {
         return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data })
     })
 })
-router.post('/VoucherFantAnnual', (req, res) => {
-    let user = req.body;
-    console.log(user);   
-    let fantarray = user.fant_id
-    let fants = fantarray.map((it) => { return `'${it}'` })
-    console.log(fants);
-    let query1 = `select a.aaba_id,a.office_id,a.fant_id,c.fant_name,a.sirshak_id,b.sirshak_name,e.acc_sirshak_name,b.display_order,sum(a.amount)as amount from voucher a \
-                inner join voucher_sirshak b on a.sirshak_id=b.id\                
-                inner join voucher_fant c on a.fant_id=c.id\
-                inner join voucher_month d on a.month_id=d.id\
-                inner join voucher_acc_sirshak e on e.id=b.acc_sirshak_id\
-                where a.aaba_id=? and a.office_id=? and a.fant_id in (${fants})\
-                group by a.aaba_id,a.office_id,a.fant_id,c.fant_name,a.sirshak_id order by a.fant_id,b.display_order`;
-    connection.query(query1, [user.aaba_id, user.office_id], (err, data) => {
-        if (err) {
-            console.log(err);
-            return;
-        }
-        return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data })
-    })
-})
-
 router.post('/getVoucherMaster', (req, res) => {
     let user = req.body;
     console.log(user);
@@ -519,7 +379,5 @@ router.post('/deleteVoucherById', (req, res) => {
 
     })
 })
-
-
 
 module.exports = router;

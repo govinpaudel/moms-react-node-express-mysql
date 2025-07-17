@@ -22,7 +22,7 @@ const VoucherMonthly = () => {
     console.log("getting monthlist",data)
     const response = await axios({
       method: "post",
-      url: Url + "Monthlist",
+      url: Url + "MonthlistByAaba",
       data: data,
     });
     console.log(response.data);
@@ -34,7 +34,6 @@ useEffect(() => {
   loadmonth();
   document.title = "MOMS | महिना अनुसारको विवरण";
 }, [])
-  
 
   const genReport = async () => {
     setregi([{}]); 
@@ -82,13 +81,13 @@ useEffect(() => {
         headerText="को मासिक प्रतिवेदन"
         icon={<BsInfoCircleFill size={40} />}
       />
-      <div className="Vouchermonthly__month">
+      <div className="Vouchermonthly__monthlist">
         {mdata.map((item, i) => {
           return (
-            <div className="Vouchermonthly__month__item" key={i}>
+            <div className="Vouchermonthly__monthlist__item" key={i}>
               <h4>{item.mid}</h4>
               <input
-                className="Vouchermonthly__month__item__box"
+                className="Vouchermonthly__monthlist__item__box"
                 type="checkbox"
                 name="month"
                 value={item.mid}
@@ -99,7 +98,7 @@ useEffect(() => {
           );
         })}
         <div className="Vouchermonthly__month__button no-print">
-          <button onClick={genReport} className="Vouchermonthly__month__button__button">
+          <button onClick={genReport} className="Vouchermonthly__monthlist__button__button">
             रीपोर्ट हेर्नुहोस्
           </button>
         </div>

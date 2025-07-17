@@ -9,46 +9,71 @@ const VoucherFant = () => {
   const Url = import.meta.env.VITE_API_URL + "voucher/";
   const [mselected, setmselected] = useState([]);
   const [fselected, setfselected] = useState([]);
+  const [uselected, setuselected] = useState([]);
   const [summary, setsummary] = useState([{}]);
   const [mdata, setmdata] = useState(0);
   const [fdata, setfdata] = useState(0);
+  const [udata, setudata] = useState(0);
   const [total, settotal] = useState(0);
-  const loadmonths = async () => {
+
+  const loadmonths = async () => {    
     const data = {
       office_id: loggedUser.office_id,
-      aaba_id: loggedUser.aabaid,
-      month_id: mselected,
-      fant_id: fselected,
+      aaba_id: loggedUser.aabaid      
     };
     console.log("getting monthlist", data)
     const response = await axios({
       method: "post",
-      url: Url + "Monthlist",
+      url: Url + "MonthlistByAaba",
       data: data,
     });
     console.log(response.data);
     setmdata(response.data.months);
   }
   const loadfants = async () => {
+    setfdata([]);
+    setudata([]);
+    if(mselected.length>0){   
     const data = {
       office_id: loggedUser.office_id,
       aaba_id: loggedUser.aabaid,
+      month_id: mselected
     };
     console.log("getting fantlist", data)
     const response = await axios({
       method: "post",
-      url: Url + "Fantlist",
+      url: Url + "FantlistByAabaMonth",
       data: data,
     });
     console.log(response.data);
     setfdata(response.data.fants);
   }
+  }
+
+  const loadusers = async () => {
+    setudata([]);
+    if(fselected.length>0 || fselected.length>0){ 
+    const data = {
+      office_id: loggedUser.office_id,
+      aaba_id: loggedUser.aabaid,
+      month_id: mselected,
+      fant_id:fselected
+    };
+    console.log("getting userlist", data)
+    const response = await axios({
+      method: "post",
+      url: Url + "UserlistByAabaMonthFant",
+      data: data,
+    });
+    console.log(response.data);
+    setudata(response.data.users);
+  }
+  }
 
   useEffect(() => {
-    loadmonths();
-    loadfants();
+    loadmonths();    
     document.title = "MOMS | फाँट अनुसारको विवरण";
-  }, [])
+  }, []) 
 
 
   const genReport = async () => {
@@ -60,13 +85,18 @@ const VoucherFant = () => {
     }
     if (fselected.length == 0) {
       toast.warning("कृपया फाँट छनौट गर्नुहोस् ।");
+      return;
+    }
+    if (uselected.length == 0) {
+      toast.warning("कृपया प्रयोगकर्ता छनौट गर्नुहोस् ।");
       return
     }
     const data = {
       office_id: loggedUser.office_id,
       aaba_id: loggedUser.aabaid,
       month_id: mselected,
-      fant_id: fselected
+      fant_id: fselected,
+      user_id:uselected
     };
     console.log("data sent", data);
     const response = await axios({
@@ -75,8 +105,7 @@ const VoucherFant = () => {
       data: data,
     });
     console.log(response.data.data);
-    setsummary(response.data.data);
-    
+    setsummary(response.data.data);    
   };
 
   const dototal =()=>{
@@ -87,6 +116,7 @@ const VoucherFant = () => {
     })
     settotal(x);
   }
+
   useEffect(() => {    
   dototal();   
   }, [summary])
@@ -103,6 +133,8 @@ const VoucherFant = () => {
       setmselected(x);
     }
     console.log("Month", mselected);
+    loadfants();
+    loadusers();
   }
   
   function handlefant(e) {
@@ -115,22 +147,38 @@ const VoucherFant = () => {
       x.splice(index, 1);
       setfselected(x);
     }
+    console.log("Fant", fselected);
+    loadusers();
+  }
+   function handleuser(e) {
+    const x = uselected;
+    if (e.target.checked) {
+      x.push(e.target.value);
+      setuselected(x);
+    } else {
+      const index = uselected.indexOf(e.target.value);
+      x.splice(index, 1);
+      setuselected(x);
+    }
   }
 
+
+
   return (
-    <section id="Vouchermonthly" className="Vouchermonthly">
+    <section id="Voucherfant" className="Voucherfant">
        <PageHeaderComponent
        officeText={`(${loggedUser.office_name})`}
-        headerText="को फाँट अनुसारको प्रतिवेदन"
+        headerText="को फाँट र प्रयोगकर्ता अनुसारको प्रतिवेदन"
         icon={<BsInfoCircleFill size={40} />}
       />
-      <div className="Vouchermonthly__month">
+      <div className="Voucherfant__month">
+        
         {mdata ? mdata.map((item, i) => {
           return (
-            <div className="Vouchermonthly__month__item" key={i}>
+            <div className="Voucherfant__month__item" key={i}>
               <h4>{item.mid}</h4>
               <input
-                className="Vouchermonthly__month__item__box"
+                className="Voucherfant__month__item__box"
                 type="checkbox"
                 name="month"
                 value={item.mid}
@@ -140,13 +188,14 @@ const VoucherFant = () => {
             </div>
           );
         }) : null}
+      
       </div>
-      <div className="Vouchermonthly__month">
+      <div className="Voucherfant__month">
         {fdata ? fdata.map((item, i) => {
           return (
-            <div className="Vouchermonthly__month__item" key={i}>
+            <div className="Voucherfant__month__item" key={i}>
               <input
-                className="Vouchermonthly__month__item__box"
+                className="Voucherfant__month__item__box"
                 type="checkbox"
                 name="fant"
                 value={item.fid}
@@ -156,8 +205,26 @@ const VoucherFant = () => {
             </div>
           );
         }) : null}
-        <div className="Vouchermonthly__month__button no-print">
-          <button onClick={genReport} className="Vouchermonthly__month__button__button">
+        
+      </div>
+      <div className="Voucherfant__month">
+        
+        {udata ? udata.map((item, i) => {
+          return (
+            <div className="Voucherfant__month__item" key={i}>
+              <input
+                className="Voucherfant__month__item__box"
+                type="checkbox"
+                name="user"
+                value={item.uid}
+                onClick={handleuser}
+              />
+              <h4>{item.uname}</h4>
+            </div>
+          );
+        }) : null}
+        <div className="Voucherfant__month__button no-print">
+          <button onClick={genReport} className="Voucherfant__month__button__button">
             रीपोर्ट हेर्नुहोस्
           </button>
         </div>

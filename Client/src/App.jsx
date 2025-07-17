@@ -8,11 +8,10 @@ import Addvoucher from './Pages/Voucher/Addvoucher';
 import MisilSearch from './Pages/Misil/MisilSearch';
 import Protected_route from './Utils/Protected_route';
 import Bargikaran from './Pages/Bargikaran/bargikaran';
-import VoucherSummary from './Pages/Voucher/VoucherSummary';
 import VoucherMonthly from './Pages/Voucher/VoucherMonthly';
 import VoucherFant from './Pages/Voucher/VoucherFant';
 import Editvoucher from './Pages/Voucher/Editvoucher';
-import Voucherdetails from './Pages/Voucher/Voucherdetails';
+import VoucherByDate from './Pages/Voucher/VoucherByDate';
 import ListPoka from './Pages/Misil/ListPoka';
 import Admin from './Pages/Admin/Admin';
 import ListUsers from './Pages/Admin/ListUsers';
@@ -25,16 +24,12 @@ import SuperAdmin from './Pages/SuperAdmin/SuperAdmin';
 import ListAdminUsers from './Pages/SuperAdmin/ListAdminUsers';
 import ListBadhfand from './Pages/SuperAdmin/ListBadhfand';
 import ListOffices from './Pages/SuperAdmin/ListOffices';
-import Voucherdaily from './Pages/Voucher/Voucherdaily';
 import AppHome from './Pages/AppHome';
 import VoucherHome from './Pages/Voucher/VoucherHome';
 import BargikaranHome from './Pages/Bargikaran/BargikaranHome';
 import BargikaranAdd from './Pages/Bargikaran/bargikaranAdd';
 import MisilHome from './Pages/Misil/MisilHome';
 import ViewPoka from './Pages/Misil/ViewPoka';
-import Voucheruser from './Pages/Voucher/VoucherUser';
-import VoucherFantAnnual from './Pages/Voucher/VoucherFantAnnual';
-import VoucherAccount from './Pages/Voucher/VoucherAccount';
 import CalcMainPage from './Pages/Calculator/CalcMainPage';
 
 function App() {
@@ -53,14 +48,10 @@ function App() {
               <Route path='listvoucher' element={<Listvoucher />} />
               <Route path='addvoucher' element={<Addvoucher />} />
               <Route path='editvoucher' element={<Editvoucher />} />
-              <Route path='vouchermonthly' element={<VoucherMonthly />} />
-              <Route path='voucherdaily' element={<Voucherdaily />} />
-              <Route path='voucherfant' element={<VoucherFant />} />
-              <Route path='voucheruser' element={<Voucheruser />} />
-              <Route path='vouchersummary' element={<VoucherSummary />} />
-              <Route path='voucherdetails' element={<Voucherdetails />} />
-              <Route path='voucherfantannual' element={<VoucherFantAnnual />} />
-              <Route path='voucheraccount' element={<VoucherAccount />} />
+              <Route path='vouchermonthly' element={<VoucherMonthly />} />              
+              <Route path='voucherfant' element={<VoucherFant />} />              
+              <Route path='voucherbydate' element={<VoucherByDate />} />        
+              
             </Route>
             {/* Voucher routes ends */}
             {/* bargikaran route starts */}

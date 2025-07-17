@@ -1,7 +1,15 @@
-.Voucherfant {
-  &__table{
-    text-align: left;
-  }
+.Voucherdetails{
+    &__dateform{
+        display: flex;    
+        justify-content: space-around;    
+        &__item{
+            align-self: center;
+            &__label{
+                font-size: 16px;
+                color: var(--yellow-theme-main-color);
+            }
+        }
+    }
     &__month {
     display: flex;
     justify-content: space-around;
@@ -21,51 +29,16 @@
         border-radius: 15px;
       }
     }
-
     &__item {
       text-align: center;
       &__box {
         width: 35px;
         color: var(--yellow-theme-main-color);
       }
-
-      h4 {
+    }
+    h4 {
         color: var(--yellow-theme-main-color);
         font-size: 14px;
       }
-    }
-  }
 }
-
-.reporttable {
-  text-align: left;
-}
-.line{
-  height: 10px;
-}
-
-
-@media print {
-  .Vouchermonthly {
-    &__table{
-      width: 100%;
-      text-align: left;
-      border-collapse: collapse;
-      font-family: kalimati;
-      th,
-      tr,
-      td {
-        text-align: left;
-        border: 1px solid var(--yellow-theme-nav-background-color);
-        color: var(--yellow-theme-nav-background-color);
-        font-size: 16px;
-        border: solid #000 !important;
-        border-width: 0 1px 1px 0 !important;
-      }
-    }
-    &__month{
-      display: flex;
-      flex-direction: column;
-    }
-  }
 }
