@@ -49,7 +49,7 @@ const Register = () => {
       });
       if (response.data.status == true) {
         toast.success(response.data.message);
-        navigate("/home");
+        navigate("/apphome");
       } else {
         toast.warning(response.data.message);
         console.log(response);

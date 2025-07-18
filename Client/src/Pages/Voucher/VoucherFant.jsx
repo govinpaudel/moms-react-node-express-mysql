@@ -171,8 +171,7 @@ const VoucherFant = () => {
         headerText="को फाँट र प्रयोगकर्ता अनुसारको प्रतिवेदन"
         icon={<BsInfoCircleFill size={40} />}
       />
-      <div className="Voucherfant__month">
-        
+      <div className="Voucherfant__month">        
         {mdata ? mdata.map((item, i) => {
           return (
             <div className="Voucherfant__month__item" key={i}>
@@ -223,6 +222,9 @@ const VoucherFant = () => {
             </div>
           );
         }) : null}
+        <div className="spacer">
+          
+        </div>
         <div className="Voucherfant__month__button no-print">
           <button onClick={genReport} className="Voucherfant__month__button__button">
             रीपोर्ट हेर्नुहोस्

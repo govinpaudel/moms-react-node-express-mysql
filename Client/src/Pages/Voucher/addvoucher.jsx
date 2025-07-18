@@ -60,16 +60,7 @@ console.log("NEPALI DATE AAYEKO",ndate);
     vdata.edate_transaction = adDate;    
   };
   
-  // useEffect(() => {  
-  //   const bsDate = adToBs(vdata.edate);
-	//   console.log("DATE CHANGE BHAYO",bsDate);
-  //   vdata.ndate=bsDate;
-  // }, [vdata.edate])
   
-
-
-
-
   const getVoucherMaster = async () => {
     const response = await axios({
       method: "post",

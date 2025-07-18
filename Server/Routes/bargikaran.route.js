@@ -1,43 +1,35 @@
 const express = require('express');
-const connection = require('../Libraries/connection')
+const pool = require('../Libraries/connection')
 const router = express.Router();
-
-
 router.get('/', (req, res, next) => { res.send("Hello from bargikaran route page") })
 
-router.get('/getAllOffices/:id', (req, res) => {
-    query = "select * from brg_ofc where office_id=?";
-    connection.query(query, req.params.id, (err, results) => {
-        if (!err) {
-            return res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
-        }
-        else {
-            console.log(err);
-            return res.status(500).json({ message: "डाटा प्राप्त हुन सकेन", data: err });
-        }
-    })
+router.get('/getAllOffices/:id', async (req, res, next) => {
+    try {
+        const query = "select * from brg_ofc where office_id=?";
+        const [results] = await pool.query(query, req.params.id);
+        return res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
+
+    } catch (error) {
+        next(error)
+    }
 })
-router.get('/getNapasByOfficeId/:officeid', (req, res) => {
-    query = "select * from brg_ofc_np where office_id=? order by napa_name";
-    connection.query(query, req.params.officeid, (err, results) => {
-        if (!err) {
-            return res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
-        }
-        else {
-            return res.statusCode(500).json({ message: "डाटा प्राप्त हुन सकेन", data: err });
-        }
-    })
+router.get('/getNapasByOfficeId/:officeid', async (req, res, next) => {
+    try {
+        query = "select * from brg_ofc_np where office_id=? order by napa_name";
+        const [results] = await pool.query(query, req.params.officeid);
+        return res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
+    } catch (error) {
+        next(error)
+    }
 })
-router.get('/getGabisasByOfficeId/:officeid/:napaid', (req, res) => {
-    query = "select * from brg_ofc_np_gb where office_id=? and napa_id=? order by gabisa_name";
-    connection.query(query, [req.params.officeid, req.params.napaid], (err, results) => {
-        if (!err) {
-            return res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
-        }
-        else {
-            return res.statusCode(500).json({ message: "डाटा प्राप्त हुन सकेन", data: err });
-        }
-    })
+router.get('/getGabisasByOfficeId/:officeid/:napaid', async (req, res, next) => {
+    try {
+        query = "select * from brg_ofc_np_gb where office_id=? and napa_id=? order by gabisa_name";
+        const [results] = await pool.query(query, [req.params.officeid, req.params.napaid]);
+        return res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
+    } catch (error) {
+        next(error)
+    }
 })
 
 router.get('/getWardsByGabisaId/:officeid/:napaid/:gabisaid', (req, res) => {
@@ -82,8 +74,8 @@ router.post('/savebargikaran', (req, res) => {
         if (err) {
             console.log(err);
         }
-        else {            
-            return res.status(200).json({ status:true,message: "डाटा सफलतापुर्वक सेभ भयो", data: results });
+        else {
+            return res.status(200).json({ status: true, message: "डाटा सफलतापुर्वक सेभ भयो", data: results });
         }
     })
 })

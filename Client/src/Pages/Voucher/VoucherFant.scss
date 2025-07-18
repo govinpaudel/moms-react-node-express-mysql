@@ -3,8 +3,7 @@
     text-align: left;
   }
     &__month {
-    display: flex;
-    justify-content: space-around;
+    display: flex;    
     padding: 10px;
     border: 1px solid var(--yellow-theme-main-color);
     border-radius: 5px;
@@ -43,7 +42,9 @@
 .line{
   height: 10px;
 }
-
+.spacer {
+  flex-grow: 1;
+}
 
 @media print {
   .Vouchermonthly {

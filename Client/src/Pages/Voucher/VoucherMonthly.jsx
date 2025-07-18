@@ -97,6 +97,9 @@ useEffect(() => {
             </div>
           );
         })}
+        <div className="spacer">
+          
+        </div>
         <div className="Vouchermonthly__month__button no-print">
           <button onClick={genReport} className="Vouchermonthly__monthlist__button__button">
             रीपोर्ट हेर्नुहोस्

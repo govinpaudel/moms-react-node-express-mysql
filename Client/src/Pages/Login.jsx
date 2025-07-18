@@ -38,7 +38,7 @@ const Login = () => {
         data: formData,
       });
       console.log("response",response);
-      if (response.data.status == 200) {
+      if (response.data.status == true) {
         let data1={...response.data.data,"aabaid":defaaba}   
         console.log("data1",data1)            
         sessionStorage.setItem("access_token", JSON.stringify(response.data.access_token));
@@ -60,12 +60,12 @@ const Login = () => {
     try {
       const response = await axios({
         method: "get",
-        url: Url + "getAllAabas",
-        
+        url: Url + "getAllAabas",        
       });
+      // console.log(response);
       setaabas(response.data.data);
     } catch (error) {
-      toast.loading('Waiting for Database connection');
+      toast.loading('Waiting for Database connection',error);
       console.log(error);
     }
   };

@@ -6,21 +6,21 @@ import axios from "axios";
 const VoucherSidebar = () => {
   const Url = import.meta.env.VITE_API_URL + "auth/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
-  const [data, setdata] = useState([])  
+  const [data, setdata] = useState([])
+
   const loadsidebardata = async () => {
-    console.log("getting sidebar list")
-    const response = await axios({
-      method: "post",
-      url: Url + "getSidebarlist",
-      data: {
+    const data={
         user_id: loggedUser.id,
         module:'Voucher'
       }
+    console.log("getting sidebar list",data)
+    const response = await axios({
+      method: "post",
+      url: Url + "getSidebarlist",
+      data: data
     });    
-    console.log(response.data.data)
-    setdata(response.data.data);
-   
-    
+    console.log('Resultcame',response)
+    setdata(response.data.data);   
 
   }
 

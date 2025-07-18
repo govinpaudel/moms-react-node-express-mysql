@@ -4,7 +4,6 @@ const router = express.Router();
 
 router.get('/', (req, res, next) => { res.send("Hello from kitta route page") })
 
-
 router.post('/getDetails',(req,res)=>{
     let user=req.body;
     console.log(user);    

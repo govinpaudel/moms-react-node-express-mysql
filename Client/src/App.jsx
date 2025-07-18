@@ -31,6 +31,7 @@ import BargikaranAdd from './Pages/Bargikaran/bargikaranAdd';
 import MisilHome from './Pages/Misil/MisilHome';
 import ViewPoka from './Pages/Misil/ViewPoka';
 import CalcMainPage from './Pages/Calculator/CalcMainPage';
+import VoucherOfficeSum from './Pages/Voucher/VoucherOfficeSum';
 
 function App() {
   return (
@@ -51,7 +52,7 @@ function App() {
               <Route path='vouchermonthly' element={<VoucherMonthly />} />              
               <Route path='voucherfant' element={<VoucherFant />} />              
               <Route path='voucherbydate' element={<VoucherByDate />} />        
-              
+              <Route path='officesum' element={<VoucherOfficeSum />} /> 
             </Route>
             {/* Voucher routes ends */}
             {/* bargikaran route starts */}

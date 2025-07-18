@@ -33,6 +33,7 @@ app.get('/api/', async (req, res, next) => { res.send("Hello from Main Server Pa
 
 app.use((err, req, res, next) => {
     res.status(err.status || 500)
+    console.log(err);
     res.send({
         error: {
             status: err.status || 500,
