@@ -1,207 +1,192 @@
-const express = require('express')
-const connection = require('../Libraries/connection')
+const express = require('express');
+const pool = require('../Libraries/connection');
 const router = express.Router();
-const date = require('date-and-time')
-const bcrypt = require('bcryptjs')
-router.get('/', (req, res, next) => { res.send("Hello from Admin Route page") })
-// user routes starts
-router.post('/listAdminUsers', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    let query="select a.*,b.office_name from users a\
-    inner join offices b on a.office_id=b.id where a.role=1 order by a.office_id";
-    connection.query(query, (err, users) => {
-    if (err) { return; }
-    return res.status(200).json({
-        message: "डाटा सफलतापुर्वक प्राप्त भयो",
-        data:users
-    })
-    })
-})
-router.post('/changeUserStatus', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    if(user.status==1){
-        let query="update users set isactive=0,updated_by_user_id=? where id=?";
-        connection.query(query,[user.updated_by_user_id,user.user_id], (err, users) => {
-        if (err) { 
-            console.log(err);
-            return;
+const bcrypt = require('bcryptjs');
 
-         }
-        return res.status(200).json({
-            status:true,
-            message: "प्रयोगकर्ता सफलतापुर्वक संशोधन भयो",
-            data:users
-        })
-        })
-    }
-    else{
-        let query="update users set isactive=1,updated_by_user_id=? where id=?";
-        connection.query(query,[user.updated_by_user_id,user.user_id], (err, users) => {
-        if (err) { return; }
-        return res.status(200).json({
-            status:true,
-            message: "प्रयोगकर्ता सफलतापुर्वक संशोधन भयो",
-            data:users
-        })
-        })
-    }
-   
-})
-router.post('/resetPassword', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    const newpassword='Admin@123$'
-    const hash = bcrypt.hashSync(newpassword, 10);  
-    console.log(hash) ;
-    let query="update users set password=?,updated_by_user_id=? where id=?";
-    connection.query(query,[hash,user.updated_by_user_id,user.user_id],(err,results)=>{
-        if (!err){               
-            return res.status(200).json({
-                status:true,
-                message: `प्रयोगकर्ताको पासवर्ड ${newpassword} अपडेट भयो`,
-                data:results
-            }) 
-        }
-            else{
-                console.log(err);
-            }        
+router.get('/', (req, res) => {
+  res.send("Hello from Admin Route page");
+});
 
-    })    
-})
-// Badhfand routes starts
-router.post('/listBadhfandByStates', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    let keys = user.state_id
-    console.log(keys.length);
-    if(keys.length>0){
-        states = keys.map((it) => {return `'${it}'`})
-        console.log(states);
-    }
-    else{
-        states=["'0'"]
-    }     
-    let query=`select a.*,b.state_name,c.aaba_name,d.acc_sirshak_name from voucher_badhfadh a\
-    inner join states b on a.state_id=b.id\
-    inner join aabas c on a.aaba_id=c.id \
-    inner join voucher_acc_sirshak d on a.acc_sirshak_id=d.id\
-    where\
-    a.aaba_id=${user.aaba_id} and a.state_id in (${states})`;
-    console.log(query);
-    connection.query(query, (err, badhfand) => {
-        if (err) { 
-            console.log(err);
-            return;
-         }
-        return res.status(200).json({
-            message: "डाटा सफलतापुर्वक प्राप्त भयो",
-            data:badhfand
-        })
-        })
+// List admin users
+router.post('/listAdminUsers', async (req, res) => {
+  try {
+    const query = `SELECT a.*, b.office_name FROM users a 
+                   INNER JOIN offices b ON a.office_id = b.id 
+                   WHERE a.role = 1 
+                   ORDER BY a.office_id`;
+    const [users] = await pool.query(query);
+    res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: users });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 });
-router.post('/getBadhfandById', (req, res) => {
-    let user=req.body;
-    console.log(user);    
-    let query="select a.*,b.state_name,c.aaba_name,d.sirshak_name from voucher_badhfadh a\
-    inner join states b on a.state_id=b.id\
-    inner join aabas c on a.aaba_id=c.id \
-    inner join voucher_sirshak d on a.acc_sirshak_id=d.id\
-    where a.id=?";
-        connection.query(query,[user.id], (err, results) => {
-            if (err) { return; }
-            return res.status(200).json({
-                message: "डाटा सफलतापुर्वक प्राप्त भयो",
-                data:results
-            })
-            })       
-    
-});
-router.post('/updateBadhfand', (req, res) => {
-    let user=req.body;
-    console.log(user);   
-        let query="update voucher_badhfadh set sangh=?,pardesh=?,isthaniye=?,sanchitkosh=? where id=?";
-        connection.query(query,[user.sangh,user.pardesh,user.isthaniye,user.sanchitkosh,user.id], (err, results) => {
-            if (err) { 
-                console.log(err);
-                return; }
-            return res.status(200).json({
-                status:true,
-                message: "डाटा सफलतापुर्वक संशोधन भयो",
-                data:results
-            })        
-        });    
-});
-// state routes starts
-router.post('/listStates', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    let query="select * from states";
-    connection.query(query,[user.aaba_id], (err, states) => {
-        if (err) { return; }
-        return res.status(200).json({
-            message: "प्रदेशहरु सफलतापुर्वक प्राप्त भयो",
-            states:states
-        })
-        })
-});
-//offices route starts
-router.post('/listOfficesByStates', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    let keys = user.state_id
-    console.log(keys.length);
-    if(keys.length>0){
-        states = keys.map((it) => {return `'${it}'`})
-        console.log(states);
-    }
-    else{
-        states=["'0'"]
-    }        
-    let query=`select a.*,b.state_name from offices a\
-    inner join states b on a.state_id=b.id where a.state_id in (${states})`;
-    connection.query(query,[user.state_id], (err, offices) => {
-        if (err) { 
-            console.log(err);
-            return;
-         }
-        return res.status(200).json({
-            message: "कार्यालयहरु सफलतापुर्वक प्राप्त भयो",
-            offices:offices
-        })
-        })
-});
-router.post('/getOfficesById', (req, res) => {
-    let user=req.body;
-    console.log(user);    
-        let query="select a.*,b.state_name from offices a\
-        inner join states b on a.state_id=b.id where a.id=?";
-        connection.query(query,[user.id], (err, results) => {
-            if (err) { 
-                console.log(err)
-                return;
-            }
-            return res.status(200).json({
-                message: "डाटा सफलतापुर्वक प्राप्त भयो",
-                data:results
-            })
-            })       
-    
-});
-router.post('/updateStateOfOffice', (req, res) => {
-    let user=req.body;
-    console.log(user);    
-        let query="update offices set state_id=?,isvoucherchecked=? where id=?";
-        connection.query(query,[user.state_id,user.isvoucherchecked,user.id], (err, results) => {
-            if (err) { 
-                console.log(err);
-                return; }
-            return res.status(200).json({
-                status:true,
-                message: "डाटा सफलतापुर्वक संशोधन भयो",
-                data:results
-            })
-            })
+
+// Change user status
+router.post('/changeUserStatus', async (req, res) => {
+  const { status, updated_by_user_id, user_id } = req.body;
+  try {
+    const query = `UPDATE users SET isactive = ?, updated_by_user_id = ? WHERE id = ?`;
+    const newStatus = status === 1 ? 0 : 1;
+    const [result] = await pool.query(query, [newStatus, updated_by_user_id, user_id]);
+    res.status(200).json({
+      status: true,
+      message: "प्रयोगकर्ता सफलतापुर्वक संशोधन भयो",
+      data: result,
     });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+// Reset password
+router.post('/resetPassword', async (req, res) => {
+  const { updated_by_user_id, user_id } = req.body;
+  const newPassword = 'Admin@123$';
+  const hash = bcrypt.hashSync(newPassword, 10);
+
+  try {
+    const query = `UPDATE users SET password = ?, updated_by_user_id = ? WHERE id = ?`;
+    const [result] = await pool.query(query, [hash, updated_by_user_id, user_id]);
+    res.status(200).json({
+      status: true,
+      message: `प्रयोगकर्ताको पासवर्ड ${newPassword} अपडेट भयो`,
+      data: result,
+    });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+// List Badhfand by states
+router.post('/listBadhfandByStates', async (req, res) => {
+  const { aaba_id, state_id } = req.body;
+
+  const states = state_id.length > 0
+    ? state_id.map(id => `'${id}'`).join(',')
+    : "'0'";
+
+  try {
+    const query = `
+      SELECT a.*, b.state_name, c.aaba_name, d.acc_sirshak_name 
+      FROM voucher_badhfadh a
+      INNER JOIN states b ON a.state_id = b.id
+      INNER JOIN aabas c ON a.aaba_id = c.id
+      INNER JOIN voucher_acc_sirshak d ON a.acc_sirshak_id = d.id
+      WHERE a.aaba_id = ? AND a.state_id IN (${states})`;
+    const [results] = await pool.query(query, [aaba_id]);
+    res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: results });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+// Get Badhfand by ID
+router.post('/getBadhfandById', async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    const query = `
+      SELECT a.*, b.state_name, c.aaba_name, d.sirshak_name 
+      FROM voucher_badhfadh a
+      INNER JOIN states b ON a.state_id = b.id
+      INNER JOIN aabas c ON a.aaba_id = c.id
+      INNER JOIN voucher_sirshak d ON a.acc_sirshak_id = d.id
+      WHERE a.id = ?`;
+    const [results] = await pool.query(query, [id]);
+    res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: results });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+// Update Badhfand
+router.post('/updateBadhfand', async (req, res) => {
+  const { sangh, pardesh, isthaniye, sanchitkosh, id } = req.body;
+
+  try {
+    const query = `
+      UPDATE voucher_badhfadh 
+      SET sangh = ?, pardesh = ?, isthaniye = ?, sanchitkosh = ?
+      WHERE id = ?`;
+    const [result] = await pool.query(query, [sangh, pardesh, isthaniye, sanchitkosh, id]);
+    res.status(200).json({ status: true, message: "डाटा सफलतापुर्वक संशोधन भयो", data: result });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+// List States
+router.post('/listStates', async (req, res) => {
+  try {
+    const [states] = await pool.query("SELECT * FROM states");
+    res.status(200).json({ message: "प्रदेशहरु सफलतापुर्वक प्राप्त भयो", states });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+// List Offices by States
+router.post('/listOfficesByStates', async (req, res) => {
+  const { state_id } = req.body;
+
+  const states = state_id.length > 0
+    ? state_id.map(id => `'${id}'`).join(',')
+    : "'0'";
+
+  try {
+    const query = `
+      SELECT a.*, b.state_name 
+      FROM offices a
+      INNER JOIN states b ON a.state_id = b.id 
+      WHERE a.state_id IN (${states})`;
+    const [offices] = await pool.query(query);
+    res.status(200).json({ message: "कार्यालयहरु सफलतापुर्वक प्राप्त भयो", offices });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+// Get Offices by ID
+router.post('/getOfficesById', async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    const query = `
+      SELECT a.*, b.state_name 
+      FROM offices a
+      INNER JOIN states b ON a.state_id = b.id
+      WHERE a.id = ?`;
+    const [results] = await pool.query(query, [id]);
+    res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: results });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+// Update State of Office
+router.post('/updateStateOfOffice', async (req, res) => {
+  const { state_id, isvoucherchecked, id } = req.body;
+
+  try {
+    const query = `
+      UPDATE offices 
+      SET state_id = ?, isvoucherchecked = ? 
+      WHERE id = ?`;
+    const [result] = await pool.query(query, [state_id, isvoucherchecked, id]);
+    res.status(200).json({ status: true, message: "डाटा सफलतापुर्वक संशोधन भयो", data: result });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
 module.exports = router;

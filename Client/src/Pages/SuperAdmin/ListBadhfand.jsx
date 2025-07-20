@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react'
 import axios from 'axios';
-import "./List.scss";
+import "./ListBadhfand.scss";
 import { toast } from 'react-toastify';
 const ListBadhfand = () => { 
   const initialdata={
@@ -118,7 +118,7 @@ const handlechange=(e)=>{
     document.title = "MOMS | बाँडफाँडको सेटअप";
   }, [])
   return (
-    <section id="listusers" className='listusers'>
+    <section id="listbadhfand" className='listbadhfand'>
       <form onSubmit={onSubmit} className="Addvoucher__Form">
         <div className="Addvoucher__Form__part">         
           <div className="Addvoucher__Form__part__item">
@@ -202,12 +202,12 @@ const handlechange=(e)=>{
             </div>
           </div>
 </form>
-<div className="Vouchermonthly__month">
+<div className="Badhfand__statedata">
         {statedata ? statedata.map((item, i) => {
           return (
-            <div className="Vouchermonthly__month__item" key={i}>
+            <div className="Badhfand__statedata__item" key={i}>
               <input
-                className="Vouchermonthly__month__item__box"
+                className="Badhfand__statedata__item__box"
                 type="checkbox"
                 name="month"
                 value={item.id}

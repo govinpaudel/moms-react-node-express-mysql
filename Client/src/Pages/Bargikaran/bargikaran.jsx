@@ -53,6 +53,7 @@ const Bargikaran = () => {
   }
 
   const loadwards=async(e)=>{   
+    console.log(data);
     if(data.office_id>0 && data.napa_id>0 && data.gabisa_id>0){   
     const response = await axios({
       method: "get",
@@ -81,6 +82,7 @@ const Bargikaran = () => {
     loadgapas();
   }, [data.napa_id])
   useEffect(() => {
+    console.log('loading wards')
     loadwards();
   }, [data.gabisa_id])
   

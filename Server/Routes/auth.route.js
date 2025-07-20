@@ -55,39 +55,34 @@ router.post('/login', async (req, res, next) => {
         return res.status(401).json({ status: false, message: `प्रयोगकर्ता वा पासवर्ड मिलेन ।` })
     }
 })
-router.post('/changepassword', (req, res) => {
-    const user = req.body;
-    console.log(user);
-    var query = "select * from users where id=?";
-    connection.query(query, [user.user_id], (err, results) => {
-        if (!err) {
-            if (results.length <= 0) {
-                return res.status(400).json({ message: "गलत प्रयोगकर्ता द्वारा प्रयास गरिएको ।" });
-            }
-            else {
-                console.log(results);
-                const check = bcrypt.compareSync(user.oldpassword, results[0].password)
-                if (check) {
-                    const hashnewpassword = bcrypt.hashSync(user.newpassword, 10);
-                    const uquery = "update users set password=? where id=?";
-                    connection.query(uquery, [hashnewpassword, user.user_id], (err, results) => {
-                        if (!err) {
-                            return res.status(200).json({ status: true, message: "पासवर्ड परिवर्तन सफल भयो ।" });
-                        }
-                        else {
-                            return res.status(500).json(err);
-                        }
-                    })
-                }
-                else {
-                    return res.status(200).json({ message: "गलत पुरानो पासवर्ड ।" });
-                }
+router.post('/changepassword', async (req, res) => {
+    const { user_id, oldpassword, newpassword } = req.body;
 
-            }
+    try {
+        const [users] = await pool.query("SELECT * FROM users WHERE id = ?", [user_id]);
+
+        if (users.length === 0) {
+            return res.status(400).json({ message: "गलत प्रयोगकर्ता द्वारा प्रयास गरिएको ।" });
         }
 
-    })
-})
+        const user = users[0];
+        const passwordMatch = bcrypt.compareSync(oldpassword, user.password);
+
+        if (!passwordMatch) {
+            return res.status(200).json({ message: "गलत पुरानो पासवर्ड ।" });
+        }
+
+        const hashedNewPassword = bcrypt.hashSync(newpassword, 10);
+
+        const [updateResult] = await pool.query("UPDATE users SET password = ? WHERE id = ?", [hashedNewPassword, user_id]);
+
+        return res.status(200).json({ status: true, message: "पासवर्ड परिवर्तन सफल भयो ।" });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "सर्भर त्रुटि भयो", error: err });
+    }
+});
 router.post('/refresh-token', async (req, res, next) => {
     try {
         const { oldrefreshToken } = req.body

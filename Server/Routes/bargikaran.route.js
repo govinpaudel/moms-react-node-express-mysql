@@ -1,84 +1,127 @@
 const express = require('express');
-const pool = require('../Libraries/connection')
+const pool = require('../Libraries/connection');
 const router = express.Router();
-router.get('/', (req, res, next) => { res.send("Hello from bargikaran route page") })
 
+router.get('/', (req, res) => {
+  res.send("Hello from bargikaran route page");
+});
+
+// ✅ Get all offices
 router.get('/getAllOffices/:id', async (req, res, next) => {
-    try {
-        const query = "select * from brg_ofc where office_id=?";
-        const [results] = await pool.query(query, req.params.id);
-        return res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
+  try {
+    const query = "SELECT * FROM brg_ofc WHERE office_id=?";
+    const [results] = await pool.query(query, [req.params.id]);
+    res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
+  } catch (error) {
+    next(error);
+  }
+});
 
-    } catch (error) {
-        next(error)
-    }
-})
+// ✅ Get Napas
 router.get('/getNapasByOfficeId/:officeid', async (req, res, next) => {
-    try {
-        query = "select * from brg_ofc_np where office_id=? order by napa_name";
-        const [results] = await pool.query(query, req.params.officeid);
-        return res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
-    } catch (error) {
-        next(error)
-    }
-})
+  try {
+    const query = "SELECT * FROM brg_ofc_np WHERE office_id=? ORDER BY napa_name";
+    const [results] = await pool.query(query, [req.params.officeid]);
+    res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ✅ Get Gabisas
 router.get('/getGabisasByOfficeId/:officeid/:napaid', async (req, res, next) => {
-    try {
-        query = "select * from brg_ofc_np_gb where office_id=? and napa_id=? order by gabisa_name";
-        const [results] = await pool.query(query, [req.params.officeid, req.params.napaid]);
-        return res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
-    } catch (error) {
-        next(error)
+  try {
+    const query = "SELECT * FROM brg_ofc_np_gb WHERE office_id=? AND napa_id=? ORDER BY gabisa_name";
+    const [results] = await pool.query(query, [req.params.officeid, req.params.napaid]);
+    res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ✅ Get Wards
+router.get('/getWardsByGabisaId/:officeid/:napaid/:gabisaid', async (req, res, next) => {
+  try {
+    const query = `
+      SELECT DISTINCT ward_no 
+      FROM brg_ofc_np_gb_wd 
+      WHERE office_id=? AND napa_id=? AND gabisa_id=? 
+      ORDER BY ward_no`;
+    const [results] = await pool.query(query, [
+      req.params.officeid,
+      req.params.napaid,
+      req.params.gabisaid,
+    ]);
+    res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "डाटा प्राप्त हुन सकेन", data: error });
+  }
+});
+
+// ✅ Get Kitta Details
+router.post('/getKittaDetails', async (req, res, next) => {
+  try {
+    const user = req.body;
+    const query = `
+      SELECT * FROM bargikaran 
+      WHERE office_id=? AND napa_id=? AND gabisa_id=? AND ward_no=? AND kitta_no=?`;
+    const [results] = await pool.query(query, [
+      user.office_id,
+      user.napa_id,
+      user.gabisa_id,
+      user.ward_no,
+      user.kitta_no,
+    ]);
+    if (results.length > 0) {
+      res.status(200).json({ message: `जम्माः ${results.length} डाटा प्राप्त भयो`, data: results });
+    } else {
+      res.status(200).json({ message: "कुनै पनि रेकर्ड प्राप्त भएन ।", data: [] });
     }
-})
+  } catch (error) {
+    res.status(500).json({ message: "डाटा प्राप्त हुन सकेन", data: error });
+  }
+});
 
-router.get('/getWardsByGabisaId/:officeid/:napaid/:gabisaid', (req, res) => {
-    query = "select distinct ward_no from brg_ofc_np_gb_wd where office_id=? and napa_id=? and gabisa_id=? order by ward_no";
-    connection.query(query, [req.params.officeid, req.params.napaid, req.params.gabisaid], (err, results) => {
-        if (!err) {
-            return res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
-        }
-        else {
-            console.log(err)
-            return res.status(500).json({ message: "डाटा प्राप्त हुन सकेन", data: err });
-        }
-    })
-})
+// ✅ Save Bargikaran
+router.post('/savebargikaran', async (req, res, next) => {
+  try {
+    const user = req.body;
 
-router.post('/getKittaDetails', (req, res) => {
-    let user = req.body;
-    console.log(user);
-    query = "select * from bargikaran where office_id=? and napa_id=? and gabisa_id=? and ward_no=? and kitta_no=?";
-    connection.query(query, [user.office_id, user.napa_id, user.gabisa_id, user.ward_no, user.kitta_no], (err, results) => {
-        if (!err) {
-            if (results.length > 0) {
-                return res.status(200).json({ message: "जम्माः " + results.length + " डाटा प्राप्त भयो", data: results });
-            }
-            else {
-                return res.status(200).json({ message: "कुनै पनि रेकर्ड प्राप्त भएन ।", data: results });
-            }
-        }
-        else {
-            return res.status(500).json({ message: "डाटा प्राप्त हुन सकेन", data: err });
-        }
-    })
+    const query = `
+      INSERT INTO bargikaran (
+        office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name,
+        sheet_no, ward_no, kitta_no, bargikaran, remarks, created_by_user_id
+      )
+      SELECT 
+        office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name,
+        ?, ?, ?, ?, ?, ?
+      FROM brg_ofc_np_gb
+      WHERE office_id=? AND napa_id=? AND gabisa_id=?`;
 
-})
-router.post('/savebargikaran', (req, res) => {
-    let user = req.body;
-    console.log(user);
-    let query = `insert into bargikaran(office_id,office_name,napa_id,napa_name,gabisa_id,gabisa_name,sheet_no,ward_no,kitta_no,bargikaran,remarks,created_by_user_id)(SELECT office_id,office_name,napa_id,napa_name,gabisa_id,gabisa_name,'${user.ward_no}' as ward_no,'${user.ward_no}' as sheet_no,'${user.kitta_no}' as kitta_no,'${user.bargikaran}' as bargikaran,'${user.remarks}' as remarks,'${user.user_id}' as created_by_user_id FROM brg_ofc_np_gb
-    where office_id='${user.office_id}' and napa_id='${user.napa_id}' and gabisa_id='${user.gabisa_id}')`;
-    console.log(query);
-    connection.query(query, (err, results) => {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            return res.status(200).json({ status: true, message: "डाटा सफलतापुर्वक सेभ भयो", data: results });
-        }
-    })
-})
+    const params = [
+      user.ward_no, // sheet_no
+      user.ward_no, // ward_no
+      user.kitta_no,
+      user.bargikaran,
+      user.remarks,
+      user.user_id,
+      user.office_id,
+      user.napa_id,
+      user.gabisa_id,
+    ];
 
+    const [results] = await pool.query(query, params);
+
+    res.status(200).json({
+      status: true,
+      message: "डाटा सफलतापुर्वक सेभ भयो",
+      data: results,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "डाटा सेभ गर्न सकेन", data: error });
+  }
+});
 
 module.exports = router;

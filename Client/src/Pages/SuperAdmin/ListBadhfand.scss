@@ -1,0 +1,18 @@
+.listbadhfand {
+    &__statedata {
+        display: flex;
+        justify-content: space-around;
+
+        &__item {
+            &__box {
+                width: 35px;
+                color: var(--yellow-theme-main-color);
+            }
+
+            h4 {
+                color: var(--yellow-theme-main-color);
+                font-size: 14px;
+            }
+        }
+    }
+}

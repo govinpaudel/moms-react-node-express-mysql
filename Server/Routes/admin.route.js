@@ -1,415 +1,404 @@
-const express = require('express')
-const connection = require('../Libraries/connection')
+const express = require('express');
+const pool = require('../Libraries/connection');
 const router = express.Router();
-const date = require('date-and-time')
-const bcrypt = require('bcryptjs')
-router.get('/', (req, res, next) => { res.send("Hello from Admin Route page") })
-// user routes starts
-router.post('/listUsers', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    let query="select a.*,b.office_name from users a\
-    inner join offices b on a.office_id=b.id where a.role=2 and a.office_id=? order by a.office_id";
-    connection.query(query,[user.office_id], (err, users) => {
-    if (err) { return; }
-    return res.status(200).json({
-        message: "डाटा सफलतापुर्वक प्राप्त भयो",
-        data:users
-    })
-    })
-})
-router.post('/changeUserStatus', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    if(user.status==1){
-        let query="update users set isactive=0,updated_by_user_id=? where office_id=? and id=?";
-        connection.query(query,[user.updated_by_user_id,user.office_id,user.user_id], (err, users) => {
-        if (err) { return; }
-        return res.status(200).json({
-            status:true,
-            message: "प्रयोगकर्ता सफलतापुर्वक संशोधन भयो",
-            data:users
-        })
-        })
-    }
-    else{
-        let query="update users set isactive=1,updated_by_user_id=? where office_id=? and id=?";
-        connection.query(query,[user.updated_by_user_id,user.office_id,user.user_id], (err, users) => {
-        if (err) { return; }
-        return res.status(200).json({
-            status:true,
-            message: "प्रयोगकर्ता सफलतापुर्वक संशोधन भयो",
-            data:users
-        })
-        })
-    }
-   
-})
-router.post('/resetPassword', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    const newpassword='User@123$';
-    const hash = bcrypt.hashSync(newpassword, 10);  
-    console.log(hash) ;
-    let query="update users set password=?,updated_by_user_id=? where office_id=? and id=?";
-    connection.query(query,[hash,user.updated_by_user_id,user.office_id,user.user_id],(err,results)=>{
-        if (!err){               
-            return res.status(200).json({
-                status:true,
-                message: `प्रयोगकर्ताको पासवर्ड ${newpassword} अपडेट भयो`,
-                data:results
-            }) 
-        }
-            else{
-                console.log(err);
-            }        
+const bcrypt = require('bcryptjs');
 
-    })    
-})
-// fant routes starts
-router.post('/listFants', (req, res) => {
-    let user=req.body;
-    let query="select * from voucher_fant where office_id=? order by display_order"
-    connection.query(query,[user.office_id], (err, fants) => {
-        if (err) { return; }
+router.get('/', (req, res) => {
+  res.send('Hello from Admin Route page');
+});
+
+// user routes
+router.post('/listUsers', async (req, res) => {
+  try {
+    const [users] = await pool.query(
+      `SELECT a.*, b.office_name FROM users a 
+       INNER JOIN offices b ON a.office_id = b.id 
+       WHERE a.role = 2 AND a.office_id = ? 
+       ORDER BY a.office_id`,
+      [req.body.office_id]
+    );
+    return res.status(200).json({ message: 'डाटा सफलतापुर्वक प्राप्त भयो', data: users });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Server Error', error: err });
+  }
+});
+
+router.post('/changeUserStatus', async (req, res) => {
+  const user = req.body;
+  const newStatus = user.status == 1 ? 0 : 1;
+  try {
+    const [result] = await pool.query(
+      'UPDATE users SET isactive = ?, updated_by_user_id = ? WHERE office_id = ? AND id = ?',
+      [newStatus, user.updated_by_user_id, user.office_id, user.user_id]
+    );
+    return res.status(200).json({ status: true, message: 'प्रयोगकर्ता सफलतापुर्वक संशोधन भयो', data: result });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Server Error', error: err });
+  }
+});
+
+router.post('/resetPassword', async (req, res) => {
+  const user = req.body;
+  const newpassword = 'User@123$';
+  const hash = bcrypt.hashSync(newpassword, 10);
+  try {
+    const [result] = await pool.query(
+      'UPDATE users SET password = ?, updated_by_user_id = ? WHERE office_id = ? AND id = ?',
+      [hash, user.updated_by_user_id, user.office_id, user.user_id]
+    );
+    return res.status(200).json({
+      status: true,
+      message: `प्रयोगकर्ताको पासवर्ड ${newpassword} अपडेट भयो`,
+      data: result
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Server Error', error: err });
+  }
+});
+
+// List all fants by office
+router.post('/listFants', async (req, res) => {
+    const { office_id } = req.body;
+    try {
+        const [fants] = await pool.query("SELECT * FROM voucher_fant WHERE office_id = ? ORDER BY display_order", [office_id]);
         return res.status(200).json({
             message: "डाटा सफलतापुर्वक प्राप्त भयो",
-            data:fants
-        })
-        })
-});
-router.post('/changeFantStatus', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    if(user.status==1){
-        let query="update voucher_fant set isactive=0 where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.fant_id], (err, fants) => {
-        if (err) { return; }
-        return res.status(200).json({
-            status:true,
-            message: "फाँट सफलतापुर्वक संशोधन भयो",
-            data:fants
-        })
-        })
+            data: fants
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
     }
-    else{
-        let query="update voucher_fant set isactive=1 where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.fant_id], (err, fants) => {
-        if (err) { return; }
-        return res.status(200).json({
-            status:true,
-            message: "प्रयोगकर्ता सफलतापुर्वक संशोधन भयो",
-            data:fants
-        })
-        })
-    }
-   
-})
-router.post('/getFantById', (req, res) => {
-    let user=req.body;
-    console.log(user);    
-        let query="select * from voucher_fant where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.fant_id], (err, results) => {
-            if (err) { return; }
-            return res.status(200).json({
-                message: "डाटा सफलतापुर्वक प्राप्त भयो",
-                data:results
-            })
-            })       
-    
 });
-router.post('/addOrUpdateFants', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    if (user.id==0){
-        let query="insert into voucher_fant(office_id,fant_name,display_order,isactive) values(?,?,?,?)";
-        connection.query(query,[user.office_id,user.fant_name,user.display_order,1], (err, results) => {
-            if (err) { 
-                console.log(err);
-                return; }
-            return res.status(200).json({
-                status:true,
-                message: "डाटा सफलतापुर्वक दर्ता भयो",
-                data:results
-            })
-            })    }
 
-    else{
-        let query="update voucher_fant set fant_name=?,display_order=? where id=?";
-        connection.query(query,[user.fant_name,user.display_order,user.id], (err, results) => {
-            if (err) { 
-                console.log(err);
-                return; }
-            return res.status(200).json({
-                status:true,
-                message: "डाटा सफलतापुर्वक संशोधन भयो",
-                data:results
-            })
-            })
+// Change fant status (active/inactive)
+router.post('/changeFantStatus', async (req, res) => {
+    const { office_id, fant_id, status } = req.body;
+    try {
+        const newStatus = status == 1 ? 0 : 1;
+        await pool.query("UPDATE voucher_fant SET isactive = ? WHERE office_id = ? AND id = ?", [newStatus, office_id, fant_id]);
+        return res.status(200).json({
+            status: true,
+            message: "फाँट सफलतापुर्वक संशोधन भयो"
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
     }
-    
 });
-// staff routes starts
-router.post('/listStaffs', (req, res) => {
-    let user=req.body;
-    let query="select * from voucher_staff where office_id=? order by display_order"
-    connection.query(query,[user.office_id], (err, staffs) => {
-        if (err) { return; }
+
+// Get single fant by ID
+router.post('/getFantById', async (req, res) => {
+    const { office_id, fant_id } = req.body;
+    try {
+        const [results] = await pool.query("SELECT * FROM voucher_fant WHERE office_id = ? AND id = ?", [office_id, fant_id]);
+        return res.status(200).json({
+            message: "डाटा सफलतापुर्वक प्राप्त भयो",
+            data: results
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
+    }
+});
+
+// Add or update fant
+router.post('/addOrUpdateFants', async (req, res) => {
+    const { id, office_id, fant_name, display_order } = req.body;
+    try {
+        if (id == 0) {
+            const [result] = await pool.query(
+                "INSERT INTO voucher_fant (office_id, fant_name, display_order, isactive) VALUES (?, ?, ?, ?)",
+                [office_id, fant_name, display_order, 1]
+            );
+            return res.status(200).json({
+                status: true,
+                message: "डाटा सफलतापुर्वक दर्ता भयो",
+                data: result
+            });
+        } else {
+            const [result] = await pool.query(
+                "UPDATE voucher_fant SET fant_name = ?, display_order = ? WHERE id = ?",
+                [fant_name, display_order, id]
+            );
+            return res.status(200).json({
+                status: true,
+                message: "डाटा सफलतापुर्वक संशोधन भयो",
+                data: result
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
+    }
+});
+// List all staff for an office
+router.post('/listStaffs', async (req, res) => {
+    const { office_id } = req.body;
+    try {
+        const [staffs] = await pool.query(
+            "SELECT * FROM voucher_staff WHERE office_id = ? ORDER BY display_order",
+            [office_id]
+        );
         return res.status(200).json({
             message: "कर्मचारीहरु सफलतापुर्वक प्राप्त भयो",
-            data:staffs
-        })
-        })
-});
-router.post('/changeStaffStatus', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    if(user.status==1){
-        let query="update voucher_staff set isactive=0 where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.staff_id], (err, staffs) => {
-        if (err) { return; }
-        return res.status(200).json({
-            status:true,
-            message: "फाँट सफलतापुर्वक संशोधन भयो",
-            data:staffs
-        })
-        })
+            data: staffs
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
     }
-    else{
-        let query="update voucher_staff set isactive=1 where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.staff_id], (err, fants) => {
-        if (err) { return; }
-        return res.status(200).json({
-            status:true,
-            message: "प्रयोगकर्ता सफलतापुर्वक संशोधन भयो",
-            data:fants
-        })
-        })
-    }
-   
-})
-router.post('/getStaffById', (req, res) => {
-    let user=req.body;
-    console.log(user);    
-        let query="select * from voucher_staff where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.staff_id], (err, results) => {
-            if (err) { return; }
-            return res.status(200).json({
-                message: "डाटा सफलतापुर्वक प्राप्त भयो",
-                data:results
-            })
-            })       
-    
 });
-router.post('/addOrUpdateStaffs', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    if (user.id==0){
-        let query="insert into voucher_staff(office_id,staff_name,display_order,isactive) values(?,?,?,?)";
-        connection.query(query,[user.office_id,user.staff_name,user.display_order,1], (err, results) => {
-            if (err) { 
-                console.log(err);
-                return; }
-            return res.status(200).json({
-                status:true,
-                message: "डाटा सफलतापुर्वक दर्ता भयो",
-                data:results
-            })
-            })    }
 
-    else{
-        let query="update voucher_staff set staff_name=?,display_order=? where id=?";
-        connection.query(query,[user.staff_name,user.display_order,user.id], (err, results) => {
-            if (err) { 
-                console.log(err);
-                return; }
-            return res.status(200).json({
-                status:true,
-                message: "डाटा सफलतापुर्वक संशोधन भयो",
-                data:results
-            })
-            })
-    }
-    
-});
-//Napa route starts
-router.post('/listNapas', (req, res) => {
-    let user=req.body;
-    let query="select * from voucher_napa where office_id=? order by display_order"
-    connection.query(query,[user.office_id], (err, napas) => {
-        if (err) { return; }
+// Change staff active/inactive status
+router.post('/changeStaffStatus', async (req, res) => {
+    const { office_id, staff_id, status } = req.body;
+    try {
+        const newStatus = status == 1 ? 0 : 1;
+        const [result] = await pool.query(
+            "UPDATE voucher_staff SET isactive = ? WHERE office_id = ? AND id = ?",
+            [newStatus, office_id, staff_id]
+        );
         return res.status(200).json({
-            message: "नगरपालिकाहरु सफलतापुर्वक प्राप्त भयो",
-            data:napas
-        })
-        })
+            status: true,
+            message: "कर्मचारी सफलतापुर्वक संशोधन भयो",
+            data: result
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
+    }
 });
-router.post('/changeNapaStatus', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    if(user.status==1){
-        let query="update voucher_napa set isactive=0 where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.napa_id], (err, napas) => {
-        if (err) { return; }
-        return res.status(200).json({
-            status:true,
-            message: "नगरपालिका सफलतापुर्वक संशोधन भयो",
-            data:napas
-        })
-        })
-    }
-    else{
-        let query="update voucher_napa set isactive=1 where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.napa_id], (err, fants) => {
-        if (err) { return; }
-        return res.status(200).json({
-            status:true,
-            message: "नगरपालिका सफलतापुर्वक संशोधन भयो",
-            data:fants
-        })
-        })
-    }
-   
-})
-router.post('/getNapaById', (req, res) => {
-    let user=req.body;
-    console.log(user);    
-        let query="select * from voucher_napa where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.napa_id], (err, results) => {
-            if (err) { return; }
-            return res.status(200).json({
-                message: "डाटा सफलतापुर्वक प्राप्त भयो",
-                data:results
-            })
-            })       
-    
-});
-router.post('/addOrUpdateNapas', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    if (user.napa_id==0){
-        let checkquery="select max(id)+1 as no from voucher_napa where office_id=?";
-        connection.query(checkquery,[user.office_id],(err,lastno)=>{
-            if(err){
-                console.log(err);
-                return;
-            }
-            else{
-            console.log(lastno[0].no);
-            let query="insert into voucher_napa(id,office_id,napa_name,display_order,isactive) values(?,?,?,?,?)";
-            connection.query(query,[lastno[0].no,user.office_id,user.napa_name,user.display_order,1], (err, results) => {
-            if (err) { 
-                console.log(err);
-                return; }
-            return res.status(200).json({
-                status:true,
-                message: "नगरपालिका सफलतापुर्वक दर्ता भयो",
-                data:results
-            })
-            }) 
-            }
-        })
 
-
-
-    }
-    else{
-        let query="update voucher_napa set napa_name=?,display_order=? where napa_id=? and office_id=?";
-        connection.query(query,[user.napa_name,user.display_order,user.napa_id,user.office_id], (err, results) => {
-            if (err) { 
-                console.log(err);
-                return; }
-            return res.status(200).json({
-                status:true,
-                message: "नगरपालिका सफलतापुर्वक संशोधन भयो",
-                data:results
-            })
-            })
-    }
-    
-});
-//parameter route starts
-router.post('/listParms', (req, res) => {
-    let user=req.body;
-    let query="select * from voucher_parameter where office_id=?"
-    connection.query(query,[user.office_id], (err, parms) => {
-        if (err) { return; }
+// Get staff by ID
+router.post('/getStaffById', async (req, res) => {
+    const { office_id, staff_id } = req.body;
+    try {
+        const [results] = await pool.query(
+            "SELECT * FROM voucher_staff WHERE office_id = ? AND id = ?",
+            [office_id, staff_id]
+        );
         return res.status(200).json({
             message: "डाटा सफलतापुर्वक प्राप्त भयो",
-            data:parms
-        })
-        })
-});
-router.post('/changeParmStatus', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    if(user.status==1){
-        let query="update voucher_parameter set isactive=0 where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.id], (err, parms) => {
-        if (err) { return; }
-        return res.status(200).json({
-            status:true,
-            message: "भौचर लम्बाई तथा शूरुअंक सफलतापुर्वक संशोधन भयो",
-            data:parms
-        })
-        })
+            data: results
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
     }
-    else{
-        let query="update voucher_parameter set isactive=1 where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.id], (err, parms) => {
-        if (err) { return; }
-        return res.status(200).json({
-            status:true,
-            message: "भौचर लम्बाई तथा शूरुअंक सफलतापुर्वक संशोधन भयो",
-            data:parms
-        })
-        })
-    }
-   
-})
-router.post('/getParmById', (req, res) => {
-    let user=req.body;
-    console.log(user);    
-        let query="select * from voucher_parameter where office_id=? and id=?";
-        connection.query(query,[user.office_id,user.id], (err, results) => {
-            if (err) { return; }
-            return res.status(200).json({
-                message: "डाटा सफलतापुर्वक प्राप्त भयो",
-                data:results
-            })
-            })       
-    
 });
-router.post('/addOrUpdateParms', (req, res) => {
-    let user=req.body;
-    console.log(user);
-    if (user.id==0){
-        let query="insert into voucher_parameter(office_id,vstart,vlength,isactive)values(?,?,?,?)";
-        connection.query(query,[user.office_id,user.vstart,user.vlength,1], (err, results) => {
-            if (err) { 
-                console.log(err);
-                return; }
-            return res.status(200).json({
-                status:true,
-                message: "डाटा सफलतापुर्वक दर्ता भयो",
-                data:results
-            })
-            })    }
 
-    else{
-        let query="update voucher_parameter set vstart=?,vlength=? where id=?";
-        connection.query(query,[user.vstart,user.vlength,user.id], (err, results) => {
-            if (err) { 
-                console.log(err);
-                return; }
+// Add or update staff
+router.post('/addOrUpdateStaffs', async (req, res) => {
+    const { id, office_id, staff_name, display_order } = req.body;
+    try {
+        if (id == 0) {
+            const [result] = await pool.query(
+                "INSERT INTO voucher_staff (office_id, staff_name, display_order, isactive) VALUES (?, ?, ?, ?)",
+                [office_id, staff_name, display_order, 1]
+            );
             return res.status(200).json({
-                status:true,
+                status: true,
+                message: "डाटा सफलतापुर्वक दर्ता भयो",
+                data: result
+            });
+        } else {
+            const [result] = await pool.query(
+                "UPDATE voucher_staff SET staff_name = ?, display_order = ? WHERE id = ?",
+                [staff_name, display_order, id]
+            );
+            return res.status(200).json({
+                status: true,
                 message: "डाटा सफलतापुर्वक संशोधन भयो",
-                data:results
-            })
-            })
+                data: result
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
     }
-    
+});
+// List all napas
+router.post('/listNapas', async (req, res) => {
+    const { office_id } = req.body;
+    try {
+        const [napas] = await pool.query(
+            "SELECT * FROM voucher_napa WHERE office_id = ? ORDER BY display_order",
+            [office_id]
+        );
+        return res.status(200).json({
+            message: "नगरपालिकाहरु सफलतापुर्वक प्राप्त भयो",
+            data: napas
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
+    }
+});
+
+// Change napa status
+router.post('/changeNapaStatus', async (req, res) => {
+    const { office_id, napa_id, status } = req.body;
+    try {
+        const newStatus = status == 1 ? 0 : 1;
+        const [result] = await pool.query(
+            "UPDATE voucher_napa SET isactive = ? WHERE office_id = ? AND id = ?",
+            [newStatus, office_id, napa_id]
+        );
+        return res.status(200).json({
+            status: true,
+            message: "नगरपालिका सफलतापुर्वक संशोधन भयो",
+            data: result
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
+    }
+});
+
+// Get napa by ID
+router.post('/getNapaById', async (req, res) => {
+    const { office_id, napa_id } = req.body;
+    try {
+        const [results] = await pool.query(
+            "SELECT * FROM voucher_napa WHERE office_id = ? AND id = ?",
+            [office_id, napa_id]
+        );
+        return res.status(200).json({
+            message: "डाटा सफलतापुर्वक प्राप्त भयो",
+            data: results
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
+    }
+});
+
+// Add or update napa
+router.post('/addOrUpdateNapas', async (req, res) => {
+    const { napa_id, office_id, napa_name, display_order } = req.body;
+    try {
+        if (napa_id == 0) {
+            const [lastRow] = await pool.query(
+                "SELECT COALESCE(MAX(id), 0) + 1 AS no FROM voucher_napa WHERE office_id = ?",
+                [office_id]
+            );
+            const newId = lastRow[0].no;
+
+            const [result] = await pool.query(
+                "INSERT INTO voucher_napa (id, office_id, napa_name, display_order, isactive) VALUES (?, ?, ?, ?, ?)",
+                [newId, office_id, napa_name, display_order, 1]
+            );
+            return res.status(200).json({
+                status: true,
+                message: "नगरपालिका सफलतापुर्वक दर्ता भयो",
+                data: result
+            });
+        } else {
+            const [result] = await pool.query(
+                "UPDATE voucher_napa SET napa_name = ?, display_order = ? WHERE id = ? AND office_id = ?",
+                [napa_name, display_order, napa_id, office_id]
+            );
+            return res.status(200).json({
+                status: true,
+                message: "नगरपालिका सफलतापुर्वक संशोधन भयो",
+                data: result
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
+    }
+});
+
+// List parameters
+router.post('/listParms', async (req, res) => {
+    const { office_id } = req.body;
+    try {
+        const [parms] = await pool.query(
+            "SELECT * FROM voucher_parameter WHERE office_id = ?",
+            [office_id]
+        );
+        return res.status(200).json({
+            message: "डाटा सफलतापुर्वक प्राप्त भयो",
+            data: parms
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
+    }
+});
+
+// Change parameter active status
+router.post('/changeParmStatus', async (req, res) => {
+    const { office_id, id, status } = req.body;
+    const newStatus = status == 1 ? 0 : 1;
+    try {
+        const [result] = await pool.query(
+            "UPDATE voucher_parameter SET isactive = ? WHERE office_id = ? AND id = ?",
+            [newStatus, office_id, id]
+        );
+        return res.status(200).json({
+            status: true,
+            message: "भौचर लम्बाई तथा शूरुअंक सफलतापुर्वक संशोधन भयो",
+            data: result
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
+    }
+});
+
+// Get parameter by ID
+router.post('/getParmById', async (req, res) => {
+    const { office_id, id } = req.body;
+    try {
+        const [results] = await pool.query(
+            "SELECT * FROM voucher_parameter WHERE office_id = ? AND id = ?",
+            [office_id, id]
+        );
+        return res.status(200).json({
+            message: "डाटा सफलतापुर्वक प्राप्त भयो",
+            data: results
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
+    }
+});
+
+// Add or update parameters
+router.post('/addOrUpdateParms', async (req, res) => {
+    const { id, office_id, vstart, vlength } = req.body;
+    try {
+        if (id == 0) {
+            const [result] = await pool.query(
+                "INSERT INTO voucher_parameter (office_id, vstart, vlength, isactive) VALUES (?, ?, ?, ?)",
+                [office_id, vstart, vlength, 1]
+            );
+            return res.status(200).json({
+                status: true,
+                message: "डाटा सफलतापुर्वक दर्ता भयो",
+                data: result
+            });
+        } else {
+            const [result] = await pool.query(
+                "UPDATE voucher_parameter SET vstart = ?, vlength = ? WHERE id = ?",
+                [vstart, vlength, id]
+            );
+            return res.status(200).json({
+                status: true,
+                message: "डाटा सफलतापुर्वक संशोधन भयो",
+                data: result
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: false, message: "सर्भर त्रुटि भयो" });
+    }
 });
 
 module.exports = router;
