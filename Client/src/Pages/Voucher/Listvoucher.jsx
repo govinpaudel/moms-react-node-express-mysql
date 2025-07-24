@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance  from "../../axiosInstance";
 import { useEffect, useState } from "react";
 import "./listvoucher.scss";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -96,24 +96,18 @@ useEffect(() => {
     const data = {
       created_by_user_id: loggedUser.id
     }
-    console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "getTodaysVoucher",
-      data: data
-    });
-    console.log(response);
+    console.log("Request Sent", data);  
+    const response = await axiosInstance.post("voucher/getTodaysVoucher",data)    
+    console.log('Response Came',response);
     setvoucherlist(response.data.data);
   };
 
   const loadVouchers = () => {
     console.log("svoucherno", svoucherno);
     if (svoucherno > 0) {
-      loadSingleVoucher();
-      console.log("single voucher called");
+      loadSingleVoucher();      
     } else {
-      loadTodayVouchers();
-      console.log("all voucher called");
+      loadTodayVouchers();      
     }
   };
   

@@ -3,6 +3,7 @@
     text-align: left;
   }
     &__month {
+      gap: 25px;
     display: flex;    
     padding: 10px;
     border: 1px solid var(--yellow-theme-main-color);

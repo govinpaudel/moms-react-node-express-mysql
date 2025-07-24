@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 import "./List.scss";
 import { toast } from 'react-toastify';
 const ListNapas = () => {
@@ -19,11 +19,10 @@ const ListNapas = () => {
         napa_id:id        
       }
       console.log("data sent", data);
-      const response = await axios({
-        method: "post",
-        url: Url + "getNapaById",
-        data: data
-      });
+const url="admin/getNapaById"
+      const response = await axiosInstance.post(url,data); 
+
+      
       setdata(response.data.data[0])
       console.log(response.data.data[0]);  
   }
@@ -31,11 +30,9 @@ const ListNapas = () => {
 const OnSubmit=async(e)=>{
     e.preventDefault();
     console.log("data sent for updation",data);
-    const response = await axios({
-        method: "post",
-        url: Url + "addOrUpdateNapas",
-        data: data
-      });
+  const url="admin/addOrUpdateNapas"
+    const response = await axiosInstance.post(url,data); 
+    
       console.log(response);
       if(response.data.status==true){
         toast.success(response.data.message);
@@ -51,11 +48,8 @@ const OnSubmit=async(e)=>{
       status:status
     }
     console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "changeNapaStatus",
-      data: data
-    });
+    const url="admin/changeNapaStatus"
+    const response = await axiosInstance.post(url,data);     
     console.log(response);  
     if(response.data.status){
       toast.success(response.data.message);
@@ -76,11 +70,9 @@ const OnSubmit=async(e)=>{
       office_id: loggedUser.office_id
     }
     console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "listNapas",
-      data: data
-    });
+    const url="admin/listNapas"
+    const response = await axiosInstance.post(url,data);
+    
     console.log(response);
     setlistdata(response.data.data);
 

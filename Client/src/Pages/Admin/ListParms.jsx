@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 import "./List.scss";
 import { toast } from 'react-toastify';
 const ListParms = () => {
@@ -19,11 +19,8 @@ const ListParms = () => {
         id:id        
       }
       console.log("data sent", data);
-      const response = await axios({
-        method: "post",
-        url: Url + "getParmById",
-        data: data
-      });
+      const url="admin/getParmById"
+      const response = await axiosInstance.post(url,data);       
       setdata(response.data.data[0])
       console.log(response.data.data[0]);  
   }
@@ -31,11 +28,9 @@ const ListParms = () => {
 const OnSubmit=async(e)=>{
     e.preventDefault();
     console.log("data sent for updation",data);
-    const response = await axios({
-        method: "post",
-        url: Url + "addOrUpdateParms",
-        data: data
-      });
+    const url="admin/addOrUpdateParms"
+    const response = await axiosInstance.post(url,data);  
+    
       console.log(response);
       if(response.data.status==true){
         toast.success(response.data.message);
@@ -51,11 +46,9 @@ const OnSubmit=async(e)=>{
       status:status
     }
     console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "changeParmStatus",
-      data: data
-    });
+    const url="admin/changeParmStatus"
+    const response = await axiosInstance.post(url,data);
+    
     console.log(response);  
     if(response.data.status){
       toast.success(response.data.message);
@@ -76,11 +69,8 @@ const OnSubmit=async(e)=>{
       office_id: loggedUser.office_id
     }
     console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "listParms",
-      data: data
-    });
+    const url="admin/listParms"
+    const response = await axiosInstance.post(url,data);    
     console.log(response);
     setlistdata(response.data.data);
 

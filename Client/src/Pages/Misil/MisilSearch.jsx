@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../../axiosInstance";
 import "./MisilSearch.scss";
 import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
@@ -7,8 +7,7 @@ import { BsInfoCircleFill } from "react-icons/bs";
 const MisilSearch = () => { 
   const [types, setTypes] = useState([]);
   const [aabas, setAabas] = useState([]);  
-  const [Result, setResult] = useState([]);
-  const Url = import.meta.env.VITE_API_URL + "misil/";
+  const [Result, setResult] = useState([]);  
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   
   const initialdata = {   
@@ -21,10 +20,8 @@ const MisilSearch = () => {
   const [sdata, setsdata] = useState(initialdata);
   const loadtypes = async () => {
     try {
-      const response = await axios({
-        method: "get",
-        url: Url + "getTypesByOfficeId/"+loggedUser.office_id   
-      });
+      const url="misil/getTypesByOfficeId/"+loggedUser.office_id;
+      const response=await axiosInstance.get(url)      
       setTypes(response.data.data);
     } catch (error) {
       console.log(error);
@@ -33,10 +30,8 @@ const MisilSearch = () => {
 
   const loadaabas = async (e) => {
     try {
-      const response = await axios({
-        method: "get",
-        url: Url + "getAabaByOffice/"+loggedUser.office_id+"/"+sdata.misil_type_id        
-      });
+      const url="misil/"+"getAabaByOffice/"+loggedUser.office_id+"/"+sdata.misil_type_id
+      const response=await axiosInstance.get(url)     
       setAabas(response.data.data);
     } catch (error) {
       console.log(error);
@@ -58,11 +53,9 @@ const MisilSearch = () => {
         toast.warning("मिति वा मि.नं प्रविष्ठ गर्नुहोस् ।");
         return;
       }
-      const response = await axios({
-        method: "post",
-        url: Url + "getpoka",
-        data: sdata,
-      });
+      const url="misil/getpoka";
+      const response=await axiosInstance.post(url,sdata);
+      
       console.log(response);
       setResult(response.data.data);
     } catch (error) {

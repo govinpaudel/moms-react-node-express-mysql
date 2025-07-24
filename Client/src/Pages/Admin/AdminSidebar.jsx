@@ -1,30 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import "./AdminSidebar.scss";
 import { NavLink } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from "../../axiosInstance";
 const AdminSidebar = () => {
-const [data,setdata]=useState([])
-const Url = import.meta.env.VITE_API_URL + "auth/";
-const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
-const loadSidebar=async()=>{
-const response = await axios({
-      method: "post",
-      url: Url + "getSidebarlist",
-      data: {
-        user_id: loggedUser.id,
-        module: 'Admin'
-      }
-    });
+  const [data, setdata] = useState([])  
+  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loadSidebar = async () => {
+    const data = {
+      user_id: loggedUser.id,
+      module: 'Admin'
+    }
+    const response = await axiosInstance.post("auth/getSidebarlist", data);    
     setdata(response.data.data);
     console.log(response.data.data)
-}
+  }
 
-useEffect(()=>{
-loadSidebar()
-    },[])
+  useEffect(() => {
+    loadSidebar()
+  }, [])
   return (
     <section id='AdminSidebar' className='AdminSidebar'>
-        <div className='AdminSidebar__menus'>
+      <div className='AdminSidebar__menus'>
         <ul>
           {data.map((item, i) => {
             return (
@@ -35,7 +31,7 @@ loadSidebar()
           })}
         </ul>
 
-        </div>
+      </div>
     </section>
   )
 }

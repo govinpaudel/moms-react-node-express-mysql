@@ -40,6 +40,23 @@ router.post('/FantlistByAabaMonth', async (req, res, next) => {
         next(error)
     }
 });
+router.post('/Fantlist', async (req, res, next) => {
+    try {
+        let user = req.body;
+        console.log(user);
+        let query = `select DISTINCT a.fant_id as fid,b.fant_name as fname,b.display_order from voucher a
+        inner join voucher_fant b on a.fant_id=b.id
+        where a.office_id=? and aaba_id=?
+        order by b.display_order`;
+        const [fants] = await pool.query(query, [user.office_id, user.aaba_id]);
+        return res.status(200).json({
+            message: "डाटा सफलतापुर्वक प्राप्त भयो",
+            fants: fants
+        })
+    } catch (error) {
+        next(error)
+    }
+});
 router.post('/UserlistByAabaMonthFant', async (req, res, next) => {
     try {
         let user = req.body;
@@ -169,11 +186,11 @@ router.post('/VoucherOfficeSum', async (req, res, next) => {
     SUM(amount) AS total_amount FROM voucher a
     WHERE a.aaba_id = ? AND a.office_id = ?
     ORDER BY aaba_id, office_id, sirshak_id`;
-    const [officesum] = await pool.query(query1, [
-        user.aaba_id, user.office_id,  // for first SELECT
-        user.aaba_id, user.office_id   // for second SELECT (total)
-    ]);
-    let query2=`SELECT a.aaba_id,a.office_id,a.napa_id,f.napa_name,
+        const [officesum] = await pool.query(query1, [
+            user.aaba_id, user.office_id,  // for first SELECT
+            user.aaba_id, user.office_id   // for second SELECT (total)
+        ]);
+        let query2 = `SELECT a.aaba_id,a.office_id,a.napa_id,f.napa_name,
   SUM(a.amount * (e.isthaniye / 100)) AS total_amount,
   SUM(CASE WHEN a.month_id = 4 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'A',
   SUM(CASE WHEN a.month_id = 5 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'B',
@@ -196,8 +213,8 @@ INNER JOIN voucher_badhfadh e
   AND e.acc_sirshak_id = c.id 
   AND e.state_id = d.state_id
 INNER JOIN voucher_napa f ON a.office_id = f.office_id AND a.napa_id = f.napa_id
-WHERE a.aaba_id = 83 AND a.office_id = 411
-GROUP BY a.aaba_id, a.office_id, a.napa_id, f.napa_name, e.acc_sirshak_id
+WHERE a.aaba_id = ? AND a.office_id = ?
+GROUP BY a.aaba_id, a.office_id, a.napa_id, f.napa_name
 UNION ALL
 SELECT a.aaba_id,a.office_id,9999 AS napa_id, 'जम्मा ' as napa_name,
  SUM(a.amount * (e.isthaniye / 100)) AS total_amount,
@@ -222,14 +239,14 @@ INNER JOIN voucher_badhfadh e
   AND e.acc_sirshak_id = c.id 
   AND e.state_id = d.state_id
 INNER JOIN voucher_napa f ON a.office_id = f.office_id AND a.napa_id = f.napa_id
-WHERE a.aaba_id = 83 AND a.office_id = 411
-GROUP BY a.aaba_id, a.office_id, a.napa_id, f.napa_name
+WHERE a.aaba_id = ? AND a.office_id = ?
+GROUP BY a.aaba_id, a.office_id
 ORDER BY aaba_id, office_id, napa_id`;
-    const [isthaniye]=await pool.query(query2,[
-        user.aaba_id, user.office_id,  // for first SELECT
-        user.aaba_id, user.office_id   // for second SELECT (total)
-    ])
-    const query3=`SELECT a.aaba_id,a.office_id,c.id,c.acc_sirshak_name,
+        const [isthaniye] = await pool.query(query2, [
+            user.aaba_id, user.office_id,  // for first SELECT
+            user.aaba_id, user.office_id   // for second SELECT (total)
+        ])
+        const query3 = `SELECT a.aaba_id,a.office_id,c.id,c.acc_sirshak_name,
   SUM(a.amount * (e.pardesh / 100)) AS total_amount,
   SUM(CASE WHEN a.month_id = 4 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'A',
   SUM(CASE WHEN a.month_id = 5 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'B',
@@ -279,13 +296,13 @@ INNER JOIN voucher_badhfadh e
   AND e.state_id = d.state_id
 INNER JOIN voucher_napa f ON a.office_id = f.office_id AND a.napa_id = f.napa_id
 WHERE a.aaba_id = ? AND a.office_id = ?
-GROUP BY a.aaba_id, a.office_id, a.napa_id, f.napa_name
-ORDER BY aaba_id, office_id, id`    
-    const [pardesh]=await pool.query(query3,[
-        user.aaba_id, user.office_id,  // for first SELECT
-        user.aaba_id, user.office_id   // for second SELECT (total)
-    ])
-    const query4=`SELECT a.aaba_id,a.office_id,c.id,c.acc_sirshak_name,
+GROUP BY a.aaba_id, a.office_id
+ORDER BY aaba_id, office_id, id`
+        const [pardesh] = await pool.query(query3, [
+            user.aaba_id, user.office_id,  // for first SELECT
+            user.aaba_id, user.office_id   // for second SELECT (total)
+        ])
+        const query4 = `SELECT a.aaba_id,a.office_id,c.id,c.acc_sirshak_name,
   SUM(a.amount * (e.sanchitkosh / 100)) AS total_amount,
   SUM(CASE WHEN a.month_id = 4 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'A',
   SUM(CASE WHEN a.month_id = 5 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'B',
@@ -335,20 +352,20 @@ INNER JOIN voucher_badhfadh e
   AND e.state_id = d.state_id
 INNER JOIN voucher_napa f ON a.office_id = f.office_id AND a.napa_id = f.napa_id
 WHERE a.aaba_id = ? AND a.office_id = ?
-GROUP BY a.aaba_id, a.office_id, a.napa_id, f.napa_name
+GROUP BY a.aaba_id, a.office_id
 ORDER BY aaba_id, office_id, id`
-    const [sanchitkosh]=await pool.query(query4,[
-        user.aaba_id, user.office_id,  // for first SELECT
-        user.aaba_id, user.office_id   // for second SELECT (total)
-    ])
-    
-    return res.status(200).json({
+        const [sanchitkosh] = await pool.query(query4, [
+            user.aaba_id, user.office_id,  // for first SELECT
+            user.aaba_id, user.office_id   // for second SELECT (total)
+        ])
+
+        return res.status(200).json({
             message: "डाटा सफलतापूर्वक प्राप्त भयो",
             officesum: officesum,
-            sanchitkosh:sanchitkosh,
-            isthaniye:isthaniye,
-            pardesh:pardesh,
-    });
+            sanchitkosh: sanchitkosh,
+            isthaniye: isthaniye,
+            pardesh: pardesh,
+        });
     } catch (error) {
         next(error)
     }
@@ -362,13 +379,13 @@ router.post('/VoucherByDate', async (req, res, next) => {
         console.log(users);
         console.log(users.length);
         if (users.length == 0) {
-            let query = `select a.id,a.month_id,a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,e.nepname,a.deposited_by from voucher a
-    inner join voucher_sirshak b on a.sirshak_id=b.id
-    inner join voucher_fant c on a.fant_id=c.id
-    inner join voucher_napa d on a.napa_id=d.id and a.office_id=d.office_id
-    inner join users e on e.id=a.created_by_user_id
-    where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?
-    order by edate_transaction,ndate_transaction,voucherno`;
+        let query = `select a.id,a.month_id,a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,e.nepname,a.deposited_by from voucher a
+        inner join voucher_sirshak b on a.sirshak_id=b.id
+        inner join voucher_fant c on a.fant_id=c.id
+        inner join voucher_napa d on a.napa_id=d.id and a.office_id=d.office_id
+        inner join users e on e.id=a.created_by_user_id
+        where a.office_id=? and  a.edate_transaction >=? and a.edate_transaction<=?
+        order by edate_transaction,ndate_transaction,voucherno`;
             const [data] = await pool.query(query, [user.office_id, user.start_date, user.end_date]);
             return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: data });
         }
@@ -532,7 +549,6 @@ router.get('/getVoucherDetailsById/:id', async (req, res, next) => {
         next(error)
     }
 })
-
 router.post('/deleteVoucherById', (req, res) => {
     let user = req.body;
     console.log("got from client", user);
@@ -556,5 +572,50 @@ router.post('/deleteVoucherById', (req, res) => {
 
     })
 })
+router.post('/voucherpalika', async (req, res, next) => {
+    try {
+        let user = req.body;
+        console.log(user);
+        let query = `select a.aaba_id,a.office_id,b.acc_sirshak_id,c.acc_sirshak_name,a.napa_id,d.napa_name,sum(amount) as amount from voucher a
+        inner join voucher_sirshak b on a.sirshak_id=b.id
+        inner join voucher_acc_sirshak c on b.acc_sirshak_id=c.id
+        inner join voucher_napa d on d.id=a.napa_id and a.office_id=d.office_id
+        where a.aaba_id=? and a.office_id=? and a.edate_transaction >=? and a.edate_transaction<=?
+        group by a.aaba_id,a.office_id,b.acc_sirshak_id,a.napa_id,d.napa_name
+        order by a.aaba_id,a.office_id,b.acc_sirshak_id,a.napa_id`;
+        const [data] = await pool.query(query, [user.aaba_id, user.office_id, user.start_date, user.end_date]);
+        return res.status(200).json({
+            message: "डाटा सफलतापुर्वक प्राप्त भयो",
+            data: data
+        })
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.post('/VoucherSumByDate', async (req, res, next) => {
+    try {
+        let user = req.body
+        console.log(user);
+        let keys = user.fant_id
+        let fants = keys.map((it) => { return `'${it}'` })
+        console.log(fants);
+        let query = `select a.aaba_id,a.office_id,a.sirshak_id,b.sirshak_name,sum(a.amount) as amount from voucher a
+        inner join voucher_sirshak b on a.sirshak_id=b.id
+        where a.aaba_id=? and a.office_id=? and a.edate_transaction >=? and a.edate_transaction<=? and a.fant_id in(${fants})
+        group by a.aaba_id,a.office_id,a.sirshak_id`;
+        console.log(query);
+        const [data] = await pool.query(query, [user.aaba_id, user.office_id, user.start_date, user.end_date]);
+        return res.status(200).json({
+            message: "डाटा सफलतापुर्वक प्राप्त भयो",
+            data: data
+        })
+    } catch (error) {
+        next(error)
+    }
+
+})
+
+
 
 module.exports = router;

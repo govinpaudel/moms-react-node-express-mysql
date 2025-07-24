@@ -41,8 +41,8 @@ const Login = () => {
       if (response.data.status == true) {
         let data1={...response.data.data,"aabaid":defaaba}   
         console.log("data1",data1)            
-        sessionStorage.setItem("access_token", JSON.stringify(response.data.access_token));
-        sessionStorage.setItem("refresh_token", JSON.stringify(response.data.refresh_token));
+        sessionStorage.setItem("access_token", response.data.access_token);
+        sessionStorage.setItem("refresh_token", response.data.refresh_token);
         sessionStorage.setItem("loggedUser", JSON.stringify(data1));
         toast.success(response.data.message);
         navigate("/apphome");

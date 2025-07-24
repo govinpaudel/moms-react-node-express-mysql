@@ -10,7 +10,6 @@ const authRoute = require('./Routes/auth.route');
 const voucherRoute = require('./Routes/voucher.route');
 const bargikaranRoute=require('./Routes/bargikaran.route')
 const misilRoute=require('./Routes/misil.route');
-const kittaRoute=require('./Routes/kitta.route');
 const adminRoute=require('./Routes/admin.route');
 const superadminRoute=require('./Routes/superadmin.route');
 const requestIp =require("request-ip");
@@ -23,15 +22,14 @@ app.use(requestIp.mw());
 app.set('trust proxy', true);
 // lets handle request coming from frontend
 app.use('/api/auth', authRoute);
-app.use('/api/voucher',voucherRoute);
-app.use('/api/bargikaran',bargikaranRoute);
-app.use('/api/misil',misilRoute);
-app.use('/api/kitta',kittaRoute);
-app.use('/api/admin',adminRoute);
-app.use('/api/superadmin',superadminRoute);
+app.use('/api/voucher',verifyAccesstoken,voucherRoute);
+app.use('/api/bargikaran',verifyAccesstoken,bargikaranRoute);
+app.use('/api/misil',verifyAccesstoken,misilRoute);
+app.use('/api/admin',verifyAccesstoken,adminRoute);
+app.use('/api/superadmin',verifyAccesstoken,superadminRoute);
 app.get('/api/', async (req, res, next) => { res.send("Hello from Main Server Page") })
 
-app.use((err, req, res, next) => {
+app.use((err, req, res,next) => {
     res.status(err.status || 500)
     console.log(err);
     res.send({

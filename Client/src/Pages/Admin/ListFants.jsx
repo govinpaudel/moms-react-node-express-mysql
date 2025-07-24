@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 import "./List.scss";
 import { toast } from 'react-toastify';
 const ListFants = () => {
@@ -13,7 +13,7 @@ const ListFants = () => {
 
   const [listdata,setlistdata]=useState();
   const [data,setdata]=useState(initialdata);
-  const Url = import.meta.env.VITE_API_URL + "admin/";  
+
 
   const loadEditData=async(id)=>{
     const data = {
@@ -21,11 +21,8 @@ const ListFants = () => {
         fant_id:id        
       }
       console.log("data sent", data);
-      const response = await axios({
-        method: "post",
-        url: Url + "getFantById",
-        data: data
-      });
+      const url="admin/getFantById"
+      const response = await axiosInstance.post(url,data);      
       setdata(response.data.data[0])
       console.log(response.data.data[0]);  
   }
@@ -33,11 +30,8 @@ const ListFants = () => {
 const OnSubmit=async(e)=>{
     e.preventDefault();
     console.log("data sent for updation",data);
-    const response = await axios({
-        method: "post",
-        url: Url + "addOrUpdateFants",
-        data: data
-      });
+    const url="admin/addOrUpdateFants";
+    const response= await axiosInstance.post(url,data);   
       console.log(response);
       if(response.data.status==true){
         toast.success(response.data.message);
@@ -53,11 +47,9 @@ const OnSubmit=async(e)=>{
       status:status
     }
     console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "changeFantStatus",
-      data: data
-    });
+    const url="admin/changeFantStatus";
+    const response= await axiosInstance.post(url,data);
+    
     console.log(response);  
     if(response.data.status){
       toast.success(response.data.message);
@@ -78,11 +70,8 @@ const OnSubmit=async(e)=>{
       office_id: loggedUser.office_id
     }
     console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "listFants",
-      data: data
-    });
+    const url="admin/listFants"; 
+    const response= await axiosInstance.post(url,data)  
     console.log(response);
     setlistdata(response.data.data);
 

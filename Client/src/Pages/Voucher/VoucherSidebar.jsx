@@ -1,11 +1,10 @@
 import { NavLink } from "react-router-dom";
 import "./VoucherSidebar.scss";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../../axiosInstance";
 
-const VoucherSidebar = () => {
-  const Url = import.meta.env.VITE_API_URL + "auth/";
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+const VoucherSidebar = () => {  
+  const loggedUser = JSON.parse(sessionStorage?.getItem("loggedUser"));
   const [data, setdata] = useState([])
 
   const loadsidebardata = async () => {
@@ -14,11 +13,7 @@ const VoucherSidebar = () => {
         module:'Voucher'
       }
     console.log("getting sidebar list",data)
-    const response = await axios({
-      method: "post",
-      url: Url + "getSidebarlist",
-      data: data
-    });    
+    const response =await axiosInstance.post("auth/getSidebarlist",data);    
     console.log('Resultcame',response)
     setdata(response.data.data);   
 

@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from "react";
 import "./VoucherOfficeSum.scss";
-import axios from "axios";
+import axiosInstance from "../../axiosInstance";
 import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
@@ -27,12 +27,8 @@ useEffect(() => {
       aaba_id: loggedUser.aabaid      
     };
     console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "VoucherOfficeSum",
-      data: data,
-    });
-    console.log('officesum',response.data.officesum);    
+    const response = await axiosInstance.post("voucher/VoucherOfficeSum",data)   
+    console.log('sanchitkosh',response.data.sanchitkosh);    
     setOfficeSum(response.data.officesum);    
     setisthaniye(response.data.isthaniye);    
     setpardesh(response.data.pardesh);

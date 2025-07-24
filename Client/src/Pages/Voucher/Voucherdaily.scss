@@ -1,0 +1,23 @@
+.Voucherdetails {
+    &__fant {
+        display: flex;        
+        padding: 10px;
+        border: 1px solid var(--yellow-theme-main-color);
+        border-radius: 5px;
+        margin-top: 10px;
+        margin-right: 10px;
+        gap: 25px;
+        &__item {
+            &__box {
+                width: 35px;
+                color: var(--yellow-theme-main-color);
+            }
+
+            h4 {
+                color: var(--yellow-theme-main-color);
+                font-size: 14px;
+            }
+        }
+    }
+
+}

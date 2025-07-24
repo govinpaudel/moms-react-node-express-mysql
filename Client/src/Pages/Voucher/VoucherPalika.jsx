@@ -2,11 +2,11 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { useState,useEffect } from "react";
 import Calendar from "@sbmdkl/nepali-datepicker-reactjs";
-import "./Voucherdetails.scss";
-import axios from "axios";
+import "./VoucherPalika.scss";
+import axiosInstance from "../../axiosInstance";
 import { useNavigate } from "react-router-dom";
 
-const Voucherdaily = () => {
+const VoucherPalika = () => {
   const navigate=useNavigate();
   const Url = import.meta.env.VITE_API_URL + "voucher/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
@@ -14,53 +14,25 @@ const Voucherdaily = () => {
     nep_start_date: "",
     nep_end_date: "",
     eng_start_date: "",
-    eng_end_date: "",
-    fant_id: 0
+    eng_end_date: ""    
   };
-  const [sdata, setSdata] = useState(initialdata);
-  const [fselected, setfselected] = useState([]);
-  const [fdata, setfdata] = useState(0);
+  const [sdata, setSdata] = useState(initialdata);  
   const [total, settotal] = useState(0);
   const [repdata,setrepdata]=useState([]);
-  const loadfants = async () => {
-    const data = {
-      office_id: loggedUser.office_id,
-      aaba_id: loggedUser.aabaid,
-    };
-    console.log("getting fantlist", data)
-    const response = await axios({
-      method: "post",
-      url: Url + "Fantlist",
-      data: data,
-    });
-    console.log(response.data);
-    setfdata(response.data.fants);
-  }
-  function handlefant(e) {
-    const x = fselected;
-    if (e.target.checked) {
-      x.push(e.target.value);
-      setfselected(x);
-    } else {
-      const index = fselected.indexOf(e.target.value);
-      x.splice(index, 1);
-      setfselected(x);
-    }
-  } 
-  useEffect(() => {    
-    loadfants();
+  
+  useEffect(() => {   
+    
     document.title = "MOMS | दिन अनुसारको विवरण";
   }, [])
 
 const dototal =()=>{
     var x =0;
-    repdata.forEach((a) => {      
-      if(a.sirshak_id==99){
+    repdata.forEach((a) => {  
         x=x+ parseInt(a.amount);
-      }      
     })
     settotal(x);
   }
+
   useEffect(() => {    
   dototal();   
   }, [repdata])
@@ -79,19 +51,14 @@ const dototal =()=>{
   const genReport = async () => {   
     const data = {      
       start_date:sdata.eng_start_date,
-      end_date:sdata.eng_end_date,
-      fant_id: fselected,
-      office_id:loggedUser.office_id
+      end_date:sdata.eng_end_date,      
+      office_id:loggedUser.office_id,
+      aaba_id:loggedUser.aabaid
     };
     console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "VoucherSumByDate",
-      data: data,
-    });
+    const response= await axiosInstance.post("voucher/Voucherpalika",data)    
     console.log(response.data.data);
-    setrepdata(response.data.data);
-    
+    setrepdata(response.data.data);    
   };
 
 
@@ -101,23 +68,6 @@ const dototal =()=>{
       headerText="दैनिक भौचर प्रतिवेदन"
       icon={<BsInfoCircleFill size={40} />}
     />
-<div className="Vouchermonthly__month">
-        {fdata ? fdata.map((item, i) => {
-          return (
-            <div className="Vouchermonthly__month__item" key={i}>
-              <input
-                className="Vouchermonthly__month__item__box"
-                type="checkbox"
-                name="fant"
-                value={item.fid}
-                onClick={handlefant}
-              />
-              <h4>{item.fname}</h4>
-            </div>
-          );
-        }) : null}        
-      </div>
-
     <div className="Voucherdetails__dateform">
       <div className="Voucherdetails__dateform__item">
         <label className="Voucherdetails__dateform__item__label">शुरु मिति</label>
@@ -151,10 +101,8 @@ const dototal =()=>{
       <div className="listvoucher__list">
         <table className="listvoucher__list__table">
           <thead>
-            <tr>
-                         
-              <th>कारोबार मिति</th>
-              <th>कारोबार शिर्षक</th>
+            <tr>   
+              <th>पालिकाको नाम</th>
               <th>लेखा शिर्षक</th>
               <th>रकम</th>              
             </tr>
@@ -163,9 +111,8 @@ const dototal =()=>{
             {repdata.length > 0 ? (
               repdata.map((data, i) => {
                 return (
-                  <tr key={i}> 
-                    <td>{data.ndate_transaction}</td>
-                    <td>{data.sirshak_name}</td>
+                  <tr key={i}>                     
+                    <td>{data.napa_name}</td>
                     <td>{data.acc_sirshak_name}</td>
                     <td>{data.amount}</td>                   
                   </tr>
@@ -191,4 +138,4 @@ const dototal =()=>{
   </section>
 }
 
-export default Voucherdaily;
+export default VoucherPalika;

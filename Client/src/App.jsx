@@ -32,7 +32,8 @@ import MisilHome from './Pages/Misil/MisilHome';
 import ViewPoka from './Pages/Misil/ViewPoka';
 import CalcMainPage from './Pages/Calculator/CalcMainPage';
 import VoucherOfficeSum from './Pages/Voucher/VoucherOfficeSum';
-
+import Voucherdaily from './Pages/Voucher/Voucherdaily';
+import VoucherPalika from './Pages/Voucher/VoucherPalika'
 function App() {
   return (
     <>
@@ -53,6 +54,8 @@ function App() {
               <Route path='voucherfant' element={<VoucherFant />} />              
               <Route path='voucherbydate' element={<VoucherByDate />} />        
               <Route path='officesum' element={<VoucherOfficeSum />} /> 
+              <Route path='voucherdaily' element={<Voucherdaily/>} /> 
+              <Route path='voucherpalika' element={<VoucherPalika/>} /> 
             </Route>
             {/* Voucher routes ends */}
             {/* bargikaran route starts */}

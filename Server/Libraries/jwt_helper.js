@@ -4,17 +4,17 @@ const createError = require('http-errors');
 
 function signAccessToken(userid) {
     return new Promise((resolve, reject) => {
-        const payload = {};
+        const payload = { id: userid };  // Add useful data
         const secret_key = process.env.SECRET_KEY_TO_ACCESS;
         const options = {
             expiresIn: '8h',
             audience: userid.toString()
         };
         JWT.sign(payload, secret_key, options, (err, token) => {
-            if (err) reject(err)
-            resolve(token)
-        })
-    })
+            if (err) return reject(err);
+            resolve(token);
+        });
+    });
 }
 
 function signRefreshToken(userid) {
@@ -32,11 +32,12 @@ function signRefreshToken(userid) {
     })
 }
 function verifyAccesstoken(req, res, next) {
-    console.log(req.headers['authorization']);
+    console.log('Tokencame',req.headers['authorization']);
     if (!req.headers['authorization']) return next(createError.Unauthorized())
     const authHeader = req.headers['authorization']
     const bearerToken = authHeader.split(' ')
     const token = bearerToken[1]
+    console.log('token',token)
     JWT.verify(token, process.env.SECRET_KEY_TO_ACCESS, (err, payload) => {
         if (err) {
             console.log(err.name)

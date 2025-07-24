@@ -1,9 +1,10 @@
-import axios from 'axios';
-import React, { useEffect, useState, useRef } from 'react';
+import axiosInstance from '../../axiosInstance';
+import  { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import './ViewPoka.scss';
 import { toast } from 'react-toastify';
 import { Modal } from 'bootstrap';
+
 const ViewPoka = () => {
     const location = useLocation();
     const [header, setheader] = useState([]);
@@ -39,11 +40,9 @@ const ViewPoka = () => {
         const data = {
             id: location.state.id
         }
-        const response = await axios({
-            method: 'post',
-            url: Url + 'getPokaById',
-            data: data
-        })
+ const url="misil/getPokaById";
+    const response=await axiosInstance.post(url,data)
+        
         console.log(response);
         setheader(response.data.data[0]);
     }
@@ -51,11 +50,9 @@ const ViewPoka = () => {
         const data = {
             id: location.state.id
         }
-        const response = await axios({
-            method: 'post',
-            url: Url + 'getPokaDetailsById',
-            data: data
-        })
+        const url="misil/getPokaDetailsById";
+        const response=await axiosInstance.post(url,data)
+        
         console.log(response);
         setdetails(response.data.data);
     }
@@ -64,11 +61,8 @@ const ViewPoka = () => {
     const handleSumbit = async (e) => {
         e.preventDefault();
         console.log(misil);
-        const response = await axios({
-            method: 'post',
-            url: Url + 'AddOrUpdateMisil',
-            data: misil
-        })
+        const url="misil/AddOrUpdateMisil";
+        const response=await axiosInstance.post(url,data)        
         console.log(response);
         if (response.data.status == true) {
             toast.success(response.data.message);
@@ -95,11 +89,8 @@ const ViewPoka = () => {
         const data = {
             id: e
         }
-        const response = await axios({
-            method: 'POST',
-            url: Url + 'getMisilById',
-            data: data
-        })
+        const url="misil/getMisilById";
+        const response=await axiosInstance.post(url,data);        
         console.log(response);
         setmisil(response.data.data[0])
     }
@@ -110,11 +101,8 @@ const ViewPoka = () => {
                 id: e,
                 poka_id: location.state.id
             }
-            const response = await axios({
-                method: 'POST',
-                url: Url + 'deleteMisilById',
-                data: data
-            })
+            const url="misil/deleteMisilById";
+            const response=await axiosInstance.post(url,data);            
             console.log(response);
             if (response.data.status == true) {
                 toast.success(response.data.message);

@@ -3,12 +3,11 @@ import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { useState, useEffect } from "react";
 import Calendar from "@sbmdkl/nepali-datepicker-reactjs";
 import "./VoucherByDate.scss";
-import axios from "axios";
+import axiosInstance from "../../axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 const VoucherByDate = () => {
-  const navigate = useNavigate();
-  const Url = import.meta.env.VITE_API_URL + "voucher/";
+  const navigate = useNavigate();  
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const initialdata = {
     nep_start_date: "",
@@ -28,11 +27,7 @@ const VoucherByDate = () => {
       aaba_id: loggedUser.aabaid,
     };
     console.log("getting loadusers", data)
-    const response = await axios({
-      method: "post",
-      url: Url + "Userlist",
-      data: data,
-    });
+    const response = await axiosInstance.post("voucher/Userlist",data)     
     console.log(response.data);
     setudata(response.data.users);
   }
@@ -84,11 +79,7 @@ const VoucherByDate = () => {
       office_id: loggedUser.office_id
     };
     console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "VoucherByDate",
-      data: data,
-    });
+    const response = await axiosInstance.post("voucher/VoucherByDate",data)    
     console.log(response.data.data);
     setrepdata(response.data.data);
   };

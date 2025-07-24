@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 import "./listPoka.scss";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -40,11 +40,8 @@ const ListPoka = () => {
   const handlesubmit = async (e) => {
     e.preventDefault();
     // console.log(formData);
-    const response = await axios({
-      method: "POST",
-      data: formData,
-      url: Url + 'addOrUpdatePoka'
-    })
+    const url="misil/addOrUpdatePoka";
+    const response=await axiosInstance.post(url,formData)    
     // console.log(response);
     if (response.data.status == true) {
       toast.success(response.data.message);
@@ -56,30 +53,24 @@ const ListPoka = () => {
   }
   const loadAabas = async () => {
     console.log("calling aabas");
-    const response = await axios({
-      method: "get",
-      url: Url + 'getAllAabas'
-    },)
+    const url="misil/getAllAabas";
+    const response=await axiosInstance.get(url)    
     // console.log(response.data.data);
     setAaba(response.data.data)
   };
   const loadMisiTypes = async () => {
-    const response = await axios({
-      method: "get",
-      url: Url + 'getMisilTypes'
-    },)
+    const url="misil/getMisilTypes";
+    const response=await axiosInstance.get(url)      
     // console.log(response.data.data);
     setMisilTypes(response.data.data);
   };
   const loadPokas = async () => {
-    const response = await axios({
-      method: "post",
-      url: Url + "getPokasByOffice",
-      data: {
+    const data= {
         office_id: loggedUser.office_id
       }
-    }
-    )
+     const url="misil/getPokasByOffice";
+    const response=await axiosInstance.post(url,data)  
+    
     // console.log(response.data);
     setdata(response.data.data);
   }
@@ -97,11 +88,9 @@ const ListPoka = () => {
     const data = {
       misil_id: e
     }
-    const response = await axios({
-      method: 'POST',
-      url: Url + 'getPokaForEdit',
-      data: data
-    })
+    
+    const url="misil/getPokaForEdit";
+    const response=await axiosInstance.post(url,data)    
     // console.log(response.data.data);
     openModal();
     setFormData(response.data.data[0]);

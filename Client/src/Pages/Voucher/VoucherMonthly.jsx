@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from "react";
 import "./VoucherMonthly.scss";
-import axios from "axios";
+import axiosInstance from "../../axiosInstance";
 import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
@@ -20,11 +20,7 @@ const VoucherMonthly = () => {
       aaba_id: loggedUser.aabaid,      
     };
     console.log("getting monthlist",data)
-    const response = await axios({
-      method: "post",
-      url: Url + "MonthlistByAaba",
-      data: data,
-    });
+    const response = await axiosInstance.post("voucher/MonthlistByAaba",data)
     console.log(response.data);
     setmdata(response.data.months);
   }
@@ -50,11 +46,7 @@ useEffect(() => {
       month_id: mselected,
     };
     console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "VoucherMonthly",
-      data: data,
-    });
+    const response = await axiosInstance.post("voucher/VoucherMonthly",data)    
     console.log(response.data.data);    
     setregi(response.data.data.registration); 
     setsummary(response.data.data.summary);

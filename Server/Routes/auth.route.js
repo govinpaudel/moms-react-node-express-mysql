@@ -5,8 +5,9 @@ const router = express.Router();
 const { signAccessToken, signRefreshToken, verifyAccesstoken, verifyRefreshtoken } = require('../Libraries/jwt_helper');
 const createError = require('http-errors');
 
-router.get('/', async (req, res, next) => { res.send("Hello from auth Routepage") })
 
+//route without tokens
+router.get('/', async (req, res, next) => { res.send("Hello from auth Routepage") })
 router.post('/register', async (req, res, next) => {
     try {
         const data = req.body;
@@ -55,7 +56,26 @@ router.post('/login', async (req, res, next) => {
         return res.status(401).json({ status: false, message: `प्रयोगकर्ता वा पासवर्ड मिलेन ।` })
     }
 })
-router.post('/changepassword', async (req, res) => {
+router.get('/getAllOffices', async (req, res, next) => {
+    try {
+        let query = "select * from offices where isactive='1'";
+        const [results] = await pool.query(query);
+        return res.status(200).json({ status: true, data: results, message: `डाटा प्राप्त भयो ।` })
+    } catch (error) {
+        next(error)
+    }
+})
+router.get('/getAllAabas', async (req, res, next) => {
+    try {
+        const [rows] = await pool.query("select * from aabas where isactive='1'");
+        console.log(rows);
+        return res.status(200).json({ status: true, data: rows, message: `डाटा प्राप्त भयो ।` })
+    } catch (error) {
+        next(error);
+    }
+});
+//routes with token
+router.post('/changepassword',verifyAccesstoken, async (req, res) => {
     const { user_id, oldpassword, newpassword } = req.body;
 
     try {
@@ -95,25 +115,8 @@ router.post('/refresh-token', async (req, res, next) => {
         next(err.message)
     }
 })
-router.get('/getAllOffices', async (req, res, next) => {
-    try {
-        let query = "select * from offices where isactive='1'";
-        const [results] = await pool.query(query);
-        return res.status(200).json({ status: true, data: results, message: `डाटा प्राप्त भयो ।` })
-    } catch (error) {
-        next(error)
-    }
-})
-router.get('/getAllAabas', async (req, res, next) => {
-    try {
-        const [rows] = await pool.query("select * from aabas where isactive='1'");
-        console.log(rows);
-        return res.status(200).json({ status: true, data: rows, message: `डाटा प्राप्त भयो ।` })
-    } catch (error) {
-        next(error);
-    }
-});
-router.post('/getSidebarlist', async (req, res, next) => {
+
+router.post('/getSidebarlist',verifyAccesstoken, async (req, res, next) => {
     try {
         let user = req.body;
         console.log(user);

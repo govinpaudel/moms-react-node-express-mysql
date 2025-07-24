@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./VoucherFant.scss";
-import axios from "axios";
+import axiosInstance from "../../axiosInstance";
 import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
@@ -22,11 +22,7 @@ const VoucherFant = () => {
       aaba_id: loggedUser.aabaid      
     };
     console.log("getting monthlist", data)
-    const response = await axios({
-      method: "post",
-      url: Url + "MonthlistByAaba",
-      data: data,
-    });
+    const response = await axiosInstance.post("voucher/MonthlistByAaba",data)
     console.log(response.data);
     setmdata(response.data.months);
   }
@@ -40,11 +36,7 @@ const VoucherFant = () => {
       month_id: mselected
     };
     console.log("getting fantlist", data)
-    const response = await axios({
-      method: "post",
-      url: Url + "FantlistByAabaMonth",
-      data: data,
-    });
+    const response = await axiosInstance.post("voucher/FantlistByAabaMonth",data)    
     console.log(response.data);
     setfdata(response.data.fants);
   }
@@ -60,11 +52,7 @@ const VoucherFant = () => {
       fant_id:fselected
     };
     console.log("getting userlist", data)
-    const response = await axios({
-      method: "post",
-      url: Url + "UserlistByAabaMonthFant",
-      data: data,
-    });
+    const response = await axiosInstance.post("voucher/UserlistByAabaMonthFant",data)   
     console.log(response.data);
     setudata(response.data.users);
   }
@@ -99,11 +87,7 @@ const VoucherFant = () => {
       user_id:uselected
     };
     console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "VoucherFant",
-      data: data,
-    });
+    const response = await axiosInstance.post("voucher/VoucherFant",data)
     console.log(response.data.data);
     setsummary(response.data.data);    
   };
