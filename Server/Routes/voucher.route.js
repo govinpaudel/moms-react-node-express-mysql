@@ -379,7 +379,7 @@ router.post('/VoucherByDate', async (req, res, next) => {
         console.log(users);
         console.log(users.length);
         if (users.length == 0) {
-        let query = `select a.id,a.month_id,a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,e.nepname,a.deposited_by from voucher a
+            let query = `select a.id,a.month_id,a.edate_voucher,a.ndate_voucher,a.edate_transaction,a.ndate_transaction,a.sirshak_id,b.sirshak_name,a.fant_id,c.fant_name,a.napa_id,d.napa_name,a.voucherno,a.amount,a.created_by_user_id,e.nepname,a.deposited_by from voucher a
         inner join voucher_sirshak b on a.sirshak_id=b.id
         inner join voucher_fant c on a.fant_id=c.id
         inner join voucher_napa d on a.napa_id=d.id and a.office_id=d.office_id
@@ -484,13 +484,15 @@ router.post('/getTodaysVoucher', async (req, res, next) => {
     }
 
 })
-router.post('/loadSingleVoucher', (req, res) => {
-    let user = req.body;
-    console.log(req.body);
-    const now = new Date();
-    const value = date.format(now, 'YYYY-MM-DD');
-    console.log("current date and time : " + value)
-    squery = "SELECT a.id,a.ndate_transaction,a.ndate_voucher,a.voucherno,a.sirshak_id,a.amount,DATE_FORMAT(a.created_at,'%Y-%m-%d') as created_at,a.created_by_user_id,a.deposited_by,b.sirshak_name,c.napa_name,e.fant_name,f.nepname from voucher a\
+router.post('/loadSingleVoucher', async (req, res, next) => {
+    try {
+
+        let user = req.body;
+        console.log(req.body);
+        const now = new Date();
+        const value = date.format(now, 'YYYY-MM-DD');
+        console.log("current date and time : " + value)
+        squery = "SELECT a.id,a.ndate_transaction,a.ndate_voucher,a.voucherno,a.sirshak_id,a.amount,DATE_FORMAT(a.created_at,'%Y-%m-%d') as created_at,a.created_by_user_id,a.deposited_by,b.sirshak_name,c.napa_name,e.fant_name,f.nepname from voucher a\
         INNER JOIN voucher_sirshak b on\
         a.sirshak_id=b.id \
         inner join voucher_napa c on\
@@ -502,14 +504,12 @@ router.post('/loadSingleVoucher', (req, res) => {
         a.created_by_user_id=f.id \
         WHERE a.aaba_id=? and a.office_id=? and a.voucherno=?\
         order by a.created_at";
-    connection.query(squery, [user.aaba_id, user.office_id, user.voucherno], (err, results) => {
-        if (!err) {
-            return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: results });
-        }
-        else {
-            return res.status(400).json({ message: err });
-        }
-    })
+        const values = [user.aaba_id, user.office_id, user.voucherno]
+        const [results] = await pool.query(squery, values);
+        return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: results });
+    } catch (error) {
+        next(error)
+    }
 })
 //add or edit voucher
 router.post('/addOrUpdateVoucher', async (req, res, next) => {

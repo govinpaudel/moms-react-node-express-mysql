@@ -115,7 +115,6 @@ router.post('/refresh-token', async (req, res, next) => {
         next(err.message)
     }
 })
-
 router.post('/getSidebarlist',verifyAccesstoken, async (req, res, next) => {
     try {
         let user = req.body;

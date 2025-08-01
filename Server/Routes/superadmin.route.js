@@ -9,6 +9,8 @@ router.get('/', (req, res) => {
 
 // List admin users
 router.post('/listAdminUsers', async (req, res) => {
+  let user=req.body;
+  console.log(user);
   try {
     const query = `SELECT a.*, b.office_name FROM users a 
                    INNER JOIN offices b ON a.office_id = b.id 

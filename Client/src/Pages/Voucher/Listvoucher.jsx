@@ -7,8 +7,7 @@ import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { toast } from "react-toastify";
 const Listvoucher = () => {
-  const navigate = useNavigate();
-  const Url = import.meta.env.VITE_API_URL + "voucher/";
+  const navigate = useNavigate();  
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const [voucherlist, setvoucherlist] = useState([]);
   const [svoucherno, setsvoucherno] = useState(0);
@@ -80,11 +79,8 @@ useEffect(() => {
         aaba_id: loggedUser.aabaid,
         voucherno: svoucherno.trim(),
       };
-      const response = await axios({
-        method: "post",
-        url: Url + "loadSingleVoucher",
-        data: data,
-      });
+      const url="voucher/loadSingleVoucher";
+      const response=await axiosInstance.post(url,data);      
       setvoucherlist(response.data.data);
     }
     else {

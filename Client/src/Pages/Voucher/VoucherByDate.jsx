@@ -169,7 +169,7 @@ const VoucherByDate = () => {
                   <td>{data.sirshak_name}</td>
                   <td>{data.napa_name}</td>
                   <td>{data.fant_name}</td>
-                  <td onClick={() => navigate("/voucher/editvoucher", { state: { id: data.id } })}>{data.voucherno}</td>
+                  <td>{data.voucherno}</td>
                   <td>{data.deposited_by}</td>
                   <td>{data.amount}</td>
                   <td>{data.nepname}</td>

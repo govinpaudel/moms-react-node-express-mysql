@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import "./SuperAdminSidebar.scss";
 import { NavLink } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance'
+
 
 const SuperAdminSidebar = () => {
   const [data, setdata] = useState([])
@@ -9,14 +10,12 @@ const SuperAdminSidebar = () => {
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
 
   const LoadSidebar = async () => {
-    const response = await axios({
-      method: "post",
-      url: Url + "getSidebarlist",
-      data: {
-        user_id: loggedUser.id,
-        module: 'SuperAdmin'
-      }
-    });
+    const url ="auth/getSidebarlist";
+    const data = {
+      user_id: loggedUser.id,
+      module: 'SuperAdmin'
+    }
+    const response = await axiosInstance.post(url,data);    
     setdata(response.data.data);
     console.log(response.data.data)
   }

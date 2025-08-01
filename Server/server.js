@@ -26,7 +26,7 @@ app.use('/api/voucher',verifyAccesstoken,voucherRoute);
 app.use('/api/bargikaran',verifyAccesstoken,bargikaranRoute);
 app.use('/api/misil',verifyAccesstoken,misilRoute);
 app.use('/api/admin',verifyAccesstoken,adminRoute);
-app.use('/api/superadmin',verifyAccesstoken,superadminRoute);
+app.use('/api/superadmin',superadminRoute);
 app.get('/api/', async (req, res, next) => { res.send("Hello from Main Server Page") })
 
 app.use((err, req, res,next) => {

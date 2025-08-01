@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 import "./ListAdminUsers.scss";
 import { toast } from 'react-toastify';
 const ListAdminUsers = () => {
   const [data, setdata] = useState();
-  const Url = import.meta.env.VITE_API_URL + "superadmin/";
+  
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
 
   const changeStatus = async (id, status) => {
@@ -14,13 +15,8 @@ const ListAdminUsers = () => {
       user_id: id,
       status: status
     }
-    console.log("data sent to changeuser status", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "changeUserStatus",
-      data: data
-    });
-    console.log(response);
+    const url ="superadmin/changeUserStatus";
+    const response=await axiosInstance.post(url,data);    
     if (response.data.status) {
       toast.success(response.data.message);
       loadData();
@@ -34,15 +30,9 @@ const ListAdminUsers = () => {
     const data = {
       office_id: loggedUser.office_id
     }
-    console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "listAdminUsers",
-      data: data
-    });
-    console.log(response);
+    const url="superadmin/listAdminUsers";    
+    const response =await axiosInstance.post(url,data);        
     setdata(response.data.data);
-
   }
 
   const resetPassword = async (id) => {
