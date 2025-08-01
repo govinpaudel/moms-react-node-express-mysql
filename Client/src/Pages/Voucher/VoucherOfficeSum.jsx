@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./VoucherOfficeSum.scss";
 import axiosInstance from "../../axiosInstance";
 import { toast } from "react-toastify";
@@ -6,46 +6,46 @@ import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
 const VoucherOfficeSum = () => {
   const Url = import.meta.env.VITE_API_URL + "voucher/";
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));    
-  const [officeSum,setOfficeSum]=useState([]);
-  const [sanchitkosh,setsanchitkosh]=useState([{}]);
-  const [isthaniye,setisthaniye]=useState();
-  const [pardesh,setpardesh]=useState([]);
+  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const [officeSum, setOfficeSum] = useState([]);
+  const [sanchitkosh, setsanchitkosh] = useState([{}]);
+  const [isthaniye, setisthaniye] = useState();
+  const [pardesh, setpardesh] = useState([]);
 
-useEffect(() => {
-  genReport();
-  document.title = "MOMS | कार्यालय प्रगति  विवरण";
-},[])
+  useEffect(() => {
+    genReport();
+    document.title = "MOMS | कार्यालय प्रगति  विवरण";
+  }, [])
 
   const genReport = async () => {
-    setOfficeSum([{}]); 
+    setOfficeSum([{}]);
     setsanchitkosh([{}]);
     setisthaniye([{}]);
-    setpardesh([{}]);    
-    const data = {     
+    setpardesh([{}]);
+    const data = {
       office_id: loggedUser.office_id,
-      aaba_id: loggedUser.aabaid      
+      aaba_id: loggedUser.aabaid
     };
     console.log("data sent", data);
-    const response = await axiosInstance.post("voucher/VoucherOfficeSum",data)   
-    console.log('sanchitkosh',response.data.sanchitkosh);    
-    setOfficeSum(response.data.officesum);    
-    setisthaniye(response.data.isthaniye);    
+    const response = await axiosInstance.post("voucher/VoucherOfficeSum", data)
+    console.log('sanchitkosh', response.data.sanchitkosh);
+    setOfficeSum(response.data.officesum);
+    setisthaniye(response.data.isthaniye);
     setpardesh(response.data.pardesh);
     setsanchitkosh(response.data.sanchitkosh);
   };
-  
+
   return (
     <section id="Vouchermonthly" className="Vouchermonthly">
-       <PageHeaderComponent
-       officeText={`(${loggedUser.office_name})`}
+      <PageHeaderComponent
+        officeText={`(${loggedUser.office_name})`}
         headerText="को महिना अनुसारको प्रतिवेदन"
         icon={<BsInfoCircleFill size={40} />}
-      />          
+      />
       <table className="listvoucher__list__table">
         <thead>
           <tr>
-            <th>शिर्षक</th> 
+            <th className="mywidth">शिर्षक</th>
             <th>जम्मा</th>
             <th>श्रावण</th>
             <th>भदौ</th>
@@ -58,11 +58,11 @@ useEffect(() => {
             <th>चैत्र</th>
             <th>बैशाख</th>
             <th>जेठ</th>
-            <th>असार</th>            
+            <th>असार</th>
           </tr>
         </thead>
         <tbody>
-          {officeSum?officeSum.map((item,i)=>{
+          {officeSum ? officeSum.map((item, i) => {
             return <tr key={i}>
               <td>{item.acc_sirshak_name}</td>
               <td>{item.total_amount}</td>
@@ -79,14 +79,11 @@ useEffect(() => {
               <td>{item.K}</td>
               <td>{item.L}</td>
             </tr>
-          }):null}
-          <tr><td colSpan={14}><hr className="line"/></td></tr> 
-        </tbody>
-        </table>
-        <table className="listvoucher__list__table">
-        <thead>
+          }) : null}
+
+          <tr><td colSpan={14}><hr className="line" /></td></tr>
           <tr>
-            <th>संचितकोषमा जाने</th> 
+            <th>संचितकोषमा जाने</th>
             <th>जम्मा</th>
             <th>श्रावण</th>
             <th>भदौ</th>
@@ -99,11 +96,9 @@ useEffect(() => {
             <th>चैत्र</th>
             <th>बैशाख</th>
             <th>जेठ</th>
-            <th>असार</th>            
+            <th>असार</th>
           </tr>
-        </thead>
-        <tbody>
-          {sanchitkosh?sanchitkosh.map((item,i)=>{
+          {sanchitkosh ? sanchitkosh.map((item, i) => {
             return <tr key={i}>
               <td>{item.acc_sirshak_name}</td>
               <td>{Math.round(item.total_amount)}</td>
@@ -120,12 +115,8 @@ useEffect(() => {
               <td>{Math.round(item.K)}</td>
               <td>{Math.round(item.L)}</td>
             </tr>
-          }):null}
-          <tr><td colSpan={14}><hr className="line"/></td></tr> 
-        </tbody>
-        </table>      
-        <table className="listvoucher__list__table">
-          <tbody>         
+          }) : null}
+          <tr><td colSpan={14}><hr className="line" /></td></tr>
           <tr>
             <th>स्थानियमा जाने</th>
             <th>जम्मा</th>
@@ -142,9 +133,10 @@ useEffect(() => {
             <th>जेठ</th>
             <th>असार</th>
           </tr>
-          {isthaniye ? isthaniye.map((item,i)=>{
-              return  <tr key={i}><td>{item.napa_name}</td>
-             <td>{Math.round(item.total_amount)}</td>
+
+          {isthaniye ? isthaniye.map((item, i) => {
+            return <tr key={i}><td>{item.napa_name}</td>
+              <td>{Math.round(item.total_amount)}</td>
               <td>{Math.round(item.A)}</td>
               <td>{Math.round(item.B)}</td>
               <td>{Math.round(item.C)}</td>
@@ -157,13 +149,9 @@ useEffect(() => {
               <td>{Math.round(item.J)}</td>
               <td>{Math.round(item.K)}</td>
               <td>{Math.round(item.L)}</td>
-              </tr>                            
-          }):null}          
-          <tr><td colSpan={14}><hr className="line"/></td></tr> 
-          </tbody> 
-          </table>          
-          <table className="listvoucher__list__table">
-          <tbody>
+            </tr>
+          }) : null}
+          <tr><td colSpan={14}><hr className="line" /></td></tr>
           <tr>
             <th>प्रदेशमा जाने</th>
             <th>जम्मा</th>
@@ -178,30 +166,30 @@ useEffect(() => {
             <th>चैत्र</th>
             <th>बैशाख</th>
             <th>जेठ</th>
-            <th>असार</th>    
+            <th>असार</th>
           </tr>
           {pardesh ?
-            pardesh.map((item,i)=>{
-              return  <tr key={i}><td>{item.acc_sirshak_name}</td>
-             <td>{Math.round(item.total_amount)}</td>
-              <td>{Math.round(item.A)}</td>
-              <td>{Math.round(item.B)}</td>
-              <td>{Math.round(item.C)}</td>
-              <td>{Math.round(item.D)}</td>
-              <td>{Math.round(item.E)}</td>
-              <td>{Math.round(item.F)}</td>
-              <td>{Math.round(item.G)}</td>
-              <td>{Math.round(item.H)}</td>
-              <td>{Math.round(item.I)}</td>
-              <td>{Math.round(item.J)}</td>
-              <td>{Math.round(item.K)}</td>
-              <td>{Math.round(item.L)}</td>
-              </tr>               
-          }) :null
-          }          
-          </tbody>
-            </table>          
-        
+            pardesh.map((item, i) => {
+              return <tr key={i}><td>{item.acc_sirshak_name}</td>
+                <td>{Math.round(item.total_amount)}</td>
+                <td>{Math.round(item.A)}</td>
+                <td>{Math.round(item.B)}</td>
+                <td>{Math.round(item.C)}</td>
+                <td>{Math.round(item.D)}</td>
+                <td>{Math.round(item.E)}</td>
+                <td>{Math.round(item.F)}</td>
+                <td>{Math.round(item.G)}</td>
+                <td>{Math.round(item.H)}</td>
+                <td>{Math.round(item.I)}</td>
+                <td>{Math.round(item.J)}</td>
+                <td>{Math.round(item.K)}</td>
+                <td>{Math.round(item.L)}</td>
+              </tr>
+            }) : null
+          }
+        </tbody>
+      </table>
+
     </section>
   );
 };
