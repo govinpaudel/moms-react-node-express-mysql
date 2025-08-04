@@ -12,10 +12,9 @@ import { useNavigate } from "react-router-dom";
 import { adToBs, bsToAd } from '@sbmdkl/nepali-date-converter';
 const Addvoucher = () => {
   const edate = new Date().toISOString().slice(0, 10);
-  console.log("ENGLISH DATE AAYEKO", edate);
+  console.log("आजको अंग्रेजी मिति", edate);
   const ndate = adToBs(edate);
-  console.log("NEPALI DATE AAYEKO", ndate);
-
+  console.log("आजको नेपाली मिति", ndate);
   const initialdata = {
     id: 0,
     ndate_voucher: ndate,
@@ -29,38 +28,28 @@ const Addvoucher = () => {
     amount: "",
     deposited_by: "",
   };
-
   const fant_idref = useRef()
   const sirshak_idref = useRef()
   const napa_idref = useRef()
   const vouchernoref = useRef()
-
-
   const [sirshaks, setsirshaks] = useState();
   const [fants, setfants] = useState();
   const [napas, setnapas] = useState();
   const [params, setparams] = useState();
   const [vdata, setVdata] = useState(initialdata);
-  const Url = import.meta.env.VITE_API_URL + "voucher/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const navigate = useNavigate();
-
   const handleChange = (e) => {
     setVdata({ ...vdata, [e.target.name]: e.target.value });
   };
-
   const handlesVoucherDate = ({ bsDate, adDate }) => {
     vdata.ndate_voucher = bsDate;
     vdata.edate_voucher = adDate;
-
   };
-
   const handlesTransactionDate = ({ bsDate, adDate }) => {
     vdata.ndate_transaction = bsDate;
     vdata.edate_transaction = adDate;
   };
-
-
   const getVoucherMaster = async () => {
     const data = {
       office_id: loggedUser.office_id,

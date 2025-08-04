@@ -1,5 +1,5 @@
 import axiosInstance from '../../axiosInstance';
-import  { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import './ViewPoka.scss';
 import { toast } from 'react-toastify';
@@ -40,9 +40,8 @@ const ViewPoka = () => {
         const data = {
             id: location.state.id
         }
- const url="misil/getPokaById";
-    const response=await axiosInstance.post(url,data)
-        
+        const url = "misil/getPokaById";
+        const response = await axiosInstance.post(url, data)
         console.log(response);
         setheader(response.data.data[0]);
     }
@@ -50,9 +49,9 @@ const ViewPoka = () => {
         const data = {
             id: location.state.id
         }
-        const url="misil/getPokaDetailsById";
-        const response=await axiosInstance.post(url,data)
-        
+        const url = "misil/getPokaDetailsById";
+        const response = await axiosInstance.post(url, data)
+
         console.log(response);
         setdetails(response.data.data);
     }
@@ -61,8 +60,8 @@ const ViewPoka = () => {
     const handleSumbit = async (e) => {
         e.preventDefault();
         console.log(misil);
-        const url="misil/AddOrUpdateMisil";
-        const response=await axiosInstance.post(url,data)        
+        const url = "misil/AddOrUpdateMisil";
+        const response = await axiosInstance.post(url, data)
         console.log(response);
         if (response.data.status == true) {
             toast.success(response.data.message);
@@ -72,16 +71,22 @@ const ViewPoka = () => {
             closeModal();
         }
     }
-    const handleChange = (e) => {
+    const handleChange = (e) => {        
         setmisil({ ...misil, [e.target.name]: e.target.value })
         console.log(misil);
     }
-    const changeFormat = (e) => {
-        const x = e.target.value;
-        const y = x.replaceAll('.', '-')
-        const z = y.replaceAll('/', '-')
-        setmisil({ ...misil, miti: z })
-    }
+    const changeMitiFormat = (e) => {
+    const value = e.target.value
+        .replace(/[./-]/g, '।') // Replace . and / with danda
+        .replace(/\d/g, d => '०१२३४५६७८९'[d]); // Replace digits with Devanagari
+    setmisil({ ...misil, miti: value });
+}
+const changeMinumFormat = (e) => {
+    const value = e.target.value
+        .replace(/[./-]/g, '।') // Replace . and / with danda
+        .replace(/\d/g, d => '०१२३४५६७८९'[d]); // Replace digits with Devanagari
+    setmisil({ ...misil, minum: value });
+}
 
     const handleEdit = async (e) => {
         openModal();
@@ -89,8 +94,8 @@ const ViewPoka = () => {
         const data = {
             id: e
         }
-        const url="misil/getMisilById";
-        const response=await axiosInstance.post(url,data);        
+        const url = "misil/getMisilById";
+        const response = await axiosInstance.post(url, data);
         console.log(response);
         setmisil(response.data.data[0])
     }
@@ -101,8 +106,8 @@ const ViewPoka = () => {
                 id: e,
                 poka_id: location.state.id
             }
-            const url="misil/deleteMisilById";
-            const response=await axiosInstance.post(url,data);            
+            const url = "misil/deleteMisilById";
+            const response = await axiosInstance.post(url, data);
             console.log(response);
             if (response.data.status == true) {
                 toast.success(response.data.message);
@@ -129,11 +134,11 @@ const ViewPoka = () => {
                             <div className="modal-body">
                                 <div className="mb-3">
                                     <label htmlFor='miti' className='label-control'>मिति</label>
-                                    <input type="text" name='miti' className='form-control' onKeyUp={changeFormat} onChange={handleChange} value={misil.miti} required autoComplete='off' />
+                                    <input type="text" name='miti' className='form-control' onKeyUp={changeMitiFormat} onChange={handleChange} value={misil.miti} required autoComplete='off' />
                                 </div>
                                 <div className="mb-3">
                                     <label className='label-control'>मिसिल नं</label>
-                                    <input type="text" name='minum' className='form-control' onChange={handleChange} value={misil.minum} required autoComplete='off' />
+                                    <input type="text" name='minum' className='form-control' onKeyUp={changeMinumFormat} onChange={handleChange} value={misil.minum} required autoComplete='off' />
                                 </div>
                                 <div className="mb-3">
                                     <label className='label-control'>निवेदकको नाम</label>

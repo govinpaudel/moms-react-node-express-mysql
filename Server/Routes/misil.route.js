@@ -39,6 +39,7 @@ router.get('/getAabaByOffice/:officeid/:typeid', async (req, res,next) => {
 
 router.post('/getpoka', async (req, res,next) => {
     const user = req.body;
+    console.log(user);
     let query = "";
     let params = [];
     if (user.miti.length > 0 && user.minum.length > 0) {

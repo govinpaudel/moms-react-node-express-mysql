@@ -1,17 +1,18 @@
-import axiosInstance  from "../../axiosInstance";
+import axiosInstance from "../../axiosInstance";
 import { useEffect, useState } from "react";
 import "./listvoucher.scss";
 import { NavLink, useNavigate } from "react-router-dom";
-
+import { Circles } from "react-loader-spinner";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { toast } from "react-toastify";
 const Listvoucher = () => {
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const [voucherlist, setvoucherlist] = useState([]);
   const [svoucherno, setsvoucherno] = useState(0);
-  const summary = [{ sirshak_id: 0, sirshak_name: "लिखत तर्फ", amount: 0 }];
+  const summary = [{ sirshak_id: 99, sirshak_name: "आजको जम्माः", amount: 0 }];
+  const [loading, setLoading] = useState(true); 
   voucherlist.forEach((a) => {
     let indexToUpdate = summary.findIndex(
       (item) => item.sirshak_id === a.sirshak_id
@@ -25,105 +26,111 @@ const Listvoucher = () => {
         sirshak_name: a.sirshak_name,
         amount: a.amount,
       });
-    }
-    if (a.sirshak_id == 1 || a.sirshak_id == 2) {
-      let indexToUpdate1 = summary.findIndex((item) => item.sirshak_id === 0);
+    }    
+      let indexToUpdate1 = summary.findIndex((item) => item.sirshak_id === 99);
       if (indexToUpdate1 > -1) {
         summary[indexToUpdate1].amount =
           parseInt(summary[indexToUpdate1].amount) + parseInt(a.amount);
-      }
-    }
+      }    
   });
-
-  const deleteVoucher= async(e)=>{
+  const deleteVoucher = async (e) => {
     console.log(loggedUser.role);
-    if(loggedUser.role==2){
+    if (loggedUser.role == 2) {
       toast.warning("यो सुविधा व्यवस्थापक लाई मात्र उपलब्ध छ")
       return;
     }
-    const yes=confirm("के तपाई यो भौचर हटाउन चहानुहुन्छ ?")
-    if(yes){
-      const data = { id:e,
-        user_id:loggedUser.id
-       };
+    const yes = confirm("के तपाई यो भौचर हटाउन चहानुहुन्छ ?")
+    if (yes) {
+      const data = {
+        id: e,
+        user_id: loggedUser.id
+      };
       const response = await axios({
         method: "post",
         url: Url + "deleteVoucherById",
         data: data,
       });
-      if(response.data.status==true){
+      if (response.data.status == true) {
         toast.success(`भौचर नं ${e} सफलतापुर्वक हटाईयो`)
         loadTodayVouchers();
       }
     }
-
   }
-
-  
-useEffect(() => {
-  if (svoucherno.length > 0) {
-  let timer = setTimeout(() => {     
-    loadSingleVoucher();      
-    }, 1000)
-    return () => clearTimeout(timer)
-  }
-  else{
-    loadTodayVouchers();
-  }
-}, [svoucherno])
+  useEffect(() => {
+    if (svoucherno.length > 0) {
+      let timer = setTimeout(() => {
+        loadSingleVoucher();
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+    else {
+      loadTodayVouchers();
+    }
+  }, [svoucherno])
 
   const loadSingleVoucher = async () => {
-    if (svoucherno.length > 0) {
+    try {
       const data = {
         office_id: loggedUser.office_id,
         aaba_id: loggedUser.aabaid,
         voucherno: svoucherno.trim(),
       };
-      const url="voucher/loadSingleVoucher";
-      const response=await axiosInstance.post(url,data);      
+      const url = "voucher/loadSingleVoucher";
+      const response = await axiosInstance.post(url, data);
       setvoucherlist(response.data.data);
-    }
-    else {
-      loadTodayVouchers();
+    } catch (error) {
+      console.log(error)
     }
   };
 
   const loadTodayVouchers = async () => {
-    const data = {
-      created_by_user_id: loggedUser.id
+    setLoading(true);
+    try {
+      const url = "voucher/getTodaysVoucher";
+      const data = { created_by_user_id: loggedUser.id }
+      const response = await axiosInstance.post(url, data)
+      setvoucherlist(response.data.data);
+    } catch (error) {
+      console.log(error)
     }
-    console.log("Request Sent", data);  
-    const response = await axiosInstance.post("voucher/getTodaysVoucher",data)    
-    console.log('Response Came',response);
-    setvoucherlist(response.data.data);
+    setLoading(false);
   };
 
   const loadVouchers = () => {
-    console.log("svoucherno", svoucherno);
     if (svoucherno > 0) {
-      loadSingleVoucher();      
+      loadSingleVoucher();
     } else {
-      loadTodayVouchers();      
+      loadTodayVouchers();
     }
   };
-  
+
   useEffect(() => {
-    document.title = "MOMS | आजका भौचरहरु";
+    document.title = "MOMS | आज दर्ता भौचरहरु";
     loadVouchers();
   }, []);
   return (
     <section id="listvoucher" className="listvoucher">
       <PageHeaderComponent
-      officeText={`( ${loggedUser.nepname} )`}
+        officeText={`( ${loggedUser.nepname} )`}
         headerText="बाट आज दर्ता भएका भौचरहरु"
         icon={<BsInfoCircleFill size={40} />}
       />
+      {loading ?
+        (
+          <div className="fullscreen-loader">
+            <div className="loader">
+              <Circles height={150} width={150} color="#ffdd40" ariaLabel="loading" />
+              <h2 className="loader-text" >कृपया प्रतिक्षा गर्नुहोस् ।</h2>
+            </div>
+          </div>
+        ) : null
+      }
       <div className="listvoucher__adddiv">
         <div className="listvoucher__adddiv__search no-print">
           <input
             type="text"
             className="listvoucher__adddiv__search__input"
-            placeholder="खोजीको लागि भौचर नं प्रविष्ट गर्नुहोस् ।"            
+            placeholder="खोजीको लागि भौचर नं प्रविष्ट गर्नुहोस् ।"
             onChange={(e) => {
               setsvoucherno(e.target.value)
             }}
@@ -158,7 +165,7 @@ useEffect(() => {
               <th>कारोबार मिति</th>
               <th>शिर्षक</th>
               <th>गा.पा । न.पा</th>
-              <th>फाँट</th>              
+              <th>फाँट</th>
               <th>भौचर नं</th>
               <th>जम्मा गर्ने</th>
               <th>रकम</th>
@@ -175,19 +182,19 @@ useEffect(() => {
                     <td>{data.ndate_transaction}</td>
                     <td>{data.sirshak_name}</td>
                     <td>{data.napa_name}</td>
-                    <td>{data.fant_name}</td>                   
+                    <td>{data.fant_name}</td>
                     <td>{data.voucherno}</td>
                     <td>{data.deposited_by}</td>
                     <td>{data.amount}</td>
                     <td className="no-print">
                       <button
                         className="listvoucher__list__editbtn"
-                        onClick={() => navigate("/voucher/editvoucher",{state:{id:data.id}})}
+                        onClick={() => navigate("/voucher/editvoucher", { state: { id: data.id } })}
                       >
                         संशोधन
                       </button>
                       <button className="listvoucher__list__delbtn"
-                      onClick={()=>deleteVoucher(data.id)}
+                        onClick={() => deleteVoucher(data.id)}
                       >हटाउनुहोस्</button>
                     </td>
                   </tr>

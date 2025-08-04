@@ -72,16 +72,24 @@ const Bargikaran = () => {
   }, [data.office_id])
 
   useEffect(() => {
-    loadgapas();
+    if (data.napa_id > 0) {
+      loadgapas();
+    }
   }, [data.napa_id])
+
   useEffect(() => {
-    console.log('loading wards')
-    loadwards();
+    if (data.gabisa_id > 0) {
+      loadwards();
+    }
   }, [data.gabisa_id])
 
   useEffect(() => {
     let timer = setTimeout(() => {
-      loaddata();
+      if (data.office_id > 0 && data.napa_id > 0 && data.gabisa_id > 0 && data.kitta_no > 0) {
+        loaddata();
+      }
+
+
     }, 1000);
     return () => clearTimeout(timer)
   }, [data.kitta_no])
