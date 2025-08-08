@@ -2,26 +2,22 @@ import { NavLink } from "react-router-dom";
 import "./BargikaranSidebar.scss";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import axiosInstance from '../../axiosInstance'
 
 const BargikaranSidebar = () => {
   const Url = import.meta.env.VITE_API_URL + "auth/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const [data, setdata] = useState([]) 
   const loadsidebardata = async () => {
-    const response = await axios({
-      method: "post",
-      url: Url + "getSidebarlist",
-      data: {
+    const url = "auth/"+"getSidebarlist"
+    const data={
         user_id: loggedUser.id,
         module:'Bargikaran'
       }
-    });
+    const response = await axiosInstance.post(url,data);
     setdata(response.data.data);
-    console.log(response.data.data)   
-
+    console.log(response.data.data);
   }
-
-
   useEffect(() => {
     loadsidebardata();
   }, [])

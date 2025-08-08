@@ -116,7 +116,7 @@ const VoucherByDate = () => {
           onChange={handleStartDate}
           theme="green"
           language="en"
-          className="Addvoucher__Form__part__item__input"
+          className="Addvoucher__Form__part__item__input wide"
           defaultDate={sdata.nep_start_date}
         />
       </div>
@@ -127,7 +127,7 @@ const VoucherByDate = () => {
           onChange={handleEndDate}
           theme="green"
           language="en"
-          className="Addvoucher__Form__part__item__input"
+          className="Addvoucher__Form__part__item__input wide"
           defaultDate={sdata.nep_end_date}
         />
       </div>      

@@ -114,11 +114,7 @@ useEffect(() => {
             <td>संचितकोषमा जाने</td>
             <td>{summary[0] ? Math.round(summary[0].sanchitkosh,2): null}</td>
           </tr>
-          <tr><td colSpan={2}><hr className="line"/></td></tr> 
-        </tbody>
-        </table>       
-        <table className="listvoucher__list__table">
-          <tbody>         
+          <tr><td colSpan={2}><hr className="line"/></td></tr>              
           <tr>
             <th>स्थानियमा जाने</th>
             <th>रकम</th>
@@ -130,11 +126,7 @@ useEffect(() => {
             <td>जम्मा स्थानियमा जाने</td>
             <td>{summary[0] ? Math.round(summary[0].isthaniye):0}</td>
           </tr>
-          <tr><td colSpan={2}><hr className="line"/></td></tr> 
-          </tbody> 
-          </table>          
-          <table className="listvoucher__list__table">
-          <tbody>
+          <tr><td colSpan={2}><hr className="line"/></td></tr>           
           <tr>
             <th>प्रदेशमा जाने</th> <th>रकम</th>      
           </tr>
@@ -156,11 +148,7 @@ useEffect(() => {
             <td>जम्मा बाँडफाँड हुने</td>
             <td>{summary[0] ? Math.round(parseInt(summary[0].pardesh)+parseInt(summary[0].isthaniye)): 0}</td>
           </tr>
-          </tbody>
-            </table>
-           
-          <table className="listvoucher__list__table">
-          <tbody>
+          <tr><td colSpan={2}><hr className="line"/></td></tr>           
           <tr>
             <td>संघमा जाने</td>
             <td>{summary[0] ? Math.round(summary[0].sangh):0}</td>

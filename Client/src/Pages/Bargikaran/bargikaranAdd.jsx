@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import "./bargikaranAdd.scss";
 import { useNavigate } from "react-router-dom";
-
+import axiosInstance from "../../axiosInstance"
 const BargikaranAdd = () => {
-  const navigate =useNavigate();
-  const Url = import.meta.env.VITE_API_URL + "bargikaran/";
+  const navigate =useNavigate();  
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const initialdata = {
     office_id: loggedUser.office_id,
@@ -32,39 +30,31 @@ const BargikaranAdd = () => {
     }
   }
   const loadoffices = async () => {
-    const response = await axios({
-      method: "get",
-      url: Url + "getAllOffices/" + loggedUser.office_id
-    });
+    const url="bargikaran/" + "getAllOffices/" + loggedUser.office_id    
+    const response=await axiosInstance.get(url)     
     console.log("officelist", response.data);
     setOffices(response.data.data);
   }
   const loadnapas = async () => {
     if (data.office_id > 0) {
-      const response = await axios({
-        method: "get",
-        url: Url + "getNapasByOfficeId/" + data.office_id
-      });
+      const url="bargikaran/" + "getNapasByOfficeId/" + data.office_id
+      const response = await axiosInstance.get(url);
       console.log("napalist", response.data);
       setNapas(response.data.data);
     }
   }
   const loadgapas = async () => {
     if (data.office_id > 0 && data.napa_id > 0) {
-      const response = await axios({
-        method: "get",
-        url: Url + "getGabisasByOfficeId/" + data.office_id + "/" + data.napa_id
-      });
+      const url="bargikaran/" + "getGabisasByOfficeId/" + data.office_id + "/" + data.napa_id
+      const response =await axiosInstance.get(url)      
       console.log("gapalist", response.data);
       setGapas(response.data.data);
     }
   }
   const loadwards = async (e) => {
     if (data.office_id > 0 && data.napa_id > 0 && data.gabisa_id > 0) {
-      const response = await axios({
-        method: "get",
-        url: Url + "getWardsByGabisaId/" + data.office_id + "/" + data.napa_id + "/" + data.gabisa_id
-      });
+      const url="bargikaran/" + "getWardsByGabisaId/" + data.office_id + "/" + data.napa_id + "/" + data.gabisa_id
+      const response = await axiosInstance.get(url)
       console.log("wardlist", response.data);
       setWards(response.data.data);
     }
@@ -96,11 +86,8 @@ const BargikaranAdd = () => {
     for (const item of items) {
       data.kitta_no = item;
       console.log("datasent", data);
-      const response = await axios({
-        method: "post",
-        url: Url + "savebargikaran",
-        data: data
-      });
+      const url="bargikaran/" + "savebargikaran";
+      const response = await axiosInstance.post(url,data)
       if (response.data.status == true) {
         toast.success(response.data.message);
       }
@@ -134,10 +121,6 @@ const BargikaranAdd = () => {
     processRequests(myArray);
     setData(initialdata);
   };
-
-
-
-
   return (
     <section id="bargikaran" className="bargikaranadd">
       <div className="bargikaranadd__heading">
@@ -145,7 +128,6 @@ const BargikaranAdd = () => {
           वर्गिकरण थप गर्नुहोस्
         </h5>
       </div>
-
       <form className="bargikaranadd__form" onSubmit={handleSubmit}>
         <div className="bargikaranadd__form__form-item">
           <select
