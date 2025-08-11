@@ -87,7 +87,6 @@ router.post('/getKittaDetails', async (req, res, next) => {
 router.post('/savebargikaran', async (req, res, next) => {
   try {
     const user = req.body;
-
     const query = `
       INSERT INTO bargikaran (
         office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name,
@@ -97,8 +96,7 @@ router.post('/savebargikaran', async (req, res, next) => {
         office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name,
         ?, ?, ?, ?, ?, ?
       FROM brg_ofc_np_gb
-      WHERE office_id=? AND napa_id=? AND gabisa_id=?`;
-
+      WHERE office_id=? AND napa_id=? AND gabisa_id=?`;    
     const params = [
       user.ward_no, // sheet_no
       user.ward_no, // ward_no
@@ -112,12 +110,7 @@ router.post('/savebargikaran', async (req, res, next) => {
     ];
 
     const [results] = await pool.query(query, params);
-
-    res.status(200).json({
-      status: true,
-      message: "डाटा सफलतापुर्वक सेभ भयो",
-      data: results,
-    });
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "डाटा सेभ गर्न सकेन", data: error });

@@ -61,7 +61,7 @@ const ViewPoka = () => {
         e.preventDefault();
         console.log(misil);
         const url = "misil/AddOrUpdateMisil";
-        const response = await axiosInstance.post(url, data)
+        const response = await axiosInstance.post(url, misil)
         console.log(response);
         if (response.data.status == true) {
             toast.success(response.data.message);
