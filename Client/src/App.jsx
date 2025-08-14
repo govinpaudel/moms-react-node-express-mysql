@@ -34,6 +34,7 @@ import CalcMainPage from './Pages/Calculator/CalcMainPage';
 import VoucherOfficeSum from './Pages/Voucher/VoucherOfficeSum';
 import Voucherdaily from './Pages/Voucher/Voucherdaily';
 import VoucherPalika from './Pages/Voucher/VoucherPalika'
+import Bargikarandownload from './Pages/Bargikaran/Bargikarandownload';
 function App() {
   return (
     <>
@@ -63,6 +64,7 @@ function App() {
             <Route path='' element={<Bargikaran />} />
             <Route path='search' element={<Bargikaran />} />
             <Route path='add' element={<BargikaranAdd />} />
+            <Route path='download' element={<Bargikarandownload/>}/>
             </Route>
             {/* bargikaran route ends */}
             {/* Misil route Starts */}

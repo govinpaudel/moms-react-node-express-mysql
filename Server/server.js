@@ -5,6 +5,8 @@ const morgan=require("morgan");
 const app=express();
 const PORT = process.env.API_PORT || 3000
 const {verifyAccesstoken}=require('./Libraries/jwt_helper');
+const path = require('path');
+
 // import routes
 const authRoute = require('./Routes/auth.route');
 const voucherRoute = require('./Routes/voucher.route');
@@ -18,6 +20,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(morgan('dev'));
+app.use('/downloads', express.static(path.join(__dirname, 'downloads')));
 app.use(requestIp.mw());
 app.set('trust proxy', true);
 // lets handle request coming from frontend

@@ -45,11 +45,8 @@ const Listvoucher = () => {
         id: e,
         user_id: loggedUser.id
       };
-      const response = await axios({
-        method: "post",
-        url: Url + "deleteVoucherById",
-        data: data,
-      });
+      const url="voucher/deleteVoucherById"
+      const response = await axiosInstance.post(url,data) 
       if (response.data.status == true) {
         toast.success(`भौचर नं ${e} सफलतापुर्वक हटाईयो`)
         loadTodayVouchers();
@@ -193,9 +190,11 @@ const Listvoucher = () => {
                       >
                         संशोधन
                       </button>
+                      {loggedUser.role!=2?
                       <button className="listvoucher__list__delbtn"
                         onClick={() => deleteVoucher(data.id)}
                       >हटाउनुहोस्</button>
+                      :null}
                     </td>
                   </tr>
                 );

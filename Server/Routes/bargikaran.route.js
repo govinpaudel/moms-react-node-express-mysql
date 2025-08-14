@@ -1,6 +1,8 @@
 const express = require('express');
 const pool = require('../Libraries/connection');
 const router = express.Router();
+const fs = require('fs');
+const path = require('path')
 
 router.get('/', (req, res) => {
   res.send("Hello from bargikaran route page");
@@ -115,6 +117,87 @@ router.post('/savebargikaran', async (req, res, next) => {
     console.error(error);
     res.status(500).json({ message: "डाटा सेभ गर्न सकेन", data: error });
   }
+});
+
+router.post('/export-sql', async (req, res,next) => {
+const batchSize = 1000;
+    const maxRecordsPerFile = 30000;
+    const recordsPerInsert = 10;
+    const baseInsert = `INSERT INTO bargikaran () VALUES `; // replace ... with actual column names
+
+    const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '');
+    const downloadDir = path.join(__dirname, '../downloads');
+
+    if (!fs.existsSync(downloadDir)) {
+        fs.mkdirSync(downloadDir, { recursive: true });
+    }
+
+    let fileIndex = 1;
+    let offset = 0;
+    let recordCountInFile = 0;
+    let insertValuesBatch = [];
+    let totalRows = 0;
+    let outputFiles = [];
+
+    let currentFile = path.join(downloadDir, `bargikaran_insert_${timestamp}_part${fileIndex}.sql`);
+    fs.writeFileSync(currentFile, '');
+    outputFiles.push(`/downloads/${path.basename(currentFile)}`);
+   
+
+    try {
+        while (true) {
+            const [rows] = await pool.query(`
+                SELECT id, office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name, ward_no, sheet_no, kitta_no, area, bargikaran, remarks, sno, created_at, created_by_user_id 
+                FROM bargikaran_new_updated 
+                ORDER BY id 
+                LIMIT ? OFFSET ?`, [batchSize, offset]);
+
+            if (rows.length === 0) break;
+
+            for (const row of rows) {
+                const vals = Object.values(row).map(val => val === null ? 'NULL' : `'${String(val).replace(/'/g, "''")}'`);
+                insertValuesBatch.push(`(${vals.join(',')})`);
+                recordCountInFile++;
+                totalRows++;
+
+                if (insertValuesBatch.length >= recordsPerInsert) {
+                    const insertSQL = baseInsert + insertValuesBatch.join(',') + ';\n';
+                    fs.appendFileSync(currentFile, insertSQL);
+                    insertValuesBatch = [];
+                }
+
+                if (recordCountInFile >= maxRecordsPerFile) {
+                    if (insertValuesBatch.length > 0) {
+                        const insertSQL = baseInsert + insertValuesBatch.join(',') + ';\n';
+                        fs.appendFileSync(currentFile, insertSQL);
+                        insertValuesBatch = [];
+                    }
+
+                    fileIndex++;
+                    recordCountInFile = 0;
+                    currentFile = path.join(downloadDir, `bargikaran_insert_${timestamp}_part${fileIndex}.sql`);
+                    fs.writeFileSync(currentFile, '');
+                    outputFiles.push(`/downloads/${path.basename(currentFile)}`);
+                }
+            }
+
+            offset += batchSize;
+        }
+
+        if (insertValuesBatch.length > 0) {
+            const insertSQL = baseInsert + insertValuesBatch.join(',') + ';\n';
+            fs.appendFileSync(currentFile, insertSQL);
+        }
+
+        res.json({
+            success: true,
+            totalRows,
+            files: outputFiles
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Error exporting SQL' });
+    } 
 });
 
 module.exports = router;

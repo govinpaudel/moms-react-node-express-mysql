@@ -241,8 +241,7 @@ const BargikaranAdd = () => {
         <div className="bargikaranadd__form__form-item">
           <input className="bargikaranadd__form__form-item__button" type="submit" value="सेभ गर्नुहोस्" />
         </div>
-      </form>
-
+      </form>      
     </section>
   );
 };
