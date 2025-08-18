@@ -98,7 +98,7 @@ router.post('/savebargikaran', async (req, res, next) => {
         office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name,
         ?, ?, ?, ?, ?, ?
       FROM brg_ofc_np_gb
-      WHERE office_id=? AND napa_id=? AND gabisa_id=?`;    
+      WHERE office_id=? AND napa_id=? AND gabisa_id=?`;
     const params = [
       user.ward_no, // sheet_no
       user.ward_no, // ward_no
@@ -112,92 +112,101 @@ router.post('/savebargikaran', async (req, res, next) => {
     ];
 
     const [results] = await pool.query(query, params);
-    
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "डाटा सेभ गर्न सकेन", data: error });
   }
 });
 
-router.post('/export-sql', async (req, res,next) => {
-const batchSize = 1000;
-    const maxRecordsPerFile = 30000;
-    const recordsPerInsert = 10;
-    const baseInsert = `INSERT INTO bargikaran () VALUES `; // replace ... with actual column names
+router.post('/export-sql', async (req, res, next) => {
+  const batchSize = 1000;
+  const maxRecordsPerFile = 30000;
+  const recordsPerInsert = 10;
+  const baseInsert = `INSERT INTO bargikaran (id, office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name, ward_no, sheet_no, kitta_no, area, bargikaran, remarks, sno, created_at, created_by_user_id) VALUES `;
 
-    const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '');
-    const downloadDir = path.join(__dirname, '../downloads');
+  const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '');
+  const downloadDir = path.join(__dirname, '../downloads');
 
-    if (!fs.existsSync(downloadDir)) {
-        fs.mkdirSync(downloadDir, { recursive: true });
-    }
+  if (!fs.existsSync(downloadDir)) {
+    fs.mkdirSync(downloadDir, { recursive: true });
+  }
+  let fileIndex = 1;
+  let offset = 0;
+  let recordCountInFile = 0;
+  let insertValuesBatch = [];
+  let totalRows = 0;
+  let outputFiles = [];
+  let currentFile = path.join(downloadDir, `bargikaran_insert_${timestamp}_part${fileIndex}.sql`);
+  fs.writeFileSync(currentFile, '');
+  outputFiles.push(`/downloads/${path.basename(currentFile)}`);
+  try {
+    let isFirstBatch = true;
+    while (true) {
+      const [rows] = await pool.query(`
+        SELECT id, office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name, ward_no, sheet_no, kitta_no, area, bargikaran, remarks, sno, created_at, created_by_user_id 
+        FROM bargikaran_new_updated 
+        ORDER BY id 
+        LIMIT ? OFFSET ?`, [batchSize, offset]);
+      if (isFirstBatch && rows.length === 0) {
+        return res.status(200).json({ success: false, message: 'No records exist to export.' });
+      }
+      isFirstBatch = false;
+      if (rows.length === 0) {
+        break; // No more data
+      }
+      for (const row of rows) {
+        const vals = Object.values(row).map(val =>
+          val === null ? 'NULL' : `'${String(val).replace(/'/g, "''")}'`
+        );
+        insertValuesBatch.push(`(${vals.join(',')})`);
+        recordCountInFile++;
+        totalRows++;
 
-    let fileIndex = 1;
-    let offset = 0;
-    let recordCountInFile = 0;
-    let insertValuesBatch = [];
-    let totalRows = 0;
-    let outputFiles = [];
-
-    let currentFile = path.join(downloadDir, `bargikaran_insert_${timestamp}_part${fileIndex}.sql`);
-    fs.writeFileSync(currentFile, '');
-    outputFiles.push(`/downloads/${path.basename(currentFile)}`);
-   
-
-    try {
-        while (true) {
-            const [rows] = await pool.query(`
-                SELECT id, office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name, ward_no, sheet_no, kitta_no, area, bargikaran, remarks, sno, created_at, created_by_user_id 
-                FROM bargikaran_new_updated 
-                ORDER BY id 
-                LIMIT ? OFFSET ?`, [batchSize, offset]);
-
-            if (rows.length === 0) break;
-
-            for (const row of rows) {
-                const vals = Object.values(row).map(val => val === null ? 'NULL' : `'${String(val).replace(/'/g, "''")}'`);
-                insertValuesBatch.push(`(${vals.join(',')})`);
-                recordCountInFile++;
-                totalRows++;
-
-                if (insertValuesBatch.length >= recordsPerInsert) {
-                    const insertSQL = baseInsert + insertValuesBatch.join(',') + ';\n';
-                    fs.appendFileSync(currentFile, insertSQL);
-                    insertValuesBatch = [];
-                }
-
-                if (recordCountInFile >= maxRecordsPerFile) {
-                    if (insertValuesBatch.length > 0) {
-                        const insertSQL = baseInsert + insertValuesBatch.join(',') + ';\n';
-                        fs.appendFileSync(currentFile, insertSQL);
-                        insertValuesBatch = [];
-                    }
-
-                    fileIndex++;
-                    recordCountInFile = 0;
-                    currentFile = path.join(downloadDir, `bargikaran_insert_${timestamp}_part${fileIndex}.sql`);
-                    fs.writeFileSync(currentFile, '');
-                    outputFiles.push(`/downloads/${path.basename(currentFile)}`);
-                }
-            }
-
-            offset += batchSize;
+        if (insertValuesBatch.length >= recordsPerInsert) {
+          const insertSQL = baseInsert + insertValuesBatch.join(',') + ';\n';
+          fs.appendFileSync(currentFile, insertSQL);
+          insertValuesBatch = [];
         }
 
-        if (insertValuesBatch.length > 0) {
+        if (recordCountInFile >= maxRecordsPerFile) {
+          // Flush remaining before switching files
+          if (insertValuesBatch.length > 0) {
             const insertSQL = baseInsert + insertValuesBatch.join(',') + ';\n';
             fs.appendFileSync(currentFile, insertSQL);
-        }
+            insertValuesBatch = [];
+          }
 
-        res.json({
-            success: true,
-            totalRows,
-            files: outputFiles
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, error: 'Error exporting SQL' });
-    } 
+          fileIndex++;
+          recordCountInFile = 0;
+          currentFile = path.join(downloadDir, `bargikaran_insert_${timestamp}_part${fileIndex}.sql`);
+          fs.writeFileSync(currentFile, '');
+          outputFiles.push(`/downloads/${path.basename(currentFile)}`);
+        }
+      }
+
+      offset += batchSize;
+    }
+
+    // Final flush after loop
+    if (insertValuesBatch.length > 0) {
+      const insertSQL = baseInsert + insertValuesBatch.join(',') + ';\n';
+      fs.appendFileSync(currentFile, insertSQL);
+    }
+
+    return res.status(200).json({
+      success: true,
+      totalRows,
+      files: outputFiles,
+      message:'सफलतापुर्वक फाईल सेभ भयो ।'
+    });
+
+  } catch (error) {
+    console.error('Error exporting SQL:', error);
+    return res.status(500).json({ success: false, error: 'Error exporting SQL' });
+  }
 });
+
+
 
 module.exports = router;

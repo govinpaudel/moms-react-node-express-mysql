@@ -20,7 +20,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(morgan('dev'));
-app.use('/downloads', express.static(path.join(__dirname, 'downloads')));
+app.use('/api/downloads', express.static(path.join(__dirname, 'downloads')));
 app.use(requestIp.mw());
 app.set('trust proxy', true);
 // lets handle request coming from frontend

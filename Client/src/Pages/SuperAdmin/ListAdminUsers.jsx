@@ -40,12 +40,8 @@ const ListAdminUsers = () => {
       updated_by_user_id: loggedUser.id,
       user_id: id
     }
-    console.log("data sent", data);
-    const response = await axios({
-      method: "post",
-      url: Url + "resetPassword",
-      data: data
-    });
+    const url="superadmin/resetPassword";
+    const response=await axiosInstance.post(url,data)    
     console.log(response);
     if (response.data.status) {
       toast.success(response.data.message);
