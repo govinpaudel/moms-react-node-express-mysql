@@ -4,7 +4,7 @@ import { BsInfoCircleFill } from "react-icons/bs"
 import  "./Changepassword.scss";
 import { useNavigate} from 'react-router-dom';
 import { useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from "../axiosInstance"
 import { toast } from 'react-toastify';
 const ChangePassword = () => {
     const Url = import.meta.env.VITE_API_URL + "auth/";
@@ -27,16 +27,13 @@ const ChangePassword = () => {
         if (data.newpassword != data.confirmpassword) {
             toast.warning("पासवर्ड र पुन पासवर्ड मिलेन ।");
             return;
-        }  
-        const response = await axios({
-            method: "post",
-            url: Url + "changepassword",
-            data: data,
-          });
+        }
+        const url=  Url + "changepassword";
+        const response = await axiosInstance.post(url,data);        
         console.log(response.data)
         if(response.data.status==true){
             toast.success(response.data.message);
-            navigate("/home/logout");
+            navigate("/logout");
         }
         else {
             toast.warning(response.data.message);
