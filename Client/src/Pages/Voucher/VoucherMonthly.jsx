@@ -146,7 +146,7 @@ useEffect(() => {
           <tr><td colSpan={2}><hr className="line"/></td></tr>
           <tr>
             <td>जम्मा बाँडफाँड हुने</td>
-            <td>{summary[0] ? Math.round(parseInt(summary[0].pardesh)+parseInt(summary[0].isthaniye)): 0}</td>
+            <td>{summary[0] ? Math.round(parseInt(summary[0].pardesh)+parseInt(summary[0].isthaniye)+parseInt(summary[0].sanchitkosh)): 0}</td>
           </tr>
           <tr><td colSpan={2}><hr className="line"/></td></tr>           
           <tr>

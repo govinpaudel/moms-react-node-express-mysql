@@ -264,11 +264,7 @@ FROM voucher a
 INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
 INNER JOIN voucher_acc_sirshak c ON b.acc_sirshak_id = c.id
 INNER JOIN offices d ON a.office_id = d.id
-INNER JOIN voucher_badhfadh e 
-  ON e.aaba_id = a.aaba_id 
-  AND e.acc_sirshak_id = c.id 
-  AND e.state_id = d.state_id
-INNER JOIN voucher_napa f ON a.office_id = f.office_id AND a.napa_id = f.napa_id
+INNER JOIN voucher_badhfadh e ON e.aaba_id = a.aaba_id AND e.acc_sirshak_id = c.id AND e.state_id = d.state_id
 WHERE a.aaba_id = ? AND a.office_id = ?
 GROUP BY a.aaba_id, a.office_id, c.id,c.acc_sirshak_name
 UNION ALL
@@ -290,11 +286,7 @@ FROM voucher a
 INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
 INNER JOIN voucher_acc_sirshak c ON b.acc_sirshak_id = c.id
 INNER JOIN offices d ON a.office_id = d.id
-INNER JOIN voucher_badhfadh e 
-  ON e.aaba_id = a.aaba_id 
-  AND e.acc_sirshak_id = c.id 
-  AND e.state_id = d.state_id
-INNER JOIN voucher_napa f ON a.office_id = f.office_id AND a.napa_id = f.napa_id
+INNER JOIN voucher_badhfadh e ON e.aaba_id = a.aaba_id AND e.acc_sirshak_id = c.id AND e.state_id = d.state_id
 WHERE a.aaba_id = ? AND a.office_id = ?
 GROUP BY a.aaba_id, a.office_id
 ORDER BY aaba_id, office_id, id`

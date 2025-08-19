@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import axiosInstance from "../axiosInstance"
 import { toast } from 'react-toastify';
 const ChangePassword = () => {
-    const Url = import.meta.env.VITE_API_URL + "auth/";
+     
     const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
     const initialdata={
         user_id:loggedUser.id,
@@ -28,7 +28,7 @@ const ChangePassword = () => {
             toast.warning("पासवर्ड र पुन पासवर्ड मिलेन ।");
             return;
         }
-        const url=  Url + "changepassword";
+        const url=  "auth/changepassword";
         const response = await axiosInstance.post(url,data);        
         console.log(response.data)
         if(response.data.status==true){
