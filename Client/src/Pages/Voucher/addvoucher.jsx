@@ -25,7 +25,7 @@ const Addvoucher = () => {
     sirshak_id: 0,
     napa_id: 0,
     voucherno: "",
-    amount: "",
+    amount: 0,
     deposited_by: "",
   };
   const fant_idref = useRef()
