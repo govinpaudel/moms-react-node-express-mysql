@@ -1,9 +1,10 @@
 .wrapper {
-    margin-bottom: 20px;    
+    margin-bottom: 20px;
     align-items: center;
     text-align: center;
     padding: 20px;
     border-bottom: 1px dashed var(--yellow-theme-main-color);
+
     h2 {
         text-align: center;
         font-size: 32px;
@@ -11,8 +12,9 @@
         letter-spacing: 1.5px;
         line-height: 1rem;
         text-transform: capitalize;
-        color: var(--yellow-theme-main-color);   
+        color: var(--yellow-theme-main-color);
     }
+
     h3 {
         text-align: center;
         font-size: 2rem;
@@ -20,8 +22,9 @@
         letter-spacing: 1.5px;
         line-height: 1rem;
         text-transform: capitalize;
-        color: var(--yellow-theme-main-color);   
+        color: var(--yellow-theme-main-color);
     }
+
     h4 {
         text-align: center;
         font-size: 2rem;
@@ -29,14 +32,16 @@
         letter-spacing: 1.5px;
         line-height: 1rem;
         text-transform: capitalize;
-        color: var(--yellow-theme-main-color);   
+        color: var(--yellow-theme-main-color);
     }
+
     span {
         svg {
             color: var(--yellow-theme-main-color);
         }
     }
 }
-.nepali{
+
+.nepali {
     font-family: kalimati;
 }

@@ -1,44 +1,60 @@
 import './App.scss'
 import { Route, Routes } from "react-router-dom";
+import React, { lazy, Suspense } from "react";
+
 import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Logout from './Pages/Logout';
+
+// Voucher
 import Listvoucher from './Pages/Voucher/Listvoucher';
 import Addvoucher from './Pages/Voucher/Addvoucher';
-import MisilSearch from './Pages/Misil/MisilSearch';
-import Protected_route from './Utils/Protected_route';
-import Bargikaran from './Pages/Bargikaran/bargikaran';
 import VoucherMonthly from './Pages/Voucher/VoucherMonthly';
 import VoucherFant from './Pages/Voucher/VoucherFant';
 import Editvoucher from './Pages/Voucher/Editvoucher';
 import VoucherByDate from './Pages/Voucher/VoucherByDate';
+import VoucherHome from './Pages/Voucher/VoucherHome';
+import VoucherOfficeSum from './Pages/Voucher/VoucherOfficeSum';
+import Voucherdaily from './Pages/Voucher/Voucherdaily';
+import VoucherPalika from './Pages/Voucher/VoucherPalika';
+
+// Misil
+import MisilSearch from './Pages/Misil/MisilSearch';
 import ListPoka from './Pages/Misil/ListPoka';
+import MisilHome from './Pages/Misil/MisilHome';
+import ViewPoka from './Pages/Misil/ViewPoka';
+
+// Bargikaran
+import Bargikaran from './Pages/Bargikaran/bargikaran';
+import BargikaranHome from './Pages/Bargikaran/BargikaranHome';
+import BargikaranAdd from './Pages/Bargikaran/bargikaranAdd';
+import Bargikarandownload from './Pages/Bargikaran/Bargikarandownload';
+
+// Admin
 import Admin from './Pages/Admin/Admin';
 import ListUsers from './Pages/Admin/ListUsers';
 import ListNapas from './Pages/Admin/ListNapas';
 import ListParms from './Pages/Admin/ListParms';
 import ListFants from './Pages/Admin/ListFants';
-import ChangePassword from './Pages/ChangePassword';
-import ResetPassword from './Pages/ResetPassword';
+
+// Super Admin
 import SuperAdmin from './Pages/SuperAdmin/SuperAdmin';
 import ListAdminUsers from './Pages/SuperAdmin/ListAdminUsers';
 import ListBadhfand from './Pages/SuperAdmin/ListBadhfand';
 import ListOffices from './Pages/SuperAdmin/ListOffices';
+
+// Misc
 import AppHome from './Pages/AppHome';
-import VoucherHome from './Pages/Voucher/VoucherHome';
-import BargikaranHome from './Pages/Bargikaran/BargikaranHome';
-import BargikaranAdd from './Pages/Bargikaran/bargikaranAdd';
-import MisilHome from './Pages/Misil/MisilHome';
-import ViewPoka from './Pages/Misil/ViewPoka';
+import ChangePassword from './Pages/ChangePassword';
+import ResetPassword from './Pages/ResetPassword';
 import CalcMainPage from './Pages/Calculator/CalcMainPage';
-import VoucherOfficeSum from './Pages/Voucher/VoucherOfficeSum';
-import Voucherdaily from './Pages/Voucher/Voucherdaily';
-import VoucherPalika from './Pages/Voucher/VoucherPalika'
-import Bargikarandownload from './Pages/Bargikaran/Bargikarandownload';
+import Protected_route from './Utils/Protected_route';
+
 function App() {
   return (
     <>
       <div className="App__main-page-content">
+        <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route element={<Protected_route />}>
             <Route path="/" element={<AppHome />} />
@@ -100,7 +116,9 @@ function App() {
           <Route path='/calculator' element={<CalcMainPage />} />
           <Route path='/resetpassword' element={<ResetPassword />} />
           <Route path='/login' element={<Login />} />
+          
         </Routes>
+        </Suspense>
       </div>
     </>
   )
