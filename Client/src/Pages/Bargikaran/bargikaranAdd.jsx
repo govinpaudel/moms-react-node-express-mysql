@@ -4,10 +4,13 @@ import { toast } from "react-toastify";
 import "./bargikaranAdd.scss";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../axiosInstance"
+import { useParams } from "react-router-dom";
 const BargikaranAdd = () => {
-  const navigate =useNavigate();  
+  const { id } = useParams();
+  const navigate = useNavigate();  
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const initialdata = {
+    id:id,
     office_id: loggedUser.office_id,
     napa_id: 0,
     gabisa_id: 0,
@@ -29,6 +32,18 @@ const BargikaranAdd = () => {
       navigate('/bargikaran')
     }
   }
+  
+  const loadEditData= async(id)=>{
+    console.log("utabata aayeko",id)
+    if(id>0){
+      const url="bargikaran/" + "getKittaDetailsForEdit/" + id  
+      const response=await axiosInstance.get(url) 
+      console.log("response aayeko",response)
+      setData(response.data.data[0]);
+    }
+  }
+
+
   const loadoffices = async () => {
     const url="bargikaran/" + "getAllOffices/" + loggedUser.office_id    
     const response=await axiosInstance.get(url)     
@@ -69,6 +84,7 @@ const BargikaranAdd = () => {
     document.title = "MOMS | वर्गिकरण थप गर्नुहोस्";
     checkRole();
     loadoffices();
+    loadEditData(id);
   }, []);
 
   useEffect(() => {
@@ -83,16 +99,19 @@ const BargikaranAdd = () => {
   }, [data.gabisa_id])
 
   async function processRequests(items) {
+    console.log(items);
     for (const item of items) {
       data.kitta_no = item;
+      data.user_id= loggedUser.id;
       console.log("datasent", data);
       const url="bargikaran/" + "savebargikaran";
       const response = await axiosInstance.post(url,data)
+      console.log(response);
       if (response.data.status == true) {
         toast.success(response.data.message);
+        navigate('/bargikaran/search')
       }
     }
-
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -113,10 +132,10 @@ const BargikaranAdd = () => {
       toast.warning("कृपया वडा छान्नुहोस् ।");
       return;
     }
-    if (data.kitta_no.trim().length == 0) {
+    if (data.kitta_no.toString().trim().length == 0) {
       return;
     }
-    let text = data.kitta_no;
+    let text = data.kitta_no.toString();
     const myArray = text.split(",");
     processRequests(myArray);
     setData(initialdata);

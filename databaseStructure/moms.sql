@@ -11,7 +11,7 @@
  Target Server Version : 80036
  File Encoding         : 65001
 
- Date: 17/07/2025 11:49:19
+ Date: 15/09/2025 14:44:57
 */
 
 SET NAMES utf8mb4;
@@ -52,11 +52,23 @@ CREATE TABLE `bargikaran`  (
   `sno` bigint NULL DEFAULT NULL,
   `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by_user_id` bigint NULL DEFAULT NULL,
+  `updated_at` datetime NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_user_id` bigint NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx1`(`office_id`, `napa_id`, `gabisa_id`, `ward_no`, `kitta_no`) USING BTREE,
-  INDEX `idx2`(`office_id`) USING BTREE,
-  INDEX `idx3`(`office_id`, `napa_id`, `gabisa_id`, `ward_no`, `sheet_no`, `kitta_no`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 850508 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+  INDEX `idx_full_path`(`office_id`, `napa_id`, `gabisa_id`, `ward_no`, `kitta_no`) USING BTREE,
+  INDEX `idx_created_at`(`created_at`) USING BTREE,
+  INDEX `idx_updated_at`(`updated_at`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1358111 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Table structure for brg_cnt
+-- ----------------------------
+DROP TABLE IF EXISTS `brg_cnt`;
+CREATE TABLE `brg_cnt`  (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `cnt` int NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for brg_ofc
@@ -75,7 +87,8 @@ CREATE TABLE `brg_ofc_np`  (
   `office_id` bigint NULL DEFAULT NULL,
   `office_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `napa_id` bigint NULL DEFAULT NULL,
-  `napa_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL
+  `napa_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  INDEX `idx_office_id`(`office_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -88,7 +101,8 @@ CREATE TABLE `brg_ofc_np_gb`  (
   `napa_id` bigint NULL DEFAULT NULL,
   `napa_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `gabisa_id` bigint NULL DEFAULT NULL,
-  `gabisa_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL
+  `gabisa_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  INDEX `idx_office_napa`(`office_id`, `napa_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -102,54 +116,9 @@ CREATE TABLE `brg_ofc_np_gb_wd`  (
   `napa_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `gabisa_id` bigint NULL DEFAULT NULL,
   `gabisa_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `ward_no` bigint NULL DEFAULT NULL
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for brg_ofc_np_gb_wd_st
--- ----------------------------
-DROP TABLE IF EXISTS `brg_ofc_np_gb_wd_st`;
-CREATE TABLE `brg_ofc_np_gb_wd_st`  (
-  `office_id` bigint NULL DEFAULT NULL,
-  `office_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `napa_id` bigint NULL DEFAULT NULL,
-  `napa_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `gabisa_id` bigint NULL DEFAULT NULL,
-  `gabisa_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `ward_no` bigint NULL DEFAULT NULL,
-  `sheet_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL
+  INDEX `idx_office_napa_gabisa`(`office_id`, `napa_id`, `gabisa_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for kitta
--- ----------------------------
-DROP TABLE IF EXISTS `kitta`;
-CREATE TABLE `kitta`  (
-  `F1` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F2` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F3` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F4` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F5` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F6` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F7` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F8` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F9` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F10` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F11` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F12` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F13` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F14` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F15` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F16` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F17` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F18` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F19` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F20` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F21` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F22` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F23` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `F24` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for message
@@ -182,7 +151,7 @@ CREATE TABLE `misil`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `mpokafk`(`poka_id`) USING BTREE,
   INDEX `muserfk`(`created_by_user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 28159 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 28459 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for misil_pokas
@@ -207,7 +176,7 @@ CREATE TABLE `misil_pokas`  (
   INDEX `pokaaabaidfk`(`aaba_id`) USING BTREE,
   INDEX `pokamisiltypefk`(`misil_type_id`) USING BTREE,
   INDEX `pokauserfk`(`created_by_user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 684 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 698 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for misil_type
@@ -232,7 +201,7 @@ CREATE TABLE `modules`  (
   `path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `display_order` bigint NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for offices
@@ -274,7 +243,7 @@ CREATE TABLE `user_modules`  (
   INDEX `fk_um_uid_utable`(`user_id`) USING BTREE,
   CONSTRAINT `fk_um_moid_mtable` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_um_uid_utable` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 3329 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3290 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user_roles
@@ -308,7 +277,7 @@ CREATE TABLE `users`  (
   UNIQUE INDEX `email`(`email`) USING BTREE,
   INDEX `userfkofficeid`(`office_id`) USING BTREE,
   INDEX `userfkrole`(`role`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 140 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 154 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for voucher
@@ -347,7 +316,7 @@ CREATE TABLE `voucher`  (
   CONSTRAINT `vfkmonid` FOREIGN KEY (`month_id`) REFERENCES `voucher_month` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `vfkofcid` FOREIGN KEY (`office_id`) REFERENCES `offices` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `vfksrshkid` FOREIGN KEY (`sirshak_id`) REFERENCES `voucher_sirshak` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 30053 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 32390 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for voucher_acc_sirshak
@@ -381,7 +350,7 @@ CREATE TABLE `voucher_badhfadh`  (
   INDEX `voucher_badhfadh_sirshak_id_c2ecda73_fk_voucher_sirshak_id`(`acc_sirshak_id`) USING BTREE,
   CONSTRAINT `vbfkpardesh` FOREIGN KEY (`state_id`) REFERENCES `voucher_state` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `vbfksirshak` FOREIGN KEY (`acc_sirshak_id`) REFERENCES `voucher_acc_sirshak` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 255 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 305 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for voucher_deleted
@@ -437,7 +406,7 @@ CREATE TABLE `voucher_fant`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `voucher_fant_office_id_8abe4392_fk_voucher_office_id`(`office_id`) USING BTREE,
   CONSTRAINT `fantfkofc` FOREIGN KEY (`office_id`) REFERENCES `offices` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 104 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 108 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for voucher_month
@@ -464,7 +433,7 @@ CREATE TABLE `voucher_napa`  (
   PRIMARY KEY (`napa_id`) USING BTREE,
   INDEX `voucher_napa_office_id_39475ee0_fk_voucher_office_id`(`office_id`) USING BTREE,
   CONSTRAINT `napafkofc` FOREIGN KEY (`office_id`) REFERENCES `offices` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 251 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 261 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for voucher_parameter
@@ -479,7 +448,7 @@ CREATE TABLE `voucher_parameter`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `voucher_voucherparm_office_id_4d5ad558_fk_voucher_office_id`(`office_id`) USING BTREE,
   CONSTRAINT `vpmfkofcid` FOREIGN KEY (`office_id`) REFERENCES `offices` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 159 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 161 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for voucher_sirshak
@@ -492,7 +461,7 @@ CREATE TABLE `voucher_sirshak`  (
   `display_order` int NULL DEFAULT NULL,
   `isactive` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for voucher_state

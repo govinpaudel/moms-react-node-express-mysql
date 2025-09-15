@@ -4,8 +4,10 @@ import axiosInstance from "../../axiosInstance"
 import { toast } from "react-toastify";
 import "./bargikaran.scss";
 import { Circles } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
 
 const Bargikaran = () => {
+  const navigate = useNavigate();
   const Url = import.meta.env.VITE_API_URL + "bargikaran/";
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const [data, setData] = useState({
@@ -20,7 +22,7 @@ const Bargikaran = () => {
   const [gapas, setGapas] = useState();
   const [wards, setWards] = useState();
   const [details, setDetails] = useState();
-  const [loading,setloading]=useState(false);
+  const [loading, setloading] = useState(false);
 
   const loadoffices = async () => {
     const url = "bargikaran/" + "getAllOffices/" + loggedUser.office_id
@@ -124,16 +126,16 @@ const Bargikaran = () => {
   };
   return (
     <section id="bargikaran" className="bargikaran">
-       {loading ?
-              (
-                <div className="fullscreen-loader">
-                  <div className="loader">
-                    <Circles height={150} width={150} color="#ffdd40" ariaLabel="loading" />
-                    <h2 className="loader-text" >कृपया प्रतिक्षा गर्नुहोस् ।</h2>
-                  </div>
-                </div>
-              ) : null
-            }
+      {loading ?
+        (
+          <div className="fullscreen-loader">
+            <div className="loader">
+              <Circles height={150} width={150} color="#ffdd40" ariaLabel="loading" />
+              <h2 className="loader-text" >कृपया प्रतिक्षा गर्नुहोस् ।</h2>
+            </div>
+          </div>
+        ) : null
+      }
       <div className="bargikaran__heading">
         <h5 className="bargikaran__heading__text">
           पालिकाले गरेको वर्गिकरण हेर्नुहोस् ।
@@ -246,6 +248,11 @@ const Bargikaran = () => {
                 <div className="bargikaran__result__item">
                   कैफियत - {data.remarks} ।
                 </div>
+                {(loggedUser?.role === 1 || loggedUser?.role === 3) ? (
+                  <div className="bargikaran__result__item">
+                    <button  className="btn btn-primary" onClick={() => navigate(`/bargikaran/add/${data.id}`)}><h5>संशोधन</h5></button>
+                  </div>
+                ) : null}
               </div>
             );
           })

@@ -61,13 +61,26 @@ router.get('/getWardsByGabisaId/:officeid/:napaid/:gabisaid', async (req, res, n
   }
 });
 
-// ✅ Get Kitta Details
+// ✅ Get Kitta Details for edit
+
+router.get('/getKittaDetailsForEdit/:id', async (req, res, next) => {
+  try {
+    const query = `select * from bargikaran where id=?`
+    const [results] = await pool.query(query, [req.params.id]);
+    res.status(200).json({ message: "रेकर्ड सफलतापुर्वक प्राप्त भयो ।", data: results });
+  } catch (error) {
+    next(error)
+  }
+})
+
+
+// ✅ Get Kitta Details while searching
 router.post('/getKittaDetails', async (req, res, next) => {
   try {
     const user = req.body;
     const query = `
       SELECT * FROM bargikaran 
-      WHERE office_id=? AND napa_id=? AND gabisa_id=? AND ward_no=? AND kitta_no=?`;
+      WHERE office_id=? AND napa_id=? AND gabisa_id=? AND ward_no=? AND kitta_no=? order by id desc`;
     const [results] = await pool.query(query, [
       user.office_id,
       user.napa_id,
@@ -89,7 +102,15 @@ router.post('/getKittaDetails', async (req, res, next) => {
 router.post('/savebargikaran', async (req, res, next) => {
   try {
     const user = req.body;
-    const query = `
+    console.log(user);
+    if (user.id > 0) {
+      const query = 'update bargikaran set bargikaran=?,remarks=?,updated_by_user_id=? where id=?';
+      const params = [user.bargikaran, user.remarks, user.user_id, user.id];
+      const [results] = await pool.query(query, params);
+      res.status(200).json({ status: true, message: `कित्ता नं ${user.kitta_no} को वर्गिकरण संशोधन भयो ।`, data: results });
+    }
+    else{
+const query = `
       INSERT INTO bargikaran (
         office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name,
         sheet_no, ward_no, kitta_no, bargikaran, remarks, created_by_user_id
@@ -100,8 +121,8 @@ router.post('/savebargikaran', async (req, res, next) => {
       FROM brg_ofc_np_gb
       WHERE office_id=? AND napa_id=? AND gabisa_id=?`;
     const params = [
-      user.ward_no, // sheet_no
-      user.ward_no, // ward_no
+      user.ward_no, 
+      user.ward_no, 
       user.kitta_no,
       user.bargikaran,
       user.remarks,
@@ -110,103 +131,12 @@ router.post('/savebargikaran', async (req, res, next) => {
       user.napa_id,
       user.gabisa_id,
     ];
-
     const [results] = await pool.query(query, params);
-
+    res.status(200).json({ status:true, message: `कित्ता नं ${user.kitta_no} को वर्गिकरण सेभ भयो ।`, data: results });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "डाटा सेभ गर्न सकेन", data: error });
   }
 });
-
-router.post('/export-sql', async (req, res, next) => {
-  const batchSize = 1000;
-  const maxRecordsPerFile = 30000;
-  const recordsPerInsert = 10;
-  const baseInsert = `INSERT INTO bargikaran (id, office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name, ward_no, sheet_no, kitta_no, area, bargikaran, remarks, sno, created_at, created_by_user_id) VALUES `;
-
-  const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '');
-  const downloadDir = path.join(__dirname, '../downloads');
-
-  if (!fs.existsSync(downloadDir)) {
-    fs.mkdirSync(downloadDir, { recursive: true });
-  }
-  let fileIndex = 1;
-  let offset = 0;
-  let recordCountInFile = 0;
-  let insertValuesBatch = [];
-  let totalRows = 0;
-  let outputFiles = [];
-  let currentFile = path.join(downloadDir, `bargikaran_insert_${timestamp}_part${fileIndex}.sql`);
-  fs.writeFileSync(currentFile, '');
-  outputFiles.push(`/downloads/${path.basename(currentFile)}`);
-  try {
-    let isFirstBatch = true;
-    while (true) {
-      const [rows] = await pool.query(`
-        SELECT id, office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name, ward_no, sheet_no, kitta_no, area, bargikaran, remarks, sno, created_at, created_by_user_id 
-        FROM bargikaran_new_updated 
-        ORDER BY id 
-        LIMIT ? OFFSET ?`, [batchSize, offset]);
-      if (isFirstBatch && rows.length === 0) {
-        return res.status(200).json({ success: false, message: 'No records exist to export.' });
-      }
-      isFirstBatch = false;
-      if (rows.length === 0) {
-        break; // No more data
-      }
-      for (const row of rows) {
-        const vals = Object.values(row).map(val =>
-          val === null ? 'NULL' : `'${String(val).replace(/'/g, "''")}'`
-        );
-        insertValuesBatch.push(`(${vals.join(',')})`);
-        recordCountInFile++;
-        totalRows++;
-
-        if (insertValuesBatch.length >= recordsPerInsert) {
-          const insertSQL = baseInsert + insertValuesBatch.join(',') + ';\n';
-          fs.appendFileSync(currentFile, insertSQL);
-          insertValuesBatch = [];
-        }
-
-        if (recordCountInFile >= maxRecordsPerFile) {
-          // Flush remaining before switching files
-          if (insertValuesBatch.length > 0) {
-            const insertSQL = baseInsert + insertValuesBatch.join(',') + ';\n';
-            fs.appendFileSync(currentFile, insertSQL);
-            insertValuesBatch = [];
-          }
-
-          fileIndex++;
-          recordCountInFile = 0;
-          currentFile = path.join(downloadDir, `bargikaran_insert_${timestamp}_part${fileIndex}.sql`);
-          fs.writeFileSync(currentFile, '');
-          outputFiles.push(`/downloads/${path.basename(currentFile)}`);
-        }
-      }
-
-      offset += batchSize;
-    }
-
-    // Final flush after loop
-    if (insertValuesBatch.length > 0) {
-      const insertSQL = baseInsert + insertValuesBatch.join(',') + ';\n';
-      fs.appendFileSync(currentFile, insertSQL);
-    }
-
-    return res.status(200).json({
-      success: true,
-      totalRows,
-      files: outputFiles,
-      message:'सफलतापुर्वक फाईल सेभ भयो ।'
-    });
-
-  } catch (error) {
-    console.error('Error exporting SQL:', error);
-    return res.status(500).json({ success: false, error: 'Error exporting SQL' });
-  }
-});
-
-
-
 module.exports = router;

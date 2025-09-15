@@ -28,7 +28,6 @@ import ViewPoka from './Pages/Misil/ViewPoka';
 import Bargikaran from './Pages/Bargikaran/bargikaran';
 import BargikaranHome from './Pages/Bargikaran/BargikaranHome';
 import BargikaranAdd from './Pages/Bargikaran/bargikaranAdd';
-import Bargikarandownload from './Pages/Bargikaran/Bargikarandownload';
 
 // Admin
 import Admin from './Pages/Admin/Admin';
@@ -79,8 +78,8 @@ function App() {
             <Route path='bargikaran' element={<BargikaranHome />} >
             <Route path='' element={<Bargikaran />} />
             <Route path='search' element={<Bargikaran />} />
-            <Route path='add' element={<BargikaranAdd />} />
-            <Route path='download' element={<Bargikarandownload/>}/>
+            <Route path='add/:id' element={<BargikaranAdd />} />
+            
             </Route>
             {/* bargikaran route ends */}
             {/* Misil route Starts */}
