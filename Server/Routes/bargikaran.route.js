@@ -139,4 +139,23 @@ const query = `
     res.status(500).json({ message: "डाटा सेभ गर्न सकेन", data: error });
   }
 });
+
+
+// ✅ Get data by date
+router.get('/getDataByDate/:date', async (req, res, next) => {  
+  try {
+    const { date } = req.params;
+
+    // Validate date format YYYY-MM-DD
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ status: false, message: "Invalid date format" });
+    }
+    const query = `SELECT * FROM bargikaran WHERE DATE(created_at) >= ? OR DATE(updated_at) >= ?`;
+    const [results] = await pool.query(query, [date,date]);
+    res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
