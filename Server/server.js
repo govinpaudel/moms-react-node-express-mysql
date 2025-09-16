@@ -7,8 +7,8 @@ const requestIp = require("request-ip");
 
 const app = express();
 const PORT = process.env.API_PORT || 3000;
-const FRONTEND_DEV = 'http://localhost:5173'; // Vite dev server
-const FRONTEND_PROD = 'https://bargikaran.infinityfreeapp.com'; // replace with your deployed frontend URL
+const FRONTEND_DEV = 'http://localhost:5173';
+const FRONTEND_PROD = 'http://bargikaran.infinityfreeapp.com'; 
 
 // JWT helper
 const { verifyAccesstoken } = require('./Libraries/jwt_helper');

@@ -113,11 +113,11 @@ router.post('/savebargikaran', async (req, res, next) => {
 const query = `
       INSERT INTO bargikaran (
         office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name,
-        sheet_no, ward_no, kitta_no, bargikaran, remarks, created_by_user_id
+        sheet_no, ward_no, kitta_no, bargikaran, remarks, created_by_user_id,updated_by_user_id
       )
       SELECT 
         office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name,
-        ?, ?, ?, ?, ?, ?
+        ?,?,?,?,?,?,?
       FROM brg_ofc_np_gb
       WHERE office_id=? AND napa_id=? AND gabisa_id=?`;
     const params = [
@@ -126,6 +126,7 @@ const query = `
       user.kitta_no,
       user.bargikaran,
       user.remarks,
+      user.user_id,
       user.user_id,
       user.office_id,
       user.napa_id,
@@ -145,7 +146,6 @@ const query = `
 router.get('/getDataByDate/:date', async (req, res, next) => {  
   try {
     const { date } = req.params;
-
     // Validate date format YYYY-MM-DD
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return res.status(400).json({ status: false, message: "Invalid date format" });
