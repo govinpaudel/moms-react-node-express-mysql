@@ -8,7 +8,11 @@ const requestIp = require("request-ip");
 const app = express();
 const PORT = process.env.API_PORT || 3000;
 const FRONTEND_DEV = 'http://localhost:5173';
-const FRONTEND_PROD = 'http://bargikaran.infinityfreeapp.com'; 
+const FRONTEND_PROD = 'http://bargikaran.infinityfreeapp.com';
+const FRONTEND_PROD1 = 'https://kitta.infinityfreeapp.com';
+const FRONTEND_PROD2 = 'http://kitta.infinityfreeapp.com';
+const FRONTEND_PROD3 = 'http://kitta.infinityfreeapp.com';
+
 
 // JWT helper
 const { verifyAccesstoken } = require('./Libraries/jwt_helper');
@@ -32,7 +36,7 @@ app.use('/api/downloads', express.static(path.join(__dirname, 'downloads')));
 // -------------------- CORS --------------------
 // Allow both dev and production frontend
 const corsOptions = {
-    origin: [FRONTEND_DEV, FRONTEND_PROD],
+    origin: [FRONTEND_DEV, FRONTEND_PROD,FRONTEND_PROD1,FRONTEND_PROD2,FRONTEND_PROD3],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true

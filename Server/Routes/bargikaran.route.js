@@ -3,6 +3,7 @@ const pool = require('../Libraries/connection');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path')
+const axios = require("axios");
 
 router.get('/', (req, res) => {
   res.send("Hello from bargikaran route page");
@@ -109,8 +110,8 @@ router.post('/savebargikaran', async (req, res, next) => {
       const [results] = await pool.query(query, params);
       res.status(200).json({ status: true, message: `कित्ता नं ${user.kitta_no} को वर्गिकरण संशोधन भयो ।`, data: results });
     }
-    else{
-const query = `
+    else {
+      const query = `
       INSERT INTO bargikaran (
         office_id, office_name, napa_id, napa_name, gabisa_id, gabisa_name,
         sheet_no, ward_no, kitta_no, bargikaran, remarks, created_by_user_id,updated_by_user_id
@@ -120,20 +121,20 @@ const query = `
         ?,?,?,?,?,?,?
       FROM brg_ofc_np_gb
       WHERE office_id=? AND napa_id=? AND gabisa_id=?`;
-    const params = [
-      user.ward_no, 
-      user.ward_no, 
-      user.kitta_no,
-      user.bargikaran,
-      user.remarks,
-      user.user_id,
-      user.user_id,
-      user.office_id,
-      user.napa_id,
-      user.gabisa_id,
-    ];
-    const [results] = await pool.query(query, params);
-    res.status(200).json({ status:true, message: `कित्ता नं ${user.kitta_no} को वर्गिकरण सेभ भयो ।`, data: results });
+      const params = [
+        user.ward_no,
+        user.ward_no,
+        user.kitta_no,
+        user.bargikaran,
+        user.remarks,
+        user.user_id,
+        user.user_id,
+        user.office_id,
+        user.napa_id,
+        user.gabisa_id,
+      ];
+      const [results] = await pool.query(query, params);
+      res.status(200).json({ status: true, message: `कित्ता नं ${user.kitta_no} को वर्गिकरण सेभ भयो ।`, data: results });
     }
   } catch (error) {
     console.error(error);
@@ -141,9 +142,8 @@ const query = `
   }
 });
 
-
 // ✅ Get data by date
-router.get('/getDataByDate/:date', async (req, res, next) => {  
+router.get('/getDataByDate/:date', async (req, res, next) => {
   try {
     const { date } = req.params;
     // Validate date format YYYY-MM-DD
@@ -151,11 +151,78 @@ router.get('/getDataByDate/:date', async (req, res, next) => {
       return res.status(400).json({ status: false, message: "Invalid date format" });
     }
     const query = `SELECT * FROM bargikaran WHERE DATE(created_at) >= ? OR DATE(updated_at) >= ?`;
-    const [results] = await pool.query(query, [date,date]);
+    const [results] = await pool.query(query, [date, date]);
     res.status(200).json({ message: "डाटा प्राप्त भयो", data: results });
   } catch (error) {
     next(error);
   }
 });
+
+router.post('/getCookiebyUser', async (req, res, next) => {
+  let user = req.body;
+  console.log(user);
+  const form = new URLSearchParams({
+    hidBioDataForUser: "",
+    txtCapturedFIR: "",
+    j_username: user.username,
+    j_password: user.password,
+  });
+  try {
+    const response = await axios.post(
+      "http://10.7.252.13/lrims/j_spring_security_check",
+      form.toString(),
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        maxRedirects: 0,           // stop at 302
+        validateStatus: () => true // allow 302
+      }
+    );
+    const setCookie = response.headers["set-cookie"];
+    const jsession = setCookie
+      .map(c => c.split(";")[0])
+      .find(c => c.startsWith("JSESSIONID="));
+    res.status(200).json({ status: true, message: "डाटा प्राप्त भयो", data: jsession });
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+router.get('/getGabisalist', async (req, res, next) => {
+  try {
+    const response = await axios.get('http://10.7.252.13/lrims/app/fillDropDown/getData/forarcieve/41/D_MVDC/24066/1')
+    res.status(200).json({ status: true, message: "डाटा प्राप्त भयो", data: response.data });
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+router.get('/getDataByGabisa/:id/:sessionid', async (req, res, next) => {
+  try {
+    console.log(req.params.id, req.params.sessionid);
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Cookie': req.params.sessionid
+    };
+    const formData = new URLSearchParams();
+    formData.append('ddlReportsDistrict', '41');
+    formData.append('ddlReportsMunicipalityVDC', req.params.id);
+    formData.append('ddlLandDetailsWardNumber', '');
+    const response = await axios.post('http://10.7.252.13/lrims/app/LandOwnerPersonReportSpecific/', formData.toString(), { headers, timeout: 60000 });    
+    res.status(200).json({ status: true, message: "डाटा प्राप्त भयो", data: response.data });
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = router;

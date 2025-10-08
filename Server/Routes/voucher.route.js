@@ -494,9 +494,9 @@ router.post('/loadSingleVoucher', async (req, res, next) => {
         a.fant_id=e.id\
         inner join users f on\
         a.created_by_user_id=f.id \
-        WHERE a.aaba_id=? and a.office_id=? and a.voucherno=?\
+        WHERE a.office_id=? and a.voucherno=?\
         order by a.created_at";
-        const values = [user.aaba_id, user.office_id, user.voucherno]
+        const values = [user.office_id, user.voucherno]
         const [results] = await pool.query(squery, values);
         return res.status(200).json({ message: "डाटा सफलतापुर्वक प्राप्त भयो", data: results });
     } catch (error) {
@@ -516,8 +516,8 @@ router.post('/addOrUpdateVoucher', async (req, res, next) => {
         else {
             checkquery = `select a.*,b.nepname from voucher a
         inner join users b on a.created_by_user_id=b.id
-        where a.office_id=? and a.voucherno=?`;
-            const [results] = await pool.query(checkquery, [user.office_id, user.voucherno]);
+        where a.office_id=? and a.aaba_id=? and a.voucherno=?`;
+            const [results] = await pool.query(checkquery, [user.office_id,user.aaba_id,user.voucherno]);
             if (results.length > 0) {
                 return res.status(200).json({ status: false, message: "भौचर नं‌ " + user.voucherno + " मितिः  " + results[0].ndate_voucher + " मा " + results[0].nepname + " बाट दर्ता भईसकेको छ ।" })
             }
