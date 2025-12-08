@@ -20,8 +20,6 @@ const { verifyAccesstoken } = require('./Libraries/jwt_helper');
 // import routes
 const authRoute = require('./Routes/auth.route');
 const voucherRoute = require('./Routes/voucher.route');
-const bargikaranRoute = require('./Routes/bargikaran.route');
-const misilRoute = require('./Routes/misil.route');
 const adminRoute = require('./Routes/admin.route');
 const superadminRoute = require('./Routes/superadmin.route');
 
@@ -35,8 +33,7 @@ app.use('/api/downloads', express.static(path.join(__dirname, 'downloads')));
 
 // -------------------- CORS --------------------
 // Allow both dev and production frontend
-const corsOptions = {
-    origin: [FRONTEND_DEV, FRONTEND_PROD,FRONTEND_PROD1,FRONTEND_PROD2,FRONTEND_PROD3],
+const corsOptions = {    
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
@@ -46,8 +43,6 @@ app.use(cors(corsOptions));
 // -------------------- ROUTES --------------------
 app.use('/api/auth', authRoute);
 app.use('/api/voucher', verifyAccesstoken, voucherRoute);
-app.use('/api/bargikaran', bargikaranRoute);
-app.use('/api/misil', verifyAccesstoken, misilRoute);
 app.use('/api/admin', verifyAccesstoken, adminRoute);
 app.use('/api/superadmin', superadminRoute);
 
@@ -68,6 +63,5 @@ app.use((err, req, res, next) => {
 
 // -------------------- START SERVER --------------------
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`CORS allowed for: ${FRONTEND_DEV} and ${FRONTEND_PROD}`);
+    console.log(`Server running on port ${PORT}`);    
 });

@@ -13,7 +13,7 @@ const VoucherSidebar = () => {
         module:'Voucher'
       }
     console.log("getting sidebar list",data)
-    const response =await axiosInstance.post("auth/getSidebarlist",data);    
+    const response =await axiosInstance.post("/getSidebarlist",data);    
     console.log('Resultcame',response)
     setdata(response.data.data);   
 

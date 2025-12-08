@@ -20,11 +20,10 @@ const VoucherMonthly = () => {
       aaba_id: loggedUser.aabaid,      
     };
     console.log("getting monthlist",data)
-    const response = await axiosInstance.post("voucher/MonthlistByAaba",data)
+    const response = await axiosInstance.post("getMonthlistByAaba",data)
     console.log(response.data);
-    setmdata(response.data.months);
+    setmdata(response.data.data);
   }
-
 
 useEffect(() => {
   loadmonth();
@@ -46,7 +45,7 @@ useEffect(() => {
       month_id: mselected,
     };
     console.log("data sent", data);
-    const response = await axiosInstance.post("voucher/VoucherMonthly",data)    
+    const response = await axiosInstance.post("getVoucherMonthly",data)    
     console.log(response.data.data);    
     setregi(response.data.data.registration); 
     setsummary(response.data.data.summary);

@@ -5,6 +5,7 @@ import React, { lazy, Suspense } from "react";
 import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Logout from './Pages/Logout';
+import CalcMainPage from './Pages/Calculator/CalcMainPage';
 
 // Voucher
 import Listvoucher from './Pages/Voucher/Listvoucher';
@@ -17,18 +18,6 @@ import VoucherHome from './Pages/Voucher/VoucherHome';
 import VoucherOfficeSum from './Pages/Voucher/VoucherOfficeSum';
 import Voucherdaily from './Pages/Voucher/Voucherdaily';
 import VoucherPalika from './Pages/Voucher/VoucherPalika';
-
-// Misil
-import MisilSearch from './Pages/Misil/MisilSearch';
-import ListPoka from './Pages/Misil/ListPoka';
-import MisilHome from './Pages/Misil/MisilHome';
-import ViewPoka from './Pages/Misil/ViewPoka';
-
-// Bargikaran
-import Bargikaran from './Pages/Bargikaran/bargikaran';
-import BargikaranHome from './Pages/Bargikaran/BargikaranHome';
-import BargikaranAdd from './Pages/Bargikaran/bargikaranAdd';
-
 // Admin
 import Admin from './Pages/Admin/Admin';
 import ListUsers from './Pages/Admin/ListUsers';
@@ -46,7 +35,6 @@ import ListOffices from './Pages/SuperAdmin/ListOffices';
 import AppHome from './Pages/AppHome';
 import ChangePassword from './Pages/ChangePassword';
 import ResetPassword from './Pages/ResetPassword';
-import CalcMainPage from './Pages/Calculator/CalcMainPage';
 import Protected_route from './Utils/Protected_route';
 
 function App() {
@@ -59,6 +47,8 @@ function App() {
             <Route path="/" element={<AppHome />} />
             {/* App Routes Starts */}
             <Route path="/apphome" element={<AppHome />} />
+            <Route path="/calculator" element={<CalcMainPage />} />
+
             <Route path='changepassword' element={<ChangePassword />} />
             {/* Voucher routes starts */}
             <Route path='voucher' element={<VoucherHome />} >            
@@ -73,24 +63,7 @@ function App() {
               <Route path='voucherdaily' element={<Voucherdaily/>} /> 
               <Route path='voucherpalika' element={<VoucherPalika/>} /> 
             </Route>
-            {/* Voucher routes ends */}
-            {/* bargikaran route starts */}
-            <Route path='bargikaran' element={<BargikaranHome />} >
-            <Route path='' element={<Bargikaran />} />
-            <Route path='search' element={<Bargikaran />} />
-            <Route path='add/:id' element={<BargikaranAdd />} />
-            
-            </Route>
-            {/* bargikaran route ends */}
-            {/* Misil route Starts */}
-            <Route path='misil' element={<MisilHome />} > 
-            <Route path='' element={<MisilSearch />} />           
-            <Route path='listpoka' element={<ListPoka />} />
-            <Route path='misilsearch' element={<MisilSearch />} />      
-            
-            <Route path='viewpoka' element={<ViewPoka />} />
-            </Route>
-            {/* Misil route Ends */}          
+            {/* Voucher routes ends */}    
             {/* Admin Route Starts */}
             <Route path="/admin" element={<Admin />} >              
               <Route path='listusers' element={<ListUsers />} />
@@ -107,15 +80,12 @@ function App() {
               <Route path='listoffices' element={<ListOffices />} />
               <Route path='logout' element={<Logout />} />
             </Route>
-            {/* Super Admin Route Ends */}
-           
+            {/* Super Admin Route Ends */}           
           </Route>
           <Route path='/logout' element={<Logout />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='/calculator' element={<CalcMainPage />} />
+          <Route path='/register' element={<Register />} />          
           <Route path='/resetpassword' element={<ResetPassword />} />
-          <Route path='/login' element={<Login />} />
-          
+          <Route path='/login' element={<Login />} />          
         </Routes>
         </Suspense>
       </div>

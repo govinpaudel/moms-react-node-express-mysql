@@ -10,7 +10,7 @@ const Login = () => {
   const [aabas, setaabas] = useState([]);
   const [defaaba, setdefaaba] = useState();
   const [formData, setFormData] = useState(initialdata);
-  const Url = import.meta.env.VITE_API_URL + "auth/";
+  const Url = import.meta.env.VITE_API_URL;
   const loggedUser = sessionStorage.getItem("loggedUser");
   const [loading, setLoading] = useState(true); // <-- Track loading state
   const navigate = useNavigate();

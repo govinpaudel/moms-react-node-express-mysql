@@ -72,7 +72,7 @@ const Listvoucher = () => {
         aaba_id: loggedUser.aabaid,
         voucherno: svoucherno.trim(),
       };
-      const url = "voucher/loadSingleVoucher";
+      const url = "loadSingleVoucher";
       const response = await axiosInstance.post(url, data);
       setvoucherlist(response.data.data);
     } catch (error) {
@@ -83,7 +83,7 @@ const Listvoucher = () => {
   const loadTodayVouchers = async () => {
     setLoading(true);
     try {
-      const url = "voucher/getTodaysVoucher";
+      const url = "getTodaysVoucher";
       const data = { created_by_user_id: loggedUser.id }
       const response = await axiosInstance.post(url, data)
       setvoucherlist(response.data.data);

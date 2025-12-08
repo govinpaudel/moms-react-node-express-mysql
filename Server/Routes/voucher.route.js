@@ -479,11 +479,7 @@ router.post('/getTodaysVoucher', async (req, res, next) => {
 router.post('/loadSingleVoucher', async (req, res, next) => {
     try {
 
-        let user = req.body;
-        console.log(req.body);
-        const now = new Date();
-        const value = date.format(now, 'YYYY-MM-DD');
-        console.log("current date and time : " + value)
+        let user = req.body;            
         squery = "SELECT a.id,a.ndate_transaction,a.ndate_voucher,a.voucherno,a.sirshak_id,a.amount,DATE_FORMAT(a.created_at,'%Y-%m-%d') as created_at,a.created_by_user_id,a.deposited_by,b.sirshak_name,c.napa_name,e.fant_name,f.nepname from voucher a\
         INNER JOIN voucher_sirshak b on\
         a.sirshak_id=b.id \
