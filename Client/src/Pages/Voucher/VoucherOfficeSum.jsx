@@ -4,13 +4,15 @@ import axiosInstance from "../../axiosInstance";
 import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
+import { Circles } from "react-loader-spinner";
 const VoucherOfficeSum = () => {
-  const Url = import.meta.env.VITE_API_URL + "voucher/";
+  const Url = import.meta.env.VITE_API_URL;
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const [officeSum, setOfficeSum] = useState([]);
   const [sanchitkosh, setsanchitkosh] = useState([{}]);
   const [isthaniye, setisthaniye] = useState();
   const [pardesh, setpardesh] = useState([]);
+  const [loading,setLoading]= useState(false);
 
   useEffect(() => {
     genReport();
@@ -18,6 +20,7 @@ const VoucherOfficeSum = () => {
   }, [])
 
   const genReport = async () => {
+    setLoading(true);
     setOfficeSum([{}]);
     setsanchitkosh([{}]);
     setisthaniye([{}]);
@@ -27,12 +30,13 @@ const VoucherOfficeSum = () => {
       aaba_id: loggedUser.aabaid
     };
     console.log("data sent", data);
-    const response = await axiosInstance.post("voucher/VoucherOfficeSum", data)
+    const response = await axiosInstance.post("/VoucherOfficeSum", data)
     console.log('sanchitkosh', response.data.sanchitkosh);
     setOfficeSum(response.data.officesum);
     setisthaniye(response.data.isthaniye);
     setpardesh(response.data.pardesh);
     setsanchitkosh(response.data.sanchitkosh);
+    setLoading(false);
   };
 
   return (
@@ -42,6 +46,16 @@ const VoucherOfficeSum = () => {
         headerText="को महिना अनुसारको प्रतिवेदन"
         icon={<BsInfoCircleFill size={40} />}
       />
+      {loading ?
+              (
+                <div className="fullscreen-loader">
+                  <div className="loader">
+                    <Circles height={150} width={150} color="#ffdd40" ariaLabel="loading" />
+                    <h2 className="loader-text" >कृपया प्रतिक्षा गर्नुहोस् ।</h2>
+                  </div>
+                </div>
+              ) : null
+            }
       <table className="listvoucher__list__table">
         <thead>
           <tr>

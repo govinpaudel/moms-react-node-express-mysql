@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const Voucherdaily = () => {
   const navigate=useNavigate();
-  const Url = import.meta.env.VITE_API_URL + "voucher/";
+  const Url = import.meta.env.VITE_API_URL;
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const initialdata = {
     nep_start_date: "",
@@ -27,8 +27,10 @@ const Voucherdaily = () => {
       office_id: loggedUser.office_id,
       aaba_id: loggedUser.aabaid,
     };
+    console.log(Url);
     console.log("getting fantlist", data)
-    const response = await axiosInstance.post("voucher/Fantlist",data)    
+    
+    const response = await axiosInstance.post("/Fantlist",data)    
     console.log(response.data);
     setfdata(response.data.fants);
   }
@@ -79,7 +81,7 @@ const dototal =()=>{
       aaba_id:loggedUser.aabaid
     };
     console.log("data sent", data);
-    const response = await axiosInstance.post("voucher/VoucherSumByDate",data)    
+    const response = await axiosInstance.post("/VoucherSumByDate",data)    
     console.log(response.data.data);
     setrepdata(response.data.data);    
   };

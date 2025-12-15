@@ -54,7 +54,7 @@ const Addvoucher = () => {
     const data = {
       office_id: loggedUser.office_id,
     }
-    const response = await axiosInstance.post("/voucher/getVoucherMaster", data)
+    const response = await axiosInstance.post("/getVoucherMaster", data)
     console.log(response.data.data);
     setsirshaks(response.data.data.sirshaks);
     setfants(response.data.data.fants);
@@ -119,7 +119,7 @@ const Addvoucher = () => {
       toast.warning("कृपया भौचर नं जाँच गर्नुहोस् ।");
       return;
     }
-    const res= await axiosInstance.post("voucher/addOrUpdateVoucher",vdata);    
+    const res= await axiosInstance.post("/addOrUpdateVoucher",vdata);    
     console.log(res.data);
     if (res.data.status == true) {
       toast.success(res.data.message);

@@ -4,6 +4,7 @@ import axiosInstance from "../../axiosInstance";
 import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
+import { Circles } from "react-loader-spinner";
 const VoucherMonthly = () => {
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const Url = import.meta.env.VITE_API_URL + "voucher/";
@@ -13,8 +14,10 @@ const VoucherMonthly = () => {
   const [isthaniye,setisthaniye]=useState();
   const [pardesh,setpardesh]=useState([]);
   const [mdata,setmdata]=useState([]); 
+const [loading,setLoading]= useState(false);
 
   const loadmonth=async()=>{
+    setLoading(true);
     const data = {     
       office_id: loggedUser.office_id,
       aaba_id: loggedUser.aabaid,      
@@ -23,6 +26,7 @@ const VoucherMonthly = () => {
     const response = await axiosInstance.post("getMonthlistByAaba",data)
     console.log(response.data);
     setmdata(response.data.data);
+    setLoading(false);
   }
 
 useEffect(() => {
@@ -31,6 +35,7 @@ useEffect(() => {
 }, [])
 
   const genReport = async () => {
+    setLoading(true);
     setregi([{}]); 
     setsummary([{}]);
     setisthaniye([{}]);
@@ -51,6 +56,7 @@ useEffect(() => {
     setsummary(response.data.data.summary);
     setisthaniye(response.data.data.isthaniye);
     setpardesh(response.data.data.pardesh);
+    setLoading(false);
   };
 
   function handleclick(e) { 
@@ -72,6 +78,16 @@ useEffect(() => {
         headerText="को मासिक प्रतिवेदन"
         icon={<BsInfoCircleFill size={40} />}
       />
+      {loading ?
+              (
+                <div className="fullscreen-loader">
+                  <div className="loader">
+                    <Circles height={150} width={150} color="#ffdd40" ariaLabel="loading" />
+                    <h2 className="loader-text" >कृपया प्रतिक्षा गर्नुहोस् ।</h2>
+                  </div>
+                </div>
+              ) : null
+            }
       <div className="Vouchermonthly__monthlist">
         {mdata.map((item, i) => {
           return (
@@ -131,11 +147,11 @@ useEffect(() => {
           </tr>
           {pardesh ?
             pardesh.map((item,i)=>{
-              return <><tr key={i}>
+              return <tr key={i}>
                 <td>{item.acc_sirshak_name}</td>
                 <td>{Math.round(item.pardesh)}</td>
-              </tr>              
-              </>
+              </tr>           
+              
             }) :null
           }
           <tr>

@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const VoucherPalika = () => {
   const navigate=useNavigate();
-  const Url = import.meta.env.VITE_API_URL + "voucher/";
+  const Url = import.meta.env.VITE_API_URL;
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const initialdata = {
     nep_start_date: "",
@@ -56,7 +56,7 @@ const dototal =()=>{
       aaba_id:loggedUser.aabaid
     };
     console.log("data sent", data);
-    const response= await axiosInstance.post("voucher/Voucherpalika",data)    
+    const response= await axiosInstance.post("/Voucherpalika",data)    
     console.log(response.data.data);
     setrepdata(response.data.data);    
   };

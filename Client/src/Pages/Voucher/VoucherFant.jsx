@@ -4,9 +4,10 @@ import axiosInstance from "../../axiosInstance";
 import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
+import { Circles } from "react-loader-spinner";
 const VoucherFant = () => {
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
-  const Url = import.meta.env.VITE_API_URL + "voucher/";
+  const Url = import.meta.env.VITE_API_URL;
   const [mselected, setmselected] = useState([]);
   const [fselected, setfselected] = useState([]);
   const [uselected, setuselected] = useState([]);
@@ -15,18 +16,22 @@ const VoucherFant = () => {
   const [fdata, setfdata] = useState(0);
   const [udata, setudata] = useState(0);
   const [total, settotal] = useState(0);
+  const [loading,setLoading]= useState(false);
 
-  const loadmonths = async () => {    
+  const loadmonths = async () => {
+    setLoading(true);
     const data = {
       office_id: loggedUser.office_id,
       aaba_id: loggedUser.aabaid      
     };
     console.log("getting monthlist", data)
-    const response = await axiosInstance.post("voucher/MonthlistByAaba",data)
+    const response = await axiosInstance.post("/MonthlistByAaba",data)
     console.log(response.data);
     setmdata(response.data.months);
+    setLoading(false);
   }
   const loadfants = async () => {
+    setLoading(true);
     setfdata([]);
     setudata([]);
     if(mselected.length>0){   
@@ -36,13 +41,15 @@ const VoucherFant = () => {
       month_id: mselected
     };
     console.log("getting fantlist", data)
-    const response = await axiosInstance.post("voucher/FantlistByAabaMonth",data)    
+    const response = await axiosInstance.post("/FantlistByAabaMonth",data)    
     console.log(response.data);
     setfdata(response.data.fants);
+    setLoading(false);
   }
   }
 
   const loadusers = async () => {
+    setLoading(true);
     setudata([]);
     if(fselected.length>0 || fselected.length>0){ 
     const data = {
@@ -52,9 +59,10 @@ const VoucherFant = () => {
       fant_id:fselected
     };
     console.log("getting userlist", data)
-    const response = await axiosInstance.post("voucher/UserlistByAabaMonthFant",data)   
+    const response = await axiosInstance.post("/UserlistByAabaMonthFant",data)   
     console.log(response.data);
     setudata(response.data.users);
+    setLoading(false);
   }
   }
 
@@ -65,6 +73,7 @@ const VoucherFant = () => {
 
 
   const genReport = async () => {
+    setLoading(true);
     setsummary([{}]);
     if (mselected.length == 0) {
       toast.warning("कृपया महिना छनौट गर्नुहोस् ।");
@@ -87,9 +96,10 @@ const VoucherFant = () => {
       user_id:uselected
     };
     console.log("data sent", data);
-    const response = await axiosInstance.post("voucher/VoucherFant",data)
+    const response = await axiosInstance.post("/VoucherFant",data)
     console.log(response.data.data);
     setsummary(response.data.data);    
+  setLoading(false);
   };
 
   const dototal =()=>{
@@ -155,6 +165,16 @@ const VoucherFant = () => {
         headerText="को फाँट र प्रयोगकर्ता अनुसारको प्रतिवेदन"
         icon={<BsInfoCircleFill size={40} />}
       />
+      {loading ?
+              (
+                <div className="fullscreen-loader">
+                  <div className="loader">
+                    <Circles height={150} width={150} color="#ffdd40" ariaLabel="loading" />
+                    <h2 className="loader-text" >कृपया प्रतिक्षा गर्नुहोस् ।</h2>
+                  </div>
+                </div>
+              ) : null
+            }
       <div className="Voucherfant__month">        
         {mdata ? mdata.map((item, i) => {
           return (

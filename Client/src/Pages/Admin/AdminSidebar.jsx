@@ -10,7 +10,7 @@ const AdminSidebar = () => {
       user_id: loggedUser.id,
       module: 'Admin'
     }
-    const response = await axiosInstance.post("auth/getSidebarlist", data);    
+    const response = await axiosInstance.post("/getSidebarlist", data);    
     setdata(response.data.data);
     console.log(response.data.data)
   }

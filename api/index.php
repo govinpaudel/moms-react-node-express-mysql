@@ -5,15 +5,12 @@ if (!headers_sent()) {
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: Content-Type, Authorization");
 }
-
 // Handle preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
-
 require_once "db_voucher.php";
-
 // -----------------------------
 // Parse the request
 // -----------------------------
@@ -53,6 +50,42 @@ if ($method === "GET") {
         case "getvouchermonthly":
             getVoucherMonthlyHandler();
             break;
+        case "gettodaysvoucher":
+            getTodaysVoucherHandler();
+            break;
+        case "fantlist":
+            getFantListHandler();
+            break;
+        case "voucherofficesum":
+            getVoucherOfficeSumHandler();
+            break;
+        case "vouchersumbydate":
+            VoucherSumByDateHandler();
+            break;
+        case "userlist":
+            userListHandler();
+            break;
+        case "voucherbydate":
+            VoucherByDateHandler();
+            break;
+        case "monthlistbyaaba":
+            MonthlistByAabaHandler();
+            break; 
+        case "fantlistbyaabamonth":
+            FantlistByAabaMonthHandler();
+            break;
+        case "userlistbyaabamonthfant":
+            UserlistByAabaMonthFantHandler();
+            break;
+        case "voucherfant":
+            voucherFantHandler();
+            break;
+        case "voucherpalika":
+            VoucherPalikaHandler();
+            break;
+        case "getvouchermaster":
+            getVoucherMasterHandler();
+            break;       
         default:
             methodNotAllowed();
     }
@@ -80,16 +113,15 @@ function getAllAabasHandler(){
     }
 }
 function loginHandler() {
-    header("Content-Type: application/json");
+    header("Content-Type: application/json; charset=utf-8");
     $pdo = getPDO();
     if (!$pdo) return dbUnavailable("Remote");
 
     // Read JSON POST data
-    $inputJSON = file_get_contents("php://input");
-    $input = json_decode($inputJSON, true);
+    $input = json_decode(file_get_contents("php://input"), true);
 
-    $username = isset($input["username"]) ? trim($input["username"]) : "";
-    $password = isset($input["password"]) ? trim($input["password"]) : "";
+    $username = trim($input["username"] ?? "");
+    $password = trim($input["password"] ?? "");
 
     // Required fields check
     if (!$username || !$password) {
@@ -101,10 +133,21 @@ function loginHandler() {
     }
 
     try {
-        // Fetch user by username
-        $stmt = $pdo->prepare("SELECT a.*,b.role_name,c.office_name FROM voucher_users a
-inner join voucher_user_roles b on a.role=b.id
-inner join voucher_offices c on a.office_id=c.id WHERE a.username = :username AND a.isactive='1'");
+        $sql = "
+        SELECT 
+            a.*,
+            b.role_name,
+            c.office_name,
+            c.expire_at,
+            d.state_name
+        FROM voucher_users a
+        INNER JOIN voucher_user_roles b ON a.role = b.id
+        INNER JOIN voucher_offices c ON a.office_id = c.id
+        INNER JOIN voucher_states d ON d.id = c.state_id
+        WHERE a.username = :username
+        ";
+
+        $stmt = $pdo->prepare($sql);
         $stmt->execute([":username" => $username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -112,16 +155,25 @@ inner join voucher_offices c on a.office_id=c.id WHERE a.username = :username AN
         if (!$user) {
             echo json_encode([
                 "status" => false,
-                "message" => "User not found"
+                "message" => "प्रयोगकर्ता वा पासवर्ड मिलेन ।"
             ], JSON_UNESCAPED_UNICODE);
             return;
         }
 
-        // Verify hashed password
+        // 🔒 Only check that expire_at is NOT NULL
+        if (empty($user["expire_at"])) {
+            echo json_encode([
+                "status" => false,
+                "message" => "प्रयोगकर्ता सक्रिय गरिएको छैन ।"
+            ], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        // Password verification
         if (!password_verify($password, $user["password"])) {
             echo json_encode([
                 "status" => false,
-                "message" => "Incorrect password"
+                "message" => "प्रयोगकर्ता वा पासवर्ड मिलेन ।"
             ], JSON_UNESCAPED_UNICODE);
             return;
         }
@@ -129,14 +181,16 @@ inner join voucher_offices c on a.office_id=c.id WHERE a.username = :username AN
         // Successful login
         echo json_encode([
             "status" => true,
-            "message" => "Login successful",
-            "data" => $user   // full user info returned like your other handlers
+            "message" => "प्रयोगकर्ता सफलतापुर्वक लगईन भयो ।",
+            "data" => $user
         ], JSON_UNESCAPED_UNICODE);
 
     } catch (PDOException $e) {
         respondDbError($e);
     }
 }
+
+
 function getSidebarListHandler() {
     header("Content-Type: application/json");
     $pdo = getPDO();
@@ -391,6 +445,1110 @@ function getVoucherMonthlyHandler() {
                 "summary"      => $summary,
                 "isthaniye"    => $isthaniye,
                 "pardesh"      => $pardesh
+            ]
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function getTodaysVoucherHandler() {
+    header("Content-Type: application/json");
+    $pdo = getPDO();
+    if (!$pdo) return dbUnavailable("Remote");
+
+    // Read JSON POST data
+    $inputJSON = file_get_contents("php://input");
+    $input = json_decode($inputJSON, true);
+
+    $created_by_user_id = isset($input["created_by_user_id"]) ? $input["created_by_user_id"] : "";
+
+    if (!$created_by_user_id) {
+        echo json_encode([
+            "status" => false,
+            "message" => "created_by_user_id is required"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    // Get today's date in YYYY-MM-DD
+    $todayDate = date('Y-m-d');
+
+    try {
+        $sql = "
+            SELECT 
+                a.id,
+                a.ndate_voucher,
+                a.ndate_transaction,
+                a.voucherno,
+                a.sirshak_id,
+                a.amount,
+                DATE_FORMAT(a.created_at,'%Y-%m-%d') AS created_at,
+                a.created_by_user_id,
+                a.deposited_by,
+                b.sirshak_name,
+                c.napa_name,
+                e.fant_name,
+                f.nepname
+            FROM voucher_details a
+            INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+            INNER JOIN voucher_napa c ON a.office_id = c.office_id AND a.napa_id = c.id
+            INNER JOIN voucher_fant e ON a.fant_id = e.id
+            INNER JOIN voucher_users f ON a.created_by_user_id = f.id
+            WHERE a.created_by_user_id = :user_id
+              AND DATE_FORMAT(a.created_at,'%Y-%m-%d') = :today
+            ORDER BY a.created_at
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ":user_id" => $created_by_user_id,
+            ":today"   => $todayDate
+        ]);
+
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "data" => $results
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function getFantListHandler() {
+    header("Content-Type: application/json");
+    $pdo = getPDO();
+    if (!$pdo) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Database unavailable"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    // Read JSON POST data
+    $inputJSON = file_get_contents("php://input");
+    $input = json_decode($inputJSON, true);
+
+    $office_id = isset($input["office_id"]) ? trim($input["office_id"]) : "";
+    $aaba_id = isset($input["aaba_id"]) ? trim($input["aaba_id"]) : "";
+
+    // Required fields check
+    if (!$office_id || !$aaba_id) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Office ID and Aaba ID are required"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+        $stmt = $pdo->prepare("
+            SELECT DISTINCT 
+                a.fant_id AS fid,
+                b.fant_name AS fname,
+                b.display_order
+            FROM voucher_details a
+            INNER JOIN voucher_fant b ON a.fant_id = b.id
+            WHERE a.office_id = :office_id AND a.aaba_id = :aaba_id
+            ORDER BY b.display_order
+        ");
+
+        $stmt->execute([
+            ":office_id" => $office_id,
+            ":aaba_id" => $aaba_id
+        ]);
+
+        $fants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "fants" => $fants
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e); // Your existing DB error handler
+    }
+}
+function getVoucherOfficeSumHandler() {
+
+    header("Content-Type: application/json; charset=utf-8");
+    $pdo = getPDO();
+    if (!$pdo) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Database unavailable"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    $input = json_decode(file_get_contents("php://input"), true);
+    $aaba_id   = $input["aaba_id"]   ?? "";
+    $office_id = $input["office_id"] ?? "";
+
+    if (!$aaba_id || !$office_id) {
+        echo json_encode([
+            "status" => false,
+            "message" => "aaba_id and office_id required"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        /* =====================================================
+           1. OFFICE SUM
+        ===================================================== */
+        $officeSQL = "
+        SELECT c.id sirshak_id, c.acc_sirshak_name,
+            SUM(CASE WHEN a.month_id=4 THEN a.amount ELSE 0 END) A,
+            SUM(CASE WHEN a.month_id=5 THEN a.amount ELSE 0 END) B,
+            SUM(CASE WHEN a.month_id=6 THEN a.amount ELSE 0 END) C,
+            SUM(CASE WHEN a.month_id=7 THEN a.amount ELSE 0 END) D,
+            SUM(CASE WHEN a.month_id=8 THEN a.amount ELSE 0 END) E,
+            SUM(CASE WHEN a.month_id=9 THEN a.amount ELSE 0 END) F,
+            SUM(CASE WHEN a.month_id=10 THEN a.amount ELSE 0 END) G,
+            SUM(CASE WHEN a.month_id=11 THEN a.amount ELSE 0 END) H,
+            SUM(CASE WHEN a.month_id=12 THEN a.amount ELSE 0 END) I,
+            SUM(CASE WHEN a.month_id=1 THEN a.amount ELSE 0 END) J,
+            SUM(CASE WHEN a.month_id=2 THEN a.amount ELSE 0 END) K,
+            SUM(CASE WHEN a.month_id=3 THEN a.amount ELSE 0 END) L,
+            SUM(a.amount) total_amount
+        FROM voucher_details a
+        JOIN voucher_sirshak b ON a.sirshak_id=b.id
+        JOIN voucher_acc_sirshak c ON b.acc_sirshak_id=c.id
+        WHERE a.aaba_id=:aaba1 AND a.office_id=:office1
+        GROUP BY c.id, c.acc_sirshak_name
+
+        UNION ALL
+
+        SELECT 9999,'कार्यालय जम्मा',
+            SUM(CASE WHEN month_id=4 THEN amount ELSE 0 END),
+            SUM(CASE WHEN month_id=5 THEN amount ELSE 0 END),
+            SUM(CASE WHEN month_id=6 THEN amount ELSE 0 END),
+            SUM(CASE WHEN month_id=7 THEN amount ELSE 0 END),
+            SUM(CASE WHEN month_id=8 THEN amount ELSE 0 END),
+            SUM(CASE WHEN month_id=9 THEN amount ELSE 0 END),
+            SUM(CASE WHEN month_id=10 THEN amount ELSE 0 END),
+            SUM(CASE WHEN month_id=11 THEN amount ELSE 0 END),
+            SUM(CASE WHEN month_id=12 THEN amount ELSE 0 END),
+            SUM(CASE WHEN month_id=1 THEN amount ELSE 0 END),
+            SUM(CASE WHEN month_id=2 THEN amount ELSE 0 END),
+            SUM(CASE WHEN month_id=3 THEN amount ELSE 0 END),
+            SUM(amount)
+        FROM voucher_details
+        WHERE aaba_id=:aaba2 AND office_id=:office2
+        ";
+
+        $stmt = $pdo->prepare($officeSQL);
+        $stmt->execute([
+            ":aaba1"=>$aaba_id, ":office1"=>$office_id,
+            ":aaba2"=>$aaba_id, ":office2"=>$office_id
+        ]);
+        $officeSum = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+        /* =====================================================
+           2. PARDESH SUM
+        ===================================================== */
+        $pardeshSQL = "
+        SELECT a.aaba_id,a.office_id,c.id,c.acc_sirshak_name,
+  SUM(a.amount * (e.pardesh / 100)) AS total_amount,
+  SUM(CASE WHEN a.month_id = 4 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'A',
+  SUM(CASE WHEN a.month_id = 5 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'B',
+  SUM(CASE WHEN a.month_id = 6 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'C',
+  SUM(CASE WHEN a.month_id = 7 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'D',
+  SUM(CASE WHEN a.month_id = 8 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'E',
+  SUM(CASE WHEN a.month_id = 9 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'F',
+  SUM(CASE WHEN a.month_id = 10 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'G',
+  SUM(CASE WHEN a.month_id = 11 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'H',
+  SUM(CASE WHEN a.month_id = 12 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'I',
+  SUM(CASE WHEN a.month_id = 1 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'J',
+  SUM(CASE WHEN a.month_id = 2 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'K',
+  SUM(CASE WHEN a.month_id = 3 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'L'
+FROM voucher_details a
+INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+INNER JOIN voucher_acc_sirshak c ON b.acc_sirshak_id = c.id
+INNER JOIN voucher_offices d ON a.office_id = d.id
+INNER JOIN voucher_badhfadh e ON e.aaba_id = a.aaba_id AND e.acc_sirshak_id = c.id AND e.state_id = d.state_id
+WHERE a.aaba_id = :aaba3 AND a.office_id = :office3
+GROUP BY a.aaba_id, a.office_id, c.id,c.acc_sirshak_name
+UNION ALL
+SELECT a.aaba_id,a.office_id,9999 AS id, 'जम्मा ' as acc_sirshak_name,
+ SUM(a.amount * (e.pardesh / 100)) AS total_amount,
+  SUM(CASE WHEN a.month_id = 4 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'A',
+  SUM(CASE WHEN a.month_id = 5 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'B',
+  SUM(CASE WHEN a.month_id = 6 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'C',
+  SUM(CASE WHEN a.month_id = 7 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'D',
+  SUM(CASE WHEN a.month_id = 8 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'E',
+  SUM(CASE WHEN a.month_id = 9 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'F',
+  SUM(CASE WHEN a.month_id = 10 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'G',
+  SUM(CASE WHEN a.month_id = 11 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'H',
+  SUM(CASE WHEN a.month_id = 12 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'I',
+  SUM(CASE WHEN a.month_id = 1 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'J',
+  SUM(CASE WHEN a.month_id = 2 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'K',
+  SUM(CASE WHEN a.month_id = 3 THEN a.amount * (e.pardesh / 100) ELSE 0 END) AS 'L'
+FROM voucher_details a
+INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+INNER JOIN voucher_acc_sirshak c ON b.acc_sirshak_id = c.id
+INNER JOIN voucher_offices d ON a.office_id = d.id
+INNER JOIN voucher_badhfadh e ON e.aaba_id = a.aaba_id AND e.acc_sirshak_id = c.id AND e.state_id = d.state_id
+WHERE a.aaba_id = :aaba4 AND a.office_id = :office4
+GROUP BY a.aaba_id, a.office_id
+ORDER BY aaba_id, office_id, id
+        ";
+
+        $stmt = $pdo->prepare($pardeshSQL);
+        $stmt->execute([
+            ":aaba3"=>$aaba_id,
+            ":office3"=>$office_id,
+            ":aaba4"=>$aaba_id,
+            ":office4"=>$office_id,
+        ]);
+        $pardesh = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+        /* =====================================================
+           3. SANCHITKOSH SUM
+        ===================================================== */
+        $sanchitSQL = "
+        SELECT a.aaba_id,a.office_id,c.id,c.acc_sirshak_name,
+  SUM(a.amount * (e.sanchitkosh / 100)) AS total_amount,
+  SUM(CASE WHEN a.month_id = 4 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'A',
+  SUM(CASE WHEN a.month_id = 5 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'B',
+  SUM(CASE WHEN a.month_id = 6 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'C',
+  SUM(CASE WHEN a.month_id = 7 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'D',
+  SUM(CASE WHEN a.month_id = 8 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'E',
+  SUM(CASE WHEN a.month_id = 9 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'F',
+  SUM(CASE WHEN a.month_id = 10 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'G',
+  SUM(CASE WHEN a.month_id = 11 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'H',
+  SUM(CASE WHEN a.month_id = 12 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'I',
+  SUM(CASE WHEN a.month_id = 1 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'J',
+  SUM(CASE WHEN a.month_id = 2 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'K',
+  SUM(CASE WHEN a.month_id = 3 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'L'
+FROM voucher_details a
+INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+INNER JOIN voucher_acc_sirshak c ON b.acc_sirshak_id = c.id
+INNER JOIN voucher_offices d ON a.office_id = d.id
+INNER JOIN voucher_badhfadh e 
+  ON e.aaba_id = a.aaba_id 
+  AND e.acc_sirshak_id = c.id 
+  AND e.state_id = d.state_id
+INNER JOIN voucher_napa f ON a.office_id = f.office_id AND a.napa_id = f.napa_id
+WHERE a.aaba_id = :aaba4 AND a.office_id = :office4
+GROUP BY a.aaba_id, a.office_id, c.id,c.acc_sirshak_name
+UNION ALL
+SELECT a.aaba_id,a.office_id,9999 AS id, 'जम्मा ' as acc_sirshak_name,
+ SUM(a.amount * (e.sanchitkosh / 100)) AS total_amount,
+  SUM(CASE WHEN a.month_id = 4 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'A',
+  SUM(CASE WHEN a.month_id = 5 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'B',
+  SUM(CASE WHEN a.month_id = 6 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'C',
+  SUM(CASE WHEN a.month_id = 7 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'D',
+  SUM(CASE WHEN a.month_id = 8 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'E',
+  SUM(CASE WHEN a.month_id = 9 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'F',
+  SUM(CASE WHEN a.month_id = 10 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'G',
+  SUM(CASE WHEN a.month_id = 11 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'H',
+  SUM(CASE WHEN a.month_id = 12 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'I',
+  SUM(CASE WHEN a.month_id = 1 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'J',
+  SUM(CASE WHEN a.month_id = 2 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'K',
+  SUM(CASE WHEN a.month_id = 3 THEN a.amount * (e.sanchitkosh / 100) ELSE 0 END) AS 'L'
+FROM voucher_details a
+INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+INNER JOIN voucher_acc_sirshak c ON b.acc_sirshak_id = c.id
+INNER JOIN voucher_offices d ON a.office_id = d.id
+INNER JOIN voucher_badhfadh e 
+  ON e.aaba_id = a.aaba_id 
+  AND e.acc_sirshak_id = c.id 
+  AND e.state_id = d.state_id
+INNER JOIN voucher_napa f ON a.office_id = f.office_id AND a.napa_id = f.napa_id
+WHERE a.aaba_id = :aaba5 AND a.office_id = :office5
+GROUP BY a.aaba_id, a.office_id
+ORDER BY aaba_id, office_id, id
+        ";
+
+$stmt = $pdo->prepare($sanchitSQL);
+$stmt->execute([
+            ":aaba4"=>$aaba_id,
+            ":office4"=>$office_id,
+            ":aaba5"=>$aaba_id,
+            ":office5"=>$office_id,
+        ]);
+        $sanchitkosh = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        /* =====================================================
+           4. Ishtaniye
+        ===================================================== */
+        $IshtaniyeSQL = "
+        SELECT a.aaba_id,a.office_id,a.napa_id,f.napa_name,
+  SUM(a.amount * (e.isthaniye / 100)) AS total_amount,
+  SUM(CASE WHEN a.month_id = 4 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'A',
+  SUM(CASE WHEN a.month_id = 5 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'B',
+  SUM(CASE WHEN a.month_id = 6 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'C',
+  SUM(CASE WHEN a.month_id = 7 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'D',
+  SUM(CASE WHEN a.month_id = 8 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'E',
+  SUM(CASE WHEN a.month_id = 9 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'F',
+  SUM(CASE WHEN a.month_id = 10 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'G',
+  SUM(CASE WHEN a.month_id = 11 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'H',
+  SUM(CASE WHEN a.month_id = 12 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'I',
+  SUM(CASE WHEN a.month_id = 1 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'J',
+  SUM(CASE WHEN a.month_id = 2 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'K',
+  SUM(CASE WHEN a.month_id = 3 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'L'
+FROM voucher_details a
+INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+INNER JOIN voucher_acc_sirshak c ON b.acc_sirshak_id = c.id
+INNER JOIN voucher_offices d ON a.office_id = d.id
+INNER JOIN voucher_badhfadh e 
+  ON e.aaba_id = a.aaba_id 
+  AND e.acc_sirshak_id = c.id 
+  AND e.state_id = d.state_id
+INNER JOIN voucher_napa f ON a.office_id = f.office_id AND a.napa_id = f.napa_id
+WHERE a.aaba_id = :aaba9 AND a.office_id = :office9
+GROUP BY a.aaba_id, a.office_id, a.napa_id, f.napa_name
+UNION ALL
+SELECT a.aaba_id,a.office_id,9999 AS napa_id, 'जम्मा ' as napa_name,
+ SUM(a.amount * (e.isthaniye / 100)) AS total_amount,
+  SUM(CASE WHEN a.month_id = 4 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'A',
+  SUM(CASE WHEN a.month_id = 5 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'B',
+  SUM(CASE WHEN a.month_id = 6 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'C',
+  SUM(CASE WHEN a.month_id = 7 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'D',
+  SUM(CASE WHEN a.month_id = 8 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'E',
+  SUM(CASE WHEN a.month_id = 9 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'F',
+  SUM(CASE WHEN a.month_id = 10 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'G',
+  SUM(CASE WHEN a.month_id = 11 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'H',
+  SUM(CASE WHEN a.month_id = 12 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'I',
+  SUM(CASE WHEN a.month_id = 1 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'J',
+  SUM(CASE WHEN a.month_id = 2 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'K',
+  SUM(CASE WHEN a.month_id = 3 THEN a.amount * (e.isthaniye / 100) ELSE 0 END) AS 'L'
+FROM voucher_details a
+INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+INNER JOIN voucher_acc_sirshak c ON b.acc_sirshak_id = c.id
+INNER JOIN voucher_offices d ON a.office_id = d.id
+INNER JOIN voucher_badhfadh e 
+  ON e.aaba_id = a.aaba_id 
+  AND e.acc_sirshak_id = c.id 
+  AND e.state_id = d.state_id
+INNER JOIN voucher_napa f ON a.office_id = f.office_id AND a.napa_id = f.napa_id
+WHERE a.aaba_id = :aaba10 AND a.office_id = :office10
+GROUP BY a.aaba_id, a.office_id
+ORDER BY aaba_id, office_id, napa_id
+        
+        ";
+
+        $stmt = $pdo->prepare($IshtaniyeSQL);
+        $stmt->execute([
+            ":aaba9"=>$aaba_id, ":office9"=>$office_id,
+            ":aaba10"=>$aaba_id, ":office10"=>$office_id
+        ]);
+        $isthaniyeSum = $stmt->fetchAll(PDO::FETCH_ASSOC);       
+
+
+        echo json_encode([
+            "status" => true,
+            "officesum" => $officeSum,
+            "pardesh" => $pardesh,
+            "sanchitkosh" => $sanchitkosh,
+            "isthaniye"=>$isthaniyeSum
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function VoucherSumByDateHandler() {
+
+    header("Content-Type: application/json; charset=utf-8");
+    $pdo = getPDO();
+    if (!$pdo) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Database unavailable"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    // Read JSON input
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $aaba_id    = $input["aaba_id"]    ?? "";
+    $office_id  = $input["office_id"]  ?? "";
+    $start_date = $input["start_date"] ?? "";
+    $end_date   = $input["end_date"]   ?? "";
+    $fant_ids   = $input["fant_id"]    ?? [];
+
+    // Validation
+    if (
+        !$aaba_id || !$office_id ||
+        !$start_date || !$end_date ||
+        !is_array($fant_ids) || count($fant_ids) === 0
+    ) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Required parameters missing"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        /* -----------------------------------------------------
+           Build dynamic IN (?, ?, ?) safely
+        ----------------------------------------------------- */
+        $placeholders = implode(",", array_fill(0, count($fant_ids), "?"));
+
+        $sql = "
+        SELECT 
+            a.aaba_id,
+            a.office_id,
+            a.sirshak_id,
+            b.sirshak_name,
+            SUM(a.amount) AS amount
+        FROM voucher_details a
+        INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+        WHERE a.aaba_id = ?
+          AND a.office_id = ?
+          AND a.edate_transaction >= ?
+          AND a.edate_transaction <= ?
+          AND a.fant_id IN ($placeholders)
+        GROUP BY a.aaba_id, a.office_id, a.sirshak_id, b.sirshak_name
+        ";
+
+        $stmt = $pdo->prepare($sql);
+
+        // Bind parameters in correct order
+        $params = array_merge(
+            [$aaba_id, $office_id, $start_date, $end_date],
+            $fant_ids
+        );
+
+        $stmt->execute($params);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "data" => $data
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function userListHandler() {
+
+    header("Content-Type: application/json; charset=utf-8");
+    $pdo = getPDO();
+    if (!$pdo) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Database unavailable"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    // Read JSON input
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $office_id = $input["office_id"] ?? "";
+    $aaba_id   = $input["aaba_id"]   ?? "";
+
+    // Validation
+    if (!$office_id || !$aaba_id) {
+        echo json_encode([
+            "status" => false,
+            "message" => "office_id and aaba_id required"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        $sql = "
+        SELECT DISTINCT
+            a.created_by_user_id AS uid,
+            b.nepname AS uname
+        FROM voucher_details a
+        INNER JOIN voucher_users b ON a.created_by_user_id = b.id
+        WHERE a.office_id = :office_id
+          AND a.aaba_id = :aaba_id
+        ORDER BY uid
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ":office_id" => $office_id,
+            ":aaba_id"   => $aaba_id
+        ]);
+
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "users" => $users
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function VoucherByDateHandler() {
+
+    header("Content-Type: application/json; charset=utf-8");
+    $pdo = getPDO();
+    if (!$pdo) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Database unavailable"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    // Read JSON POST body
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $office_id  = $input["office_id"] ?? "";
+    $start_date = $input["start_date"] ?? "";
+    $end_date   = $input["end_date"] ?? "";
+    $user_ids   = $input["user_id"] ?? [];   // array
+
+    if (!$office_id || !$start_date || !$end_date) {
+        echo json_encode([
+            "status" => false,
+            "message" => "office_id, start_date and end_date are required"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        /* =========================================================
+           CASE 1: NO USER FILTER
+        ========================================================= */
+        if (!is_array($user_ids) || count($user_ids) === 0) {
+
+            $sql = "
+            SELECT
+                a.id,
+                a.month_id,
+                a.edate_voucher,
+                a.ndate_voucher,
+                a.edate_transaction,
+                a.ndate_transaction,
+                a.sirshak_id,
+                b.sirshak_name,
+                a.fant_id,
+                c.fant_name,
+                a.napa_id,
+                d.napa_name,
+                a.voucherno,
+                a.amount,
+                a.created_by_user_id,
+                e.nepname,
+                a.deposited_by
+            FROM voucher_details a
+            INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+            INNER JOIN voucher_fant c ON a.fant_id = c.id
+            INNER JOIN voucher_napa d ON a.napa_id = d.id AND a.office_id = d.office_id
+            INNER JOIN voucher_users e ON e.id = a.created_by_user_id
+            WHERE a.office_id = :office_id
+              AND a.edate_transaction BETWEEN :start_date AND :end_date
+            ORDER BY a.edate_transaction, a.ndate_transaction, a.voucherno
+            ";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ":office_id"  => $office_id,
+                ":start_date" => $start_date,
+                ":end_date"   => $end_date
+            ]);
+
+        }
+        /* =========================================================
+           CASE 2: FILTER BY USERS
+        ========================================================= */
+        else {
+
+            // create placeholders (?, ?, ?)
+            $placeholders = implode(',', array_fill(0, count($user_ids), '?'));
+
+            $sql = "
+            SELECT
+                a.id,
+                a.month_id,
+                a.ndate_voucher,
+                a.ndate_transaction,
+                a.sirshak_id,
+                b.sirshak_name,
+                a.fant_id,
+                c.fant_name,
+                a.napa_id,
+                d.napa_name,
+                a.voucherno,
+                a.amount,
+                a.created_by_user_id,
+                e.nepname,
+                a.deposited_by
+            FROM voucher_details a
+            INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+            INNER JOIN voucher_fant c ON a.fant_id = c.id
+            INNER JOIN voucher_napa d ON a.napa_id = d.id AND a.office_id = d.office_id
+            INNER JOIN voucher_users e ON e.id = a.created_by_user_id
+            WHERE a.office_id = ?
+              AND a.created_by_user_id IN ($placeholders)
+              AND a.edate_transaction BETWEEN ? AND ?
+            ORDER BY a.edate_transaction, a.ndate_transaction, a.voucherno
+            ";
+
+            $params = array_merge(
+                [$office_id],
+                $user_ids,
+                [$start_date, $end_date]
+            );
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+        }
+
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status"  => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "data"    => $data
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function MonthlistByAabaHandler() {
+
+    header("Content-Type: application/json; charset=utf-8");
+    $pdo = getPDO();
+    if (!$pdo) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Database unavailable"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $office_id = $input["office_id"] ?? "";
+    $aaba_id   = $input["aaba_id"]   ?? "";
+
+    if (!$office_id || !$aaba_id) {
+        echo json_encode([
+            "status" => false,
+            "message" => "office_id and aaba_id required"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        $sql = "
+        SELECT DISTINCT
+            a.month_id AS mid,
+            b.month_name AS mname,
+            b.month_order
+        FROM voucher_details a
+        INNER JOIN voucher_month b ON a.month_id = b.id
+        WHERE a.office_id = :office_id
+          AND a.aaba_id   = :aaba_id
+        ORDER BY b.month_order
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ":office_id" => $office_id,
+            ":aaba_id"   => $aaba_id
+        ]);
+
+        $months = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status"  => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "months"  => $months
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function FantlistByAabaMonthHandler() {
+
+    header("Content-Type: application/json; charset=utf-8");
+    $pdo = getPDO();
+    if (!$pdo) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Database unavailable"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $office_id = $input["office_id"] ?? "";
+    $aaba_id   = $input["aaba_id"]   ?? "";
+    $month_ids = $input["month_id"]  ?? [];   // array
+
+    if (!$office_id || !$aaba_id || !is_array($month_ids) || count($month_ids) === 0) {
+        echo json_encode([
+            "status" => false,
+            "message" => "office_id, aaba_id and month_id array required"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        // create ?,?,? placeholders
+        $placeholders = implode(',', array_fill(0, count($month_ids), '?'));
+
+        $sql = "
+        SELECT DISTINCT
+            a.fant_id AS fid,
+            b.fant_name AS fname,
+            b.display_order
+        FROM voucher_details a
+        INNER JOIN voucher_fant b ON a.fant_id = b.id
+        WHERE a.office_id = ?
+          AND a.aaba_id   = ?
+          AND a.month_id IN ($placeholders)
+        ORDER BY b.display_order
+        ";
+
+        $params = array_merge(
+            [$office_id, $aaba_id],
+            $month_ids
+        );
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $fants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status"  => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "fants"   => $fants
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function UserlistByAabaMonthFantHandler() {
+
+    header("Content-Type: application/json; charset=utf-8");
+    $pdo = getPDO();
+    if (!$pdo) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Database unavailable"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    // Read JSON input
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $office_id = $input["office_id"] ?? "";
+    $aaba_id   = $input["aaba_id"]   ?? "";
+    $month_ids = $input["month_id"]  ?? [];
+    $fant_ids  = $input["fant_id"]   ?? [];
+
+    // Validation
+    if (
+        !$office_id || !$aaba_id ||
+        !is_array($month_ids) || count($month_ids) === 0 ||
+        !is_array($fant_ids)  || count($fant_ids) === 0
+    ) {
+        echo json_encode([
+            "status" => false,
+            "message" => "office_id, aaba_id, month_id[] and fant_id[] required"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        // Create placeholders
+        $monthPlaceholders = implode(',', array_fill(0, count($month_ids), '?'));
+        $fantPlaceholders  = implode(',', array_fill(0, count($fant_ids), '?'));
+
+        $sql = "
+        SELECT DISTINCT
+            a.created_by_user_id AS uid,
+            b.nepname AS uname
+        FROM voucher_details a
+        INNER JOIN voucher_users b ON a.created_by_user_id = b.id
+        WHERE a.office_id = ?
+          AND a.aaba_id   = ?
+          AND a.month_id IN ($monthPlaceholders)
+          AND a.fant_id  IN ($fantPlaceholders)
+        ORDER BY uid
+        ";
+
+        $params = array_merge(
+            [$office_id, $aaba_id],
+            $month_ids,
+            $fant_ids
+        );
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status"  => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "users"   => $users
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function voucherFantHandler() {
+    header("Content-Type: application/json; charset=utf-8");
+    $pdo = getPDO();
+    if (!$pdo) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Database unavailable"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    // Read JSON input
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $aaba_id   = $input["aaba_id"]   ?? "";
+    $office_id = $input["office_id"] ?? "";
+    $month_ids = $input["month_id"]  ?? [];
+    $fant_ids  = $input["fant_id"]   ?? [];
+    $user_ids  = $input["user_id"]   ?? [];
+
+    // Validation
+    if (
+        !$aaba_id || !$office_id ||
+        !is_array($month_ids) || count($month_ids) === 0 ||
+        !is_array($fant_ids)  || count($fant_ids) === 0 ||
+        !is_array($user_ids)  || count($user_ids) === 0
+    ) {
+        echo json_encode([
+            "status" => false,
+            "message" => "aaba_id, office_id, month_id[], fant_id[] and user_id[] required"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        // Create placeholders
+        $monthPH = implode(',', array_fill(0, count($month_ids), '?'));
+        $fantPH  = implode(',', array_fill(0, count($fant_ids), '?'));
+        $userPH  = implode(',', array_fill(0, count($user_ids), '?'));
+
+        $sql = "
+        SELECT
+            a.aaba_id,
+            a.office_id,
+            a.month_id,
+            d.month_name,
+            d.month_order,
+            a.fant_id,
+            c.fant_name,
+            a.sirshak_id,
+            b.sirshak_name,
+            e.acc_sirshak_name,
+            b.display_order,
+            SUM(a.amount) AS amount
+        FROM voucher_details a
+        INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+        INNER JOIN voucher_fant c ON a.fant_id = c.id
+        INNER JOIN voucher_month d ON a.month_id = d.id
+        INNER JOIN voucher_acc_sirshak e ON e.id = b.acc_sirshak_id
+        WHERE a.aaba_id = ?
+          AND a.office_id = ?
+          AND a.fant_id IN ($fantPH)
+          AND a.month_id IN ($monthPH)
+          AND a.created_by_user_id IN ($userPH)
+        GROUP BY
+            a.aaba_id,
+            a.office_id,
+            a.month_id,
+            a.fant_id,
+            c.fant_name,
+            a.sirshak_id
+        ORDER BY
+            d.month_order,
+            a.fant_id,
+            b.display_order
+        ";
+
+        $params = array_merge(
+            [$aaba_id, $office_id],
+            $fant_ids,
+            $month_ids,
+            $user_ids
+        );
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status"  => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "data"    => $data
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+
+function VoucherpalikaHandler() {
+
+    header("Content-Type: application/json; charset=utf-8");
+    $pdo = getPDO();
+    if (!$pdo) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Database unavailable"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    // Read JSON input
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $aaba_id    = $input["aaba_id"]    ?? "";
+    $office_id  = $input["office_id"]  ?? "";
+    $start_date = $input["start_date"] ?? "";
+    $end_date   = $input["end_date"]   ?? "";
+
+    // Validation
+    if (!$aaba_id || !$office_id || !$start_date || !$end_date) {
+        echo json_encode([
+            "status" => false,
+            "message" => "aaba_id, office_id, start_date and end_date are required"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        $sql = "
+        SELECT
+            a.aaba_id,
+            a.office_id,
+            b.acc_sirshak_id,
+            c.acc_sirshak_name,
+            a.napa_id,
+            d.napa_name,
+            SUM(a.amount) AS amount
+        FROM voucher_details a
+        INNER JOIN voucher_sirshak b ON a.sirshak_id = b.id
+        INNER JOIN voucher_acc_sirshak c ON b.acc_sirshak_id = c.id
+        INNER JOIN voucher_napa d ON d.id = a.napa_id AND a.office_id = d.office_id
+        WHERE a.aaba_id = :aaba_id
+          AND a.office_id = :office_id
+          AND a.edate_transaction BETWEEN :start_date AND :end_date
+        GROUP BY
+            a.aaba_id,
+            a.office_id,
+            b.acc_sirshak_id,
+            a.napa_id,
+            d.napa_name
+        ORDER BY
+            a.aaba_id,
+            a.office_id,
+            b.acc_sirshak_id,
+            a.napa_id
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ":aaba_id"    => $aaba_id,
+            ":office_id"  => $office_id,
+            ":start_date" => $start_date,
+            ":end_date"   => $end_date
+        ]);
+
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status"  => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "data"    => $data
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function getVoucherMasterHandler() {
+    header("Content-Type: application/json; charset=utf-8");
+    $pdo = getPDO();
+    if (!$pdo) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Database unavailable"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    $input = json_decode(file_get_contents("php://input"), true);
+    $office_id = isset($input["office_id"]) ? trim($input["office_id"]) : "";
+
+    if (!$office_id) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Office ID is required"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+        // ----------- Voucher Sirshak -----------
+        $stmt1 = $pdo->query("SELECT * FROM voucher_sirshak WHERE isactive=1 ORDER BY display_order");
+        $sirshaks = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+
+        // ----------- Voucher Fant -----------
+        $stmt2 = $pdo->prepare("SELECT * FROM voucher_fant WHERE isactive=1 AND office_id=:office_id ORDER BY display_order");
+        $stmt2->execute([":office_id" => $office_id]);
+        $fants = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+        // ----------- Voucher Napa -----------
+        $stmt3 = $pdo->prepare("SELECT * FROM voucher_napa WHERE isactive=1 AND office_id=:office_id ORDER BY display_order");
+        $stmt3->execute([":office_id" => $office_id]);
+        $napas = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+
+        // ----------- Voucher Parameters -----------
+        $stmt4 = $pdo->prepare("SELECT office_id, vstart, vlength, CONCAT(vstart, vlength) AS parm FROM voucher_parameter WHERE office_id=:office_id AND isactive=1");
+        $stmt4->execute([":office_id" => $office_id]);
+        $params = $stmt4->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "डाटा सफलतापूर्वक प्राप्त भयो",
+            "data" => [
+                "sirshaks" => $sirshaks,
+                "fants" => $fants,
+                "napas" => $napas,
+                "params" => $params
             ]
         ], JSON_UNESCAPED_UNICODE);
 

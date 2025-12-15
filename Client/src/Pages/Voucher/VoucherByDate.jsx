@@ -27,7 +27,7 @@ const VoucherByDate = () => {
       aaba_id: loggedUser.aabaid,
     };
     console.log("getting loadusers", data)
-    const response = await axiosInstance.post("voucher/Userlist",data)     
+    const response = await axiosInstance.post("/Userlist",data)     
     console.log(response.data);
     setudata(response.data.users);
   }
@@ -79,7 +79,7 @@ const VoucherByDate = () => {
       office_id: loggedUser.office_id
     };
     console.log("data sent", data);
-    const response = await axiosInstance.post("voucher/VoucherByDate",data)    
+    const response = await axiosInstance.post("/VoucherByDate",data)    
     console.log(response.data.data);
     setrepdata(response.data.data);
   };
