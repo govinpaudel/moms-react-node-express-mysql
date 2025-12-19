@@ -15,7 +15,7 @@ const ListAdminUsers = () => {
       user_id: id,
       status: status
     }
-    const url ="superadmin/changeUserStatus";
+    const url ="/changeUserStatus";
     const response=await axiosInstance.post(url,data);    
     if (response.data.status) {
       toast.success(response.data.message);
@@ -27,20 +27,23 @@ const ListAdminUsers = () => {
   }
 
   const loadData = async () => {
-    const data = {
-      office_id: loggedUser.office_id
+    const data = {       
+      office_id: loggedUser.office_id,
+      role_id:loggedUser.role,
     }
-    const url="superadmin/listAdminUsers";    
+    const url="/listUsers";    
     const response =await axiosInstance.post(url,data);        
     setdata(response.data.data);
   }
 
   const resetPassword = async (id) => {
     const data = {
-      updated_by_user_id: loggedUser.id,
-      user_id: id
+      user_id:id,
+      updated_by_user_id:loggedUser.id,
+      office_id: loggedUser.office_id,
+      role_id:loggedUser.role,
     }
-    const url="superadmin/resetPassword";
+    const url="/resetPassword";
     const response=await axiosInstance.post(url,data)    
     console.log(response);
     if (response.data.status) {

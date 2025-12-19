@@ -17,24 +17,12 @@ console.log("ENGLISH DATE AAYEKO", edate);
 const ndate = adToBs(edate);
 console.log("NEPALI DATE AAYEKO", ndate);
 const Editvoucher = () => {
-  const initialdata = {
-    id: 0,
-    ndate_voucher: ndate,
-    edate_voucher: edate,
-    ndate_transaction: ndate,
-    edate_transaction: edate,
-    fant_id: 0,
-    sirshak_id: 0,
-    napa_id: 0,
-    voucherno: "",
-    amount: "",
-    deposited_by: "",
-  };
+  
   const [sirshaks, setsirshaks] = useState();
   const [fants, setfants] = useState();
   const [napas, setnapas] = useState();
   const [params, setparams] = useState();
-  const [vdata, setVdata] = useState(initialdata);
+  const [vdata, setVdata] = useState([]);
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,7 +34,6 @@ const Editvoucher = () => {
   const handlesVoucherDate = ({ bsDate, adDate }) => {
     vdata.ndate_voucher = bsDate;
     vdata.edate_voucher = adDate;
-
   };
 
   const handlesTransactionDate = ({ bsDate, adDate }) => {
@@ -58,24 +45,13 @@ const Editvoucher = () => {
     const data = {
       office_id: loggedUser.office_id,
     }
-    const response = await axiosInstance.post("voucher/getVoucherMaster", data)
+    const response = await axiosInstance.post("/getVoucherMaster", data)
     console.log(response.data.data);
     setsirshaks(response.data.data.sirshaks);
     setfants(response.data.data.fants);
     setnapas(response.data.data.napas);
     setparams(response.data.data.params);
   };
-
-  const getVoucherDetailsById = async () => {
-    try {
-      let url = "voucher/getVoucherDetailsById/" + location.state.id;
-      const response = await axiosInstance.get(url)
-      console.log(response.data.data[0]);
-      setVdata(response.data.data[0]);
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   const checkVoucher = (e) => {
     if (!loggedUser.isvoucherchecked) {
@@ -101,6 +77,8 @@ const Editvoucher = () => {
       }
     }
   };
+
+  
   const onSubmit = async (event) => {
     event.preventDefault();
     console.log(vdata);
@@ -126,25 +104,24 @@ const Editvoucher = () => {
       toast.warning("कृपया भौचर नं जाँच गर्नुहोस् ।");
       return;
     }
-    const res = await axiosInstance.post("voucher/addOrUpdateVoucher", vdata);
+    const res = await axiosInstance.post("/addOrUpdateVoucher", vdata);
     console.log(res.data);
     if (res.data.status == true) {
       toast.success(res.data.message);
-      setVdata(initialdata);
+      setVdata([]);
       navigate("/voucher/listvoucher");
     } else {
       toast.warning(res.data.message);
     }
   };
   useEffect(() => {
-    setVdata(initialdata);
     getVoucherMaster();
-    document.title = "MOMS | भौचर दर्ता फाराम";
-    getVoucherDetailsById();
-    const edate_voucher = format(new Date(vdata.edate_voucher), 'MM/dd/yyyy')
-    setVdata({ ...vdata, "edate_voucher": edate_voucher })
+    setVdata(location.state.data);    
+    document.title = "VMS | भौचर दर्ता फाराम";    
+    // const edate_voucher = format(new Date(vdata.edate_voucher), 'MM/dd/yyyy')
+    // setVdata({ ...vdata, "edate_voucher": edate_voucher })
     console.log(vdata)
-    console.log("hello date", format(new Date(vdata.edate_voucher), 'MM/dd/yyyy'));
+    // console.log("hello date", format(new Date(vdata.edate_voucher), 'MM/dd/yyyy'));
   }, []);
 
   return (

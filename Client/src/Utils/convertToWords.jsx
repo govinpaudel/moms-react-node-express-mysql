@@ -1,6 +1,5 @@
 export const convertToWords = (theInput) => {
-  let num = theInput.toString();
-
+  const num = String(theInput ?? "0");
   // Split into rupee and paisa
   let [rupeesPart, paisaPart] = num.split(".");
 

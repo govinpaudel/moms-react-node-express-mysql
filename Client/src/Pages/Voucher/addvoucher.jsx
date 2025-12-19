@@ -63,8 +63,7 @@ const Addvoucher = () => {
   };
 
   const checkVoucher = (e) => {
-    if (!loggedUser.isvoucherchecked) {
-      console.log("voucher not checked");
+    if (!loggedUser.isvoucherchecked) {      
       return true;
     }
     else {
@@ -77,15 +76,14 @@ const Addvoucher = () => {
       let f = d.toString() + a.toString();
       console.log(f);
       let status = params.find((temp) => temp.parm == f);
-      if (status) {
-        console.log("voucher ok");
+      if (status) {        
         return true;
-      } else {
-        console.log("voucher not ok");
+      } else {       
         return false;
       }
     }
   };
+
   const onSubmit = async (event) => {
     event.preventDefault();
     console.log(vdata);
@@ -94,7 +92,10 @@ const Addvoucher = () => {
     vdata.aaba_id = loggedUser.aabaid;
     vdata.created_by_user_id = loggedUser.id;
     vdata.month_id = myArray[1];
-    const vstatus = checkVoucher(vdata.voucherno);
+    if(!loggedUser.isvoucherenabled){
+      toast.warning("भौचर दर्ता गर्न सक्रिय गरिएको छैन ।");
+      return;
+    }
     if (vdata.fant_id == 0) {
       fant_idref.current.focus()
       fant_idref.current.style.color = "blue";
@@ -113,6 +114,7 @@ const Addvoucher = () => {
       toast.warning("कृपया रजिष्ट्रेशन शुल्क मा न.पा अनिवार्य चयन गर्नुहोस् ।");
       return;
     }
+    const vstatus = checkVoucher(vdata.voucherno);
     if (!vstatus) {
       vouchernoref.current.focus()
       vouchernoref.current.style.color = "blue";

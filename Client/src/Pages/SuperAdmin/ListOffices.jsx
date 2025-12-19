@@ -10,14 +10,17 @@ const ListOffices = () => {
     office_id:0,
     office_name:'',
     isvoucherchecked:0,
+    isvoucherenabled:0,
+    usenepcalendar:0,
+    expire_at:'',
     isactive:1  
   }
 
   const [officeData,setOfficedata]=useState();  
-  const [bdata,setbdata]=useState([]);
+  const [bdata,setbdata]=useState(initialdata);
   const [sselected, setsselected] = useState([]);
   const [stateData,setStateData]=useState();
-  const Url = import.meta.env.VITE_API_URL + "superadmin/";
+  const Url = import.meta.env.VITE_API_URL;
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
 
 const onSubmit=async(e)=>{
@@ -38,6 +41,10 @@ const onSubmit=async(e)=>{
     loadOfficesData();
     setbdata(initialdata);
   }
+  else{
+    toast.warning(response.data.message);
+  }
+
  }
 const handlechange=(e)=>{
   setbdata({...bdata,[e.target.name]:e.target.value})
@@ -75,18 +82,9 @@ const handlechange=(e)=>{
 
   }
 
-  const loadEditData=async(id)=>{
-    const data = {        
-        id:id        
-      }
-      console.log("getting data by id", data);
-      const response = await axios({
-        method: "post",
-        url: Url + "getOfficesById",
-        data: data
-      });
-      console.log(response);
-      setbdata(response.data.data[0]);      
+  const loadEditData=async(data)=>{
+    console.log(data);
+          setbdata(data);      
   }
  
   const loadOfficesData= async()=>{
@@ -152,6 +150,8 @@ const handlechange=(e)=>{
               disabled           
             />
           </div>
+          </div>
+          <div className="Addvoucher__Form__part">      
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">भौचर चेक</label>
             <input
@@ -161,7 +161,37 @@ const handlechange=(e)=>{
               value={bdata.isvoucherchecked}
               onChange={handlechange}            
             />
-          </div>  
+          </div>
+          <div className="Addvoucher__Form__part__item">
+            <label className="Addvoucher__Form__part__item__label">भौचर दर्ता</label>
+            <input
+              type="text"
+              name="isvoucherenabled"
+              className="Addvoucher__Form__part__item__input"
+              value={bdata.isvoucherenabled}
+              onChange={handlechange}            
+            />
+            </div>
+            <div className="Addvoucher__Form__part__item">
+            <label className="Addvoucher__Form__part__item__label">नेपाली पात्रो</label>
+            <input
+              type="text"
+              name="usenepcalendar"
+              className="Addvoucher__Form__part__item__input"
+              value={bdata.usenepcalendar}
+              onChange={handlechange}            
+            />
+            </div>
+            <div className="Addvoucher__Form__part__item">
+            <label className="Addvoucher__Form__part__item__label">म्याद सकिने</label>
+            <input
+              type="text"
+              name="expire_at"
+              className="Addvoucher__Form__part__item__input"
+              value={bdata.expire_at}
+              onChange={handlechange}            
+            />
+            </div>  
           <div className="Addvoucher__Form__part__item">
             <label className="Addvoucher__Form__part__item__label">सेभ</label>
             <input
@@ -171,6 +201,7 @@ const handlechange=(e)=>{
             />
             </div>
           </div>
+
 </form>
 <div className="listoffices__statedata">
         {stateData ? stateData.map((item, i) => {
@@ -198,7 +229,9 @@ const handlechange=(e)=>{
         <th>प्रदेशको नाम</th>
         <th>कार्यालय कोड</th>        
         <th>कार्यालयको नाम</th>
-        <th>भौचर चेक</th>        
+        <th>भौचर चेक</th>
+        <th>भौचर दर्ता</th>
+        <th>अन्तिम म्याद</th>
         <th>अवस्था</th>
         <th colSpan={2}>कृयाकलाप</th>
         </tr>
@@ -211,11 +244,13 @@ const handlechange=(e)=>{
             <td>{item.state_name}</td>
             <td>{item.id}</td>
             <td>{item.office_name}</td>
-            <td>{item.isvoucherchecked?"सक्रिय" : "निष्कृय" }</td>            
+            <td>{item.isvoucherchecked?"सक्रिय" : "निष्कृय" }</td> 
+            <td>{item.isvoucherenabled?"सक्रिय" : "निष्कृय" }</td>  
+            <td>{item.expire_at}</td>             
             <td> {item.isactive?"सक्रिय" : "निष्कृय" }</td>
             <td>
               <button className='listvoucher__list__editbtn' onClick={()=>{
-                loadEditData(item.id);
+                loadEditData(item);
               }}>संशोधन</button>
             </td>
           </tr>

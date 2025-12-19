@@ -186,7 +186,7 @@ const Listvoucher = () => {
                     <td className="no-print">
                       <button
                         className="listvoucher__list__editbtn"
-                        onClick={() => navigate("/voucher/editvoucher", { state: { id: data.id } })}
+                        onClick={() => navigate("/voucher/editvoucher", { state: { data: data } })}
                       >
                         संशोधन
                       </button>

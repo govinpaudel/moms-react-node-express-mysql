@@ -5,12 +5,11 @@ import axiosInstance from '../../axiosInstance'
 
 
 const SuperAdminSidebar = () => {
-  const [data, setdata] = useState([])
-  const Url = import.meta.env.VITE_API_URL + "auth/";
+  const [data, setdata] = useState([])  
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
 
   const LoadSidebar = async () => {
-    const url ="auth/getSidebarlist";
+    const url ="/getSidebarlist";
     const data = {
       user_id: loggedUser.id,
       module: 'SuperAdmin'

@@ -44,8 +44,9 @@ const VoucherFant = () => {
     const response = await axiosInstance.post("/FantlistByAabaMonth",data)    
     console.log(response.data);
     setfdata(response.data.fants);
-    setLoading(false);
+   
   }
+ setLoading(false);
   }
 
   const loadusers = async () => {
@@ -62,8 +63,9 @@ const VoucherFant = () => {
     const response = await axiosInstance.post("/UserlistByAabaMonthFant",data)   
     console.log(response.data);
     setudata(response.data.users);
-    setLoading(false);
+    
   }
+  setLoading(false);
   }
 
   useEffect(() => {

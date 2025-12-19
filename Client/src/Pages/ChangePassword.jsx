@@ -28,7 +28,7 @@ const ChangePassword = () => {
             toast.warning("पासवर्ड र पुन पासवर्ड मिलेन ।");
             return;
         }
-        const url=  "auth/changepassword";
+        const url=  "/changepassword";
         const response = await axiosInstance.post(url,data);        
         console.log(response.data)
         if(response.data.status==true){

@@ -85,7 +85,34 @@ if ($method === "GET") {
             break;
         case "getvouchermaster":
             getVoucherMasterHandler();
-            break;       
+            break;
+        case "addorupdatevoucher":
+            addOrUpdateVoucherHandler();
+            break;
+        case "listusers":
+            listUsersHandler();
+            break;
+        case "changeuserstatus":
+            changeUserStatusHandler();
+            break;
+        case "resetpassword":
+            resetPasswordHandler();
+            break;
+        case "liststates":
+            listStatesHandler();
+            break;
+        case "listbadhfandbystates":
+            listBadhfandByStatesHandler();
+            break;
+        case "listofficesbystates":
+            listOfficesByStatesHandler();
+            break;
+        case "updatestateofoffice":
+            updateStateOfOfficeHandler();
+            break;
+        case "changepassword":
+            changePasswordHandler();
+            break;
         default:
             methodNotAllowed();
     }
@@ -120,14 +147,15 @@ function loginHandler() {
     // Read JSON POST data
     $input = json_decode(file_get_contents("php://input"), true);
 
-    $username = trim($input["username"] ?? "");
-    $password = trim($input["password"] ?? "");
+    $username   = trim($input["username"] ?? "");
+    $password   = trim($input["password"] ?? "");
+    $todaydate  = trim($input["todaydate"] ?? "");
 
     // Required fields check
     if (!$username || !$password) {
         echo json_encode([
             "status" => false,
-            "message" => "Username and password are required"
+            "message" => "प्रयोगकर्ता नाम वा पासवर्ड मिलेन ।"
         ], JSON_UNESCAPED_UNICODE);
         return;
     }
@@ -139,46 +167,62 @@ function loginHandler() {
             b.role_name,
             c.office_name,
             c.expire_at,
-            d.state_name
+            d.state_name,
+            c.usenepcalendar,
+            c.isvoucherchecked,
+            c.isvoucherenabled
         FROM voucher_users a
         INNER JOIN voucher_user_roles b ON a.role = b.id
         INNER JOIN voucher_offices c ON a.office_id = c.id
-        INNER JOIN voucher_states d ON d.id = c.state_id
+        INNER JOIN voucher_state d ON d.id = c.state_id
         WHERE a.username = :username
+        LIMIT 1
         ";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([":username" => $username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // User not found
+        // 1️⃣ Username does not exist
         if (!$user) {
             echo json_encode([
                 "status" => false,
-                "message" => "प्रयोगकर्ता वा पासवर्ड मिलेन ।"
+                "message" => "प्रयोगकर्ता नाम वा पासवर्ड मिलेन ।"
             ], JSON_UNESCAPED_UNICODE);
             return;
         }
 
-        // 🔒 Only check that expire_at is NOT NULL
-        if (empty($user["expire_at"])) {
-            echo json_encode([
-                "status" => false,
-                "message" => "प्रयोगकर्ता सक्रिय गरिएको छैन ।"
-            ], JSON_UNESCAPED_UNICODE);
-            return;
-        }
-
-        // Password verification
+        // 2️⃣ Username exists but password does not match
         if (!password_verify($password, $user["password"])) {
             echo json_encode([
                 "status" => false,
-                "message" => "प्रयोगकर्ता वा पासवर्ड मिलेन ।"
+                "message" => "प्रयोगकर्ता नाम वा पासवर्ड मिलेन ।"
             ], JSON_UNESCAPED_UNICODE);
             return;
         }
 
-        // Successful login
+        // 3️⃣ Office expire check (NULL or expired)
+        if (
+            empty($user["expire_at"]) ||
+            strtotime($user["expire_at"]) < strtotime($todaydate)
+        ) {
+            echo json_encode([
+                "status" => false,
+                "message" => "कार्यालय नविकरण गरिएको छैन कृपया नविकरण गर्नु होला ।"
+            ], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        // 4️⃣ User not active
+        if ((int)$user["isactive"] === 0) {
+            echo json_encode([
+                "status" => false,
+                "message" => "प्रयोगकर्ता सक्रिय गरिएको छैन । कृपया व्यवस्थापक लाई सम्पर्क राख्नु होला "
+            ], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        // 5️⃣ Successful login
         echo json_encode([
             "status" => true,
             "message" => "प्रयोगकर्ता सफलतापुर्वक लगईन भयो ।",
@@ -189,7 +233,6 @@ function loginHandler() {
         respondDbError($e);
     }
 }
-
 
 function getSidebarListHandler() {
     header("Content-Type: application/json");
@@ -477,15 +520,7 @@ function getTodaysVoucherHandler() {
     try {
         $sql = "
             SELECT 
-                a.id,
-                a.ndate_voucher,
-                a.ndate_transaction,
-                a.voucherno,
-                a.sirshak_id,
-                a.amount,
-                DATE_FORMAT(a.created_at,'%Y-%m-%d') AS created_at,
-                a.created_by_user_id,
-                a.deposited_by,
+                a.*,
                 b.sirshak_name,
                 c.napa_name,
                 e.fant_name,
@@ -1556,7 +1591,616 @@ function getVoucherMasterHandler() {
         respondDbError($e);
     }
 }
+function addOrUpdateVoucherHandler() {
+    header("Content-Type: application/json; charset=utf-8");
 
+    $pdo = getPDO();
+    if (!$pdo) return dbUnavailable("Remote");
+
+    // Read JSON POST data
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    // Assign variables safely
+    $id                     = (int)($input["id"] ?? 0);
+    $aaba_id                = $input["aaba_id"] ?? null;
+    $office_id              = $input["office_id"] ?? null;
+    $edate_voucher          = $input["edate_voucher"] ?? null;
+    $ndate_voucher          = $input["ndate_voucher"] ?? null;
+    $edate_transaction      = $input["edate_transaction"] ?? null;
+    $ndate_transaction      = $input["ndate_transaction"] ?? null;
+    $month_id               = $input["month_id"] ?? null;
+    $sirshak_id             = $input["sirshak_id"] ?? null;
+    $fant_id                = $input["fant_id"] ?? null;
+    $napa_id                = $input["napa_id"] ?? null;
+    $voucherno              = trim($input["voucherno"] ?? "");
+    $amount                 = $input["amount"] ?? 0;
+    $deposited_by           = strtoupper(trim($input["deposited_by"] ?? ""));
+    $created_by_user_id     = $input["created_by_user_id"] ?? null;
+    $client_ip              = $_SERVER["REMOTE_ADDR"] ?? "";
+
+    if (!$voucherno || !$office_id || !$aaba_id) {
+        echo json_encode([
+            "status" => false,
+            "message" => "आवश्यक विवरणहरू उपलब्ध छैनन् ।"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        /** ===============================
+         * UPDATE VOUCHER
+         * =============================== */
+        if ($id > 0) {
+
+            $sql = "
+                UPDATE voucher_details SET
+                    aaba_id = :aaba_id,
+                    office_id = :office_id,
+                    edate_voucher = :edate_voucher,
+                    ndate_voucher = :ndate_voucher,
+                    edate_transaction = :edate_transaction,
+                    ndate_transaction = :ndate_transaction,
+                    month_id = :month_id,
+                    sirshak_id = :sirshak_id,
+                    fant_id = :fant_id,
+                    napa_id = :napa_id,
+                    voucherno = :voucherno,
+                    amount = :amount,
+                    updated_by_user_id = :updated_by_user_id,
+                    deposited_by = :deposited_by,
+                    updated_by_ip = :updated_by_ip
+                WHERE id = :id
+            ";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ":aaba_id" => $aaba_id,
+                ":office_id" => $office_id,
+                ":edate_voucher" => $edate_voucher,
+                ":ndate_voucher" => $ndate_voucher,
+                ":edate_transaction" => $edate_transaction,
+                ":ndate_transaction" => $ndate_transaction,
+                ":month_id" => $month_id,
+                ":sirshak_id" => $sirshak_id,
+                ":fant_id" => $fant_id,
+                ":napa_id" => $napa_id,
+                ":voucherno" => $voucherno,
+                ":amount" => $amount,
+                ":updated_by_user_id" => $created_by_user_id,
+                ":deposited_by" => $deposited_by,
+                ":updated_by_ip" => $client_ip,
+                ":id" => $id
+            ]);
+
+            echo json_encode([
+                "status" => true,
+                "message" => "भौचर नं {$voucherno} सफलतापुर्वक संशोधन भयो ।"
+            ], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        /** ===============================
+         * CHECK DUPLICATE VOUCHER
+         * =============================== */
+        $checkSql = "
+            SELECT a.*, b.nepname
+            FROM voucher_details a
+            INNER JOIN voucher_users b ON a.created_by_user_id = b.id
+            WHERE a.office_id = :office_id
+              AND a.aaba_id = :aaba_id
+              AND a.voucherno = :voucherno
+            LIMIT 1
+        ";
+
+        $checkStmt = $pdo->prepare($checkSql);
+        $checkStmt->execute([
+            ":office_id" => $office_id,
+            ":aaba_id" => $aaba_id,
+            ":voucherno" => $voucherno
+        ]);
+
+        $exists = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($exists) {
+            echo json_encode([
+                "status" => false,
+                "message" => "भौचर नं {$voucherno} मितिः {$exists['ndate_voucher']} मा {$exists['nepname']} बाट दर्ता भईसकेको छ ।"
+            ], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        /** ===============================
+         * INSERT VOUCHER
+         * =============================== */
+        $insertSql = "
+            INSERT INTO voucher_details (
+                aaba_id, office_id,
+                edate_voucher, ndate_voucher,
+                edate_transaction, ndate_transaction,
+                month_id, sirshak_id, fant_id, napa_id,
+                voucherno, amount,
+                deposited_by,
+                created_by_user_id,
+                created_by_ip
+            ) VALUES (
+                :aaba_id, :office_id,
+                :edate_voucher, :ndate_voucher,
+                :edate_transaction, :ndate_transaction,
+                :month_id, :sirshak_id, :fant_id, :napa_id,
+                :voucherno, :amount,
+                :deposited_by,
+                :created_by_user_id,
+                :created_by_ip
+            )
+        ";
+
+        $stmt = $pdo->prepare($insertSql);
+        $stmt->execute([
+            ":aaba_id" => $aaba_id,
+            ":office_id" => $office_id,
+            ":edate_voucher" => $edate_voucher,
+            ":ndate_voucher" => $ndate_voucher,
+            ":edate_transaction" => $edate_transaction,
+            ":ndate_transaction" => $ndate_transaction,
+            ":month_id" => $month_id,
+            ":sirshak_id" => $sirshak_id,
+            ":fant_id" => $fant_id,
+            ":napa_id" => $napa_id,
+            ":voucherno" => $voucherno,
+            ":amount" => $amount,
+            ":deposited_by" => $deposited_by,
+            ":created_by_user_id" => $created_by_user_id,
+            ":created_by_ip" => $client_ip
+        ]);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "भौचर नं {$voucherno} सफलतापुर्वक दर्ता भयो ।"
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function listUsersHandler() {
+    header("Content-Type: application/json; charset=utf-8");
+
+    $pdo = getPDO();
+    if (!$pdo) return dbUnavailable("Remote");
+
+    // Read JSON POST data
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $role_id   = $input["role_id"] ?? null;
+    $office_id = $input["office_id"] ?? null;
+
+    if (!$role_id) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Role ID उपलब्ध छैन ।"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        /** ===============================
+         * ROLE BASED QUERY
+         * =============================== */
+        if ((int)$role_id === 1) {
+
+            // role_id = 1 → fetch role = 2 users (all offices)
+            $sql = "
+                SELECT a.*, b.office_name
+                FROM voucher_users a
+                INNER JOIN voucher_offices b ON a.office_id = b.id
+                WHERE a.role = 2
+                ORDER BY a.office_id
+            ";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute();
+
+        } elseif ((int)$role_id === 2) {
+
+            // role_id = 2 → fetch role = 3 users (same office only)
+            if (!$office_id) {
+                echo json_encode([
+                    "status" => false,
+                    "message" => "कार्यालय आईडी आवश्यक छ ।"
+                ], JSON_UNESCAPED_UNICODE);
+                return;
+            }
+
+            $sql = "
+                SELECT a.*, b.office_name
+                FROM voucher_users a
+                INNER JOIN voucher_offices b ON a.office_id = b.id
+                WHERE a.role = 3
+                  AND a.office_id = :office_id
+                ORDER BY a.office_id
+            ";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ":office_id" => $office_id
+            ]);
+
+        } else {
+
+            echo json_encode([
+                "status" => false,
+                "message" => "अनुमति नभएको भूमिका (Role) ।"
+            ], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "data" => $users
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+
+function changeUserStatusHandler() {
+    header("Content-Type: application/json; charset=utf-8");
+
+    $pdo = getPDO();
+    if (!$pdo) return dbUnavailable("Remote");
+
+    // Read JSON POST
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $status             = $input["status"] ?? null;
+    $updated_by_user_id = $input["updated_by_user_id"] ?? null;
+    $user_id            = $input["user_id"] ?? null;
+
+    if ($status === null || !$updated_by_user_id || !$user_id) {
+        echo json_encode([
+            "status" => false,
+            "message" => "आवश्यक विवरणहरू उपलब्ध छैनन् ।"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    // Toggle status
+    $newStatus = ((int)$status === 1) ? 0 : 1;
+
+    try {
+        $sql = "
+            UPDATE voucher_users 
+            SET isactive = :isactive,
+                updated_by_user_id = :updated_by_user_id
+            WHERE id = :id
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ":isactive" => $newStatus,
+            ":updated_by_user_id" => $updated_by_user_id,
+            ":id" => $user_id
+        ]);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "प्रयोगकर्ता सफलतापुर्वक संशोधन भयो",
+            "data" => [
+                "user_id" => $user_id,
+                "new_status" => $newStatus
+            ]
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function resetPasswordHandler() {
+    header("Content-Type: application/json; charset=utf-8");
+
+    $pdo = getPDO();
+    if (!$pdo) return dbUnavailable("Remote");
+
+    // Read JSON POST
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $updated_by_user_id = $input["updated_by_user_id"] ?? null;
+    $user_id            = $input["user_id"] ?? null;
+
+    if (!$updated_by_user_id || !$user_id) {
+        echo json_encode([
+            "status" => false,
+            "message" => "आवश्यक विवरणहरू उपलब्ध छैनन् ।"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    $newPassword = "Admin@123$";
+    $hash = password_hash($newPassword, PASSWORD_BCRYPT);
+
+    try {
+        $sql = "
+            UPDATE voucher_users 
+            SET password = :password,
+                updated_by_user_id = :updated_by_user_id
+            WHERE id = :id
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ":password" => $hash,
+            ":updated_by_user_id" => $updated_by_user_id,
+            ":id" => $user_id
+        ]);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "प्रयोगकर्ताको पासवर्ड {$newPassword} अपडेट भयो",
+            "data" => [
+                "user_id" => $user_id
+            ]
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function listStatesHandler() {
+    header("Content-Type: application/json; charset=utf-8");
+
+    $pdo = getPDO();
+    if (!$pdo) return dbUnavailable("Remote");
+
+    try {
+
+        $sql = "SELECT * FROM voucher_state";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+
+        $states = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "प्रदेशहरु सफलतापुर्वक प्राप्त भयो",
+            "states" => $states
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function listBadhfandByStatesHandler() {
+    header("Content-Type: application/json; charset=utf-8");
+
+    $pdo = getPDO();
+    if (!$pdo) return dbUnavailable("Remote");
+
+    // Read JSON POST
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $aaba_id  = $input["aaba_id"] ?? null;
+    $state_id = $input["state_id"] ?? [];
+
+    if (!$aaba_id || !is_array($state_id)) {
+        echo json_encode([
+            "status" => false,
+            "message" => "आवश्यक विवरण उपलब्ध छैन ।"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+
+        /** ===============================
+         * BUILD IN CLAUSE SAFELY
+         * =============================== */
+        if (count($state_id) > 0) {
+            // ?,?,? placeholders
+            $placeholders = implode(",", array_fill(0, count($state_id), "?"));
+            $whereState   = "a.state_id IN ($placeholders)";
+            $params       = array_merge([$aaba_id], $state_id);
+        } else {
+            // No state selected → return empty
+            $whereState = "a.state_id IN (0)";
+            $params     = [$aaba_id];
+        }
+
+        $sql = "
+            SELECT 
+                a.*,
+                b.state_name,
+                c.aaba_name,
+                d.acc_sirshak_name
+            FROM voucher_badhfadh a
+            INNER JOIN voucher_state b ON a.state_id = b.id
+            INNER JOIN voucher_aabas c ON a.aaba_id = c.id
+            INNER JOIN voucher_acc_sirshak d ON a.acc_sirshak_id = d.id
+            WHERE a.aaba_id = ?
+              AND $whereState
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "डाटा सफलतापुर्वक प्राप्त भयो",
+            "data" => $results
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function listOfficesByStatesHandler() {
+    header("Content-Type: application/json; charset=utf-8");
+
+    $pdo = getPDO();
+    if (!$pdo) return dbUnavailable("Remote");
+
+    // Read JSON POST
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $state_id = $input["state_id"] ?? [];
+
+    if (!is_array($state_id)) {
+        echo json_encode([
+            "status" => false,
+            "message" => "state_id array उपलब्ध छैन ।"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+        // Build IN clause safely
+        if (count($state_id) > 0) {
+            $placeholders = implode(",", array_fill(0, count($state_id), "?"));
+            $whereState = "a.state_id IN ($placeholders)";
+            $params = $state_id;
+        } else {
+            $whereState = "a.state_id IN (0)";
+            $params = [];
+        }
+
+        $sql = "
+            SELECT a.*, b.state_name
+            FROM voucher_offices a
+            INNER JOIN voucher_state b ON a.state_id = b.id
+            WHERE $whereState
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $offices = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "कार्यालयहरु सफलतापुर्वक प्राप्त भयो",
+            "offices" => $offices
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function updateStateOfOfficeHandler() {
+    header("Content-Type: application/json; charset=utf-8");
+
+    $pdo = getPDO();
+    if (!$pdo) return dbUnavailable("Remote");
+
+    // Read JSON POST
+    $input = json_decode(file_get_contents("php://input"), true);
+    $state_id         = $input["state_id"] ?? null;
+    $isvoucherchecked = $input["isvoucherchecked"] ?? null;
+    $isvoucherenabled = $input["isvoucherenabled"] ?? null;
+    $usenepcalendar= $input["usenepcalendar"] ?? null;
+    $expire_at=$input["expire_at"] ?? null;
+    $id = $input["id"] ?? null;
+
+    if ($state_id === null || $isvoucherenabled===null ||$usenepcalendar===null || $isvoucherchecked === null || $id === null ) {
+        echo json_encode([
+            "status" => false,
+            "message" => "आवश्यक विवरण उपलब्ध छैन ।"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    try {
+        $sql = "
+            UPDATE voucher_offices
+            SET state_id = :state_id,
+            isvoucherchecked = :isvoucherchecked,
+            isvoucherenabled = :isvoucherenabled,
+            usenepcalendar = :usenepcalendar,
+            expire_at = :expire_at
+            WHERE id = :id
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ":state_id" => $state_id,
+            ":isvoucherchecked" => $isvoucherchecked,
+            ":isvoucherenabled" => $isvoucherenabled,
+            ":usenepcalendar" =>$usenepcalendar,
+            ":expire_at" =>$expire_at,
+            ":id" => $id
+        ]);
+
+        echo json_encode([
+            "status" => true,
+            "message" => "डाटा सफलतापुर्वक संशोधन भयो",
+            "data" => [
+                "id" => $id,
+                "state_id" => $state_id,
+                "isvoucherchecked" => $isvoucherchecked,
+
+            ]
+        ], JSON_UNESCAPED_UNICODE);
+
+    } catch (PDOException $e) {
+        respondDbError($e);
+    }
+}
+function changePasswordHandler(){
+ header("Content-Type: application/json; charset=utf-8");
+
+    $pdo = getPDO();
+if (!$pdo) return dbUnavailable("Remote");
+$inputJSON = file_get_contents('php://input');
+$input = json_decode($inputJSON, true);
+
+$user_id     = $input['user_id'] ?? null;
+$oldpassword = $input['oldpassword'] ?? null;
+$newpassword = $input['newpassword'] ?? null;
+
+if (!$user_id || !$oldpassword || !$newpassword) {
+    http_response_code(400);
+    echo json_encode(["message" => "अनावश्यक डाटा हराइरहेको छ।"]);
+    exit;
+}
+
+try {
+    // Fetch user
+    $stmt = $pdo->prepare("SELECT * FROM voucher_users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        http_response_code(400);
+        echo json_encode(["message" => "गलत प्रयोगकर्ता द्वारा प्रयास गरिएको।"]);
+        exit;
+    }
+
+    // Verify old password
+    if (!password_verify($oldpassword, $user['password'])) {
+        echo json_encode(["message" => "गलत पुरानो पासवर्ड।"]);
+        exit;
+    }
+
+    // Hash new password
+    $hashedNewPassword = password_hash($newpassword, PASSWORD_BCRYPT);
+
+    // Update password
+    $stmt = $pdo->prepare("UPDATE voucher_users SET password = ? WHERE id = ?");
+    $stmt->execute([$hashedNewPassword, $user_id]);
+
+    echo json_encode(["status" => true, "message" => "पासवर्ड परिवर्तन सफल भयो।"]);
+
+} catch (\PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["message" => "सर्भर त्रुटि भयो", "error" => $e->getMessage()]);
+}
+}
 function notFound() { http_response_code(404); echo json_encode(["status"=>false,"message"=>"Not Found"]); exit(); }
 function methodNotAllowed() { http_response_code(405); echo json_encode(["status"=>false,"message"=>"Method Not Allowed"]); exit(); }
 function respondDbError($e) { http_response_code(500); echo json_encode(["status"=>false,"message"=>"Database Error","error"=>$e->getMessage()]); exit(); }

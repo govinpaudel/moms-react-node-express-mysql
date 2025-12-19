@@ -11,7 +11,7 @@ const Admin = () => {
   const navigate=useNavigate();
   const checkRole=()=>{
     console.log("role",loggedUser)
-  if (loggedUser.role==2){
+  if (!loggedUser.role==2){
     toast.warning("एडमिन प्रयोगकर्तालाई मात्र यो अख्तियारी उपलब्ध छ ।")
     navigate('/apphome')
   }    

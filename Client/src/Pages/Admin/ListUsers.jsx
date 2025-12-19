@@ -3,7 +3,7 @@ import axiosInstance from "../../axiosInstance"
 import { toast } from 'react-toastify';
 const ListUsers = () => {
   const [data, setdata] = useState();
-  const Url = import.meta.env.VITE_API_URL + "admin/";
+  const Url = import.meta.env.VITE_API_URL;
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
 
   const resetPassword = async (id) => {
@@ -13,7 +13,7 @@ const ListUsers = () => {
       user_id: id
     }
     console.log("data sent", data);
-    const url = "admin/resetPassword";
+    const url = "/resetPassword";
     const response = await axiosInstance.post(url, data)
     console.log(response);
     if (response.data.status) {
@@ -34,7 +34,7 @@ const ListUsers = () => {
       status: status
     }
     console.log("data sent", data);
-    const url = "admin/changeUserStatus";
+    const url = "/changeUserStatus";
     const response =await axiosInstance.post(url, data)
     console.log(response);
     if (response.data.status) {
@@ -48,10 +48,12 @@ const ListUsers = () => {
 
   const loadData = async () => {
     const data = {
-      office_id: loggedUser.office_id
+      id:loggedUser.id,
+      office_id: loggedUser.office_id,
+      role_id:loggedUser.role,
     }
     console.log("data sent", data);
-    const url = "admin/listUsers";
+    const url = "/listUsers";
     const response = await axiosInstance.post(url, data)
     console.log(response);
     setdata(response.data.data);

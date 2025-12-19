@@ -10,7 +10,7 @@ const ListBadhfand = () => {
     state_id:0,
     state_name:'',
     sirshak_id:0,
-    sirshak_name:"",
+    acc_sirshak_name:"",
     sangh:0,
     pardesh:0,
     isthaniye:0,
@@ -18,10 +18,10 @@ const ListBadhfand = () => {
   }
 
   const [data,setdata]=useState();  
-  const [bdata,setbdata]=useState([]);
+  const [bdata,setbdata]=useState(initialdata);
   const [sselected, setsselected] = useState([]);
   const [statedata,setstatedata]=useState();
-  const Url = import.meta.env.VITE_API_URL + "superadmin/";
+  const Url = import.meta.env.VITE_API_URL;
   const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
 
 const onSubmit=async(e)=>{
@@ -84,18 +84,9 @@ const handlechange=(e)=>{
 
   }
 
-  const loadEditData=async(id)=>{
-    const data = {        
-        id:id        
-      }
-      console.log("getting data by id", data);
-      const response = await axios({
-        method: "post",
-        url: Url + "getBadhfandById",
-        data: data
-      });
-      setbdata(response.data.data[0])
-      console.log(response.data.data[0]);  
+  const loadEditData=async(data)=>{    
+      setbdata(data);
+      console.log(data);  
   }
  
   const loadBadhfandData= async()=>{
@@ -147,7 +138,7 @@ const handlechange=(e)=>{
               type="text"
               name="sirshak_name"
               className="Addvoucher__Form__part__item__input"
-              value={bdata.sirshak_name}              
+              value={bdata.acc_sirshak_name}              
               disabled               
             />
           </div>
@@ -202,12 +193,12 @@ const handlechange=(e)=>{
             </div>
           </div>
 </form>
-<div className="Badhfand__statedata">
+<div className="listbadhfand__statedata">
         {statedata ? statedata.map((item, i) => {
           return (
-            <div className="Badhfand__statedata__item" key={i}>
+            <div className="listbadhfand__statedata__item" key={i}>
               <input
-                className="Badhfand__statedata__item__box"
+                className="listbadhfand__statedata__item__box"
                 type="checkbox"
                 name="month"
                 value={item.id}
@@ -247,7 +238,7 @@ const handlechange=(e)=>{
             <td> {item.isactive?"सक्रिय" : "निष्कृय" }</td>
             <td>
               <button className='listvoucher__list__editbtn' onClick={()=>{
-                loadEditData(item.id);
+                loadEditData(item);
               }}>संशोधन</button>
             </td>
           </tr>
