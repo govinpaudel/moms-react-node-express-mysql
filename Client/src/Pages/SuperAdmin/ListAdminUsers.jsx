@@ -27,11 +27,11 @@ const ListAdminUsers = () => {
   }
 
   const loadData = async () => {
-    const data = {       
-      office_id: loggedUser.office_id,
-      role_id:loggedUser.role,
+    const data = {
+      
+      table:'voucher_users'
     }
-    const url="/listUsers";    
+    const url="/getAll";    
     const response =await axiosInstance.post(url,data);        
     setdata(response.data.data);
   }
@@ -64,8 +64,7 @@ const ListAdminUsers = () => {
       <table className='listvoucher__list__table'>
         <thead>
           <tr>
-            <th>कार्यालय कोड</th>
-            <th>कार्यालयको नाम</th>
+            <th>कार्यालय कोड</th>            
             <th>प्रयोगकर्ताको नाम</th>
             <th>नाम नेपालीमा</th>
             <th>नाम अंग्रेजीमा</th>
@@ -78,8 +77,7 @@ const ListAdminUsers = () => {
         <tbody>
           {data ? data.map((item, i) => {
             return <tr key={i}>
-              <td>{item.office_id}</td>
-              <td>{item.office_name}</td>
+              <td>{item.office_id}</td>              
               <td>{item.username}</td>
               <td>{item.nepname}</td>
               <td>{item.engname}</td>

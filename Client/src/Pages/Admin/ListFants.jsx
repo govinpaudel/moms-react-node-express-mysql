@@ -15,22 +15,14 @@ const ListFants = () => {
   const [data,setdata]=useState(initialdata);
 
 
-  const loadEditData=async(id)=>{
-    const data = {
-        office_id: loggedUser.office_id,
-        fant_id:id        
-      }
-      console.log("data sent", data);
-      const url="admin/getFantById"
-      const response = await axiosInstance.post(url,data);      
-      setdata(response.data.data[0])
-      console.log(response.data.data[0]);  
+  const loadEditData=async(data)=>{       
+      setdata(data)      
   }
 
 const OnSubmit=async(e)=>{
     e.preventDefault();
     console.log("data sent for updation",data);
-    const url="admin/addOrUpdateFants";
+    const url="/addOrUpdateFants";
     const response= await axiosInstance.post(url,data);   
       console.log(response);
       if(response.data.status==true){
@@ -42,12 +34,13 @@ const OnSubmit=async(e)=>{
 }
   const changeStatus=async(id,status)=>{
     const data = {
+      table:'voucher_fant',
       office_id: loggedUser.office_id,
-      fant_id:id,
+      id:id,
       status:status
     }
     console.log("data sent", data);
-    const url="admin/changeFantStatus";
+    const url="toggleStatus";
     const response= await axiosInstance.post(url,data);
     
     console.log(response);  
@@ -67,10 +60,11 @@ const OnSubmit=async(e)=>{
 
   const loadData= async()=>{
     const data = {
-      office_id: loggedUser.office_id
+      office_id: loggedUser.office_id,
+      table:'voucher_fant',
     }
     console.log("data sent", data);
-    const url="admin/listFants"; 
+    const url="/getAll"; 
     const response= await axiosInstance.post(url,data)  
     console.log(response);
     setlistdata(response.data.data);
@@ -120,7 +114,7 @@ const OnSubmit=async(e)=>{
               changeStatus(item.id,item.isactive);
             }}>{item.isactive?"निस्कृय पार्नुहोस्" : "सकृय पार्नुहोस्" }</button>
             <button className='editbtn' onClick={()=>{
-                loadEditData(item.id);
+                loadEditData(item);
             }}>संशोधन गर्नुहोस्</button></td>
           </tr>
           }):null

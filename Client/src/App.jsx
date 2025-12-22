@@ -36,6 +36,7 @@ import AppHome from './Pages/AppHome';
 import ChangePassword from './Pages/ChangePassword';
 import ResetPassword from './Pages/ResetPassword';
 import Protected_route from './Utils/Protected_route';
+import Datasync from './Pages/SuperAdmin/Datasync';
 
 function App() {
   return (
@@ -78,6 +79,7 @@ function App() {
               <Route path='listadminusers' element={<ListAdminUsers />} />
               <Route path='listbadhfand' element={<ListBadhfand />} />
               <Route path='listoffices' element={<ListOffices />} />
+              <Route path='datasync' element={<Datasync />} />
               <Route path='logout' element={<Logout />} />
             </Route>
             {/* Super Admin Route Ends */}           

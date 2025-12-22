@@ -28,13 +28,13 @@ const ListUsers = () => {
 
   const changeStatus = async (id, status) => {
     const data = {
-      office_id: loggedUser.office_id,
-      updated_by_user_id: loggedUser.id,
-      user_id: id,
-      status: status
+      office_id: loggedUser.office_id,      
+      id: id,
+      status: status,
+      table:'voucher_users'
     }
     console.log("data sent", data);
-    const url = "/changeUserStatus";
+    const url = "/toggleStatus";
     const response =await axiosInstance.post(url, data)
     console.log(response);
     if (response.data.status) {
@@ -47,13 +47,12 @@ const ListUsers = () => {
   }
 
   const loadData = async () => {
-    const data = {
-      id:loggedUser.id,
+    const data = {      
       office_id: loggedUser.office_id,
-      role_id:loggedUser.role,
+      table:'voucher_users'
     }
     console.log("data sent", data);
-    const url = "/listUsers";
+    const url = "/getAll";
     const response = await axiosInstance.post(url, data)
     console.log(response);
     setdata(response.data.data);
@@ -72,8 +71,7 @@ const ListUsers = () => {
       <table className='listvoucher__list__table'>
         <thead>
           <tr>
-            <th>कार्यालय कोड</th>
-            <th>कार्यालयको नाम</th>
+            <th>कार्यालय कोड</th>            
             <th>प्रयोगकर्ताको नाम</th>
             <th>नाम नेपालीमा</th>
             <th>नाम अंग्रेजीमा</th>
@@ -86,8 +84,7 @@ const ListUsers = () => {
         <tbody>
           {data ? data.map((item, i) => {
             return <tr key={i}>
-              <td>{item.office_id}</td>
-              <td>{item.office_name}</td>
+              <td>{item.office_id}</td>              
               <td>{item.username}</td>
               <td>{item.nepname}</td>
               <td>{item.engname}</td>
