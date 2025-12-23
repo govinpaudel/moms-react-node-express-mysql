@@ -10,12 +10,13 @@ const ListAdminUsers = () => {
 
   const changeStatus = async (id, status) => {
     const data = {
+      table:'voucher_users',
       office_id: loggedUser.office_id,
       updated_by_user_id: loggedUser.id,
-      user_id: id,
+      id:id,
       status: status
     }
-    const url ="/changeUserStatus";
+    const url ="/toggleStatus";
     const response=await axiosInstance.post(url,data);    
     if (response.data.status) {
       toast.success(response.data.message);
@@ -27,13 +28,14 @@ const ListAdminUsers = () => {
   }
 
   const loadData = async () => {
-    const data = {
-      
+    const data = {      
       table:'voucher_users'
     }
     const url="/getAll";    
-    const response =await axiosInstance.post(url,data);        
-    setdata(response.data.data);
+    const response =await axiosInstance.post(url,data);
+    const newdata = response.data?.data || [];
+    const filteredData = newdata.filter(item => item.role === 2);
+    setdata(filteredData);   
   }
 
   const resetPassword = async (id) => {

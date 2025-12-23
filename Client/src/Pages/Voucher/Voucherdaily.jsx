@@ -21,7 +21,7 @@ const Voucherdaily = () => {
   const [fselected, setfselected] = useState([]);
   const [fdata, setfdata] = useState(0);
   const [total, settotal] = useState(0);
-  const [repdata,setrepdata]=useState([]);
+  const [repdata,setrepdata]=useState([{}]);
   const loadfants = async () => {
     const data = {
       office_id: loggedUser.office_id,
@@ -52,10 +52,12 @@ const Voucherdaily = () => {
 
 const dototal =()=>{
     var x =0;
+    if(repdata){
     repdata.forEach((a) => {      
         x=x+ parseInt(a.amount);         
     })
     settotal(x);
+  }
   }
   useEffect(() => {    
   dototal();   
@@ -149,7 +151,7 @@ const dototal =()=>{
             </tr>
           </thead>
           <tbody>
-            {repdata.length > 0 ? (
+            {repdata ? repdata.length > 0 ? (
               repdata.map((data, i) => {
                 return (
                   <tr key={i}>                     
@@ -166,7 +168,7 @@ const dototal =()=>{
                   </h1>
                 </td>
               </tr>
-            )}
+            ):null}
             <tr><td colSpan={9}>जम्मा रकम : {total}</td></tr>
           </tbody>
         </table>

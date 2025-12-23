@@ -75,7 +75,7 @@ const VoucherFant = () => {
 
 
   const genReport = async () => {
-    setLoading(true);
+   
     setsummary([{}]);
     if (mselected.length == 0) {
       toast.warning("कृपया महिना छनौट गर्नुहोस् ।");
@@ -96,12 +96,13 @@ const VoucherFant = () => {
       month_id: mselected,
       fant_id: fselected,
       user_id:uselected
-    };
+    };    
     console.log("data sent", data);
+    setLoading(true);
     const response = await axiosInstance.post("/VoucherFant",data)
     console.log(response.data.data);
     setsummary(response.data.data);    
-  setLoading(false);
+    setLoading(false);
   };
 
   const dototal =()=>{

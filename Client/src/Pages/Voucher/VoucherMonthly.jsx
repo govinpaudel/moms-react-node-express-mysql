@@ -35,7 +35,7 @@ useEffect(() => {
 }, [])
 
   const genReport = async () => {
-    setLoading(true);
+    
     setregi([{}]); 
     setsummary([{}]);
     setisthaniye([{}]);
@@ -49,6 +49,7 @@ useEffect(() => {
       aaba_id: loggedUser.aabaid,
       month_id: mselected,
     };
+    setLoading(true);
     console.log("data sent", data);
     const response = await axiosInstance.post("getVoucherMonthly",data)    
     console.log(response.data.data);    
