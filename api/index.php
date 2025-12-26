@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 require_once "db_voucher.php";
+require_once "jwt_helper.php";
 // -----------------------------
 // Parse the request
 // -----------------------------
@@ -25,8 +26,21 @@ $method = $_SERVER['REQUEST_METHOD'];
 // -----------------------------
 // Routing
 // -----------------------------
+$publicRoutes = [
+    "POST" => ["login", "signup", "refreshtoken"],
+    "GET"  => ["getallaabas"]
+];
+
+$route  = $pathParts[0] ?? "";
+$method = $_SERVER["REQUEST_METHOD"];
+
+// 🔐 Protect routes except public ones
+if (!in_array($route, $publicRoutes[$method] ?? [])) {
+    requireAccessToken();
+}
+
 if ($method === "GET") {
-    switch ($pathParts[0] ?? "") {                
+    switch ($route) {                
         case "getallaabas":
             getAllAabasHandler();
             break;        
@@ -34,7 +48,7 @@ if ($method === "GET") {
             notFound();
     }
 } elseif ($method === "POST") {
-    switch ($pathParts[0] ?? "") {
+    switch ($route) {
         case "signup":
             signupHandler();
             break;
@@ -128,6 +142,9 @@ if ($method === "GET") {
         case "downloadrecords":
             downloadRecordsHandler();
             break;
+        case "refreshtoken":
+            refreshTokenHandler();
+            break;        
         default:
             methodNotAllowed();
     }
@@ -238,11 +255,47 @@ function loginHandler() {
         }
 
         // 5️⃣ Successful login
+       try {
+        /* ---- YOUR EXISTING USER VALIDATION CODE ---- */
+
+        // 🔐 Access Token (short-lived)
+        $accessPayload = [
+            "iss" => JWT_ISSUER,
+            "iat" => time(),
+            "exp" => time() + ACCESS_TOKEN_EXPIRE,
+            "type" => "access",
+            "user_id" => $user["id"],
+            "role_id" => $user["role"],
+            "office_id" => $user["office_id"]
+        ];
+
+        // 🔁 Refresh Token (long-lived)
+        $refreshPayload = [
+            "iss" => JWT_ISSUER,
+            "iat" => time(),
+            "exp" => time() + REFRESH_TOKEN_EXPIRE,
+            "type" => "refresh",
+            "user_id" => $user["id"]
+        ];
+
+        $accessToken  = jwtEncode($accessPayload);
+        $refreshToken = jwtEncode($refreshPayload);
+
+        unset($user["password"]);
+
         echo json_encode([
             "status" => true,
             "message" => "प्रयोगकर्ता सफलतापुर्वक लगईन भयो ।",
+            "access_token" => $accessToken,
+            "refresh_token" => $refreshToken,
+            "expires_in" => ACCESS_TOKEN_EXPIRE,
             "data" => $user
         ], JSON_UNESCAPED_UNICODE);
+
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(["message" => $e->getMessage()]);
+    }
 
     } catch (PDOException $e) {
         respondDbError($e);
@@ -2370,6 +2423,90 @@ function downloadRecordsHandler() {
         ]);
     }
 }
+
+function refreshTokenHandler() {
+
+    $input = json_decode(file_get_contents("php://input"), true);
+    $refreshToken = $input["refresh_token"] ?? "";
+
+    if (!$refreshToken) {
+        http_response_code(400);
+        echo json_encode([
+            "status" => false,
+            "message" => "Refresh token required"
+        ]);
+        return;
+    }
+
+    try {
+        $payload = jwtDecode($refreshToken);
+
+        if (($payload["type"] ?? "") !== "refresh") {
+            throw new Exception("Invalid refresh token");
+        }
+
+        // 🔐 Create new access token
+        $accessPayload = [
+            "iss" => JWT_ISSUER,
+            "iat" => time(),
+            "exp" => time() + ACCESS_TOKEN_EXPIRE,
+            "type" => "access",
+            "user_id" => $payload["user_id"]
+        ];
+
+        $accessToken = jwtEncode($accessPayload);
+
+        echo json_encode([
+            "status" => true,
+            "access_token" => $accessToken,
+            "expires_in" => ACCESS_TOKEN_EXPIRE
+        ]);
+
+    } catch (Exception $e) {
+        http_response_code(403);
+        echo json_encode([
+            "status" => false,
+            "message" => $e->getMessage()
+        ]);
+    }
+}
+
+function requireAccessToken() {
+    $headers = getallheaders();
+
+    if (!isset($headers['Authorization'])) {
+        http_response_code(401);
+        echo json_encode([
+            "status" => false,
+            "message" => "Access token required"
+        ]);
+        exit;
+    }
+
+    $token = str_replace("Bearer ", "", $headers['Authorization']);
+
+    try {
+        $payload = jwtDecode($token);
+
+        if (($payload['type'] ?? '') !== 'access') {
+            throw new Exception("Invalid access token");
+        }
+
+        // Make user available globally
+        $GLOBALS['auth_user'] = $payload;
+
+        return $payload;
+
+    } catch (Exception $e) {
+        http_response_code(401);
+        echo json_encode([
+            "status" => false,
+            "message" => $e->getMessage()
+        ]);
+        exit;
+    }
+}
+
 function notFound() { http_response_code(404); echo json_encode(["status"=>false,"message"=>"Not Found"]); exit(); }
 function methodNotAllowed() { http_response_code(405); echo json_encode(["status"=>false,"message"=>"Method Not Allowed"]); exit(); }
 function respondDbError($e) { http_response_code(500); echo json_encode(["status"=>false,"message"=>"Database Error","error"=>$e->getMessage()]); exit(); }

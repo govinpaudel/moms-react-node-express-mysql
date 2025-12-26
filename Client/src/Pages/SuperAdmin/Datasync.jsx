@@ -34,7 +34,7 @@ const Datasync = () => {
   "voucher_user_roles"
 ]
     }    
-    const response=await axiosInstance.post(Url+"downloadRecords",data)
+    const response=await axiosInstance.post("/downloadRecords",data)
     setData(response.data.data)
     setNdata(response.data)
     console.log(response);
