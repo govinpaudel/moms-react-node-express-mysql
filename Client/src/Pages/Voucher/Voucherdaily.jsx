@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 const Voucherdaily = () => {
   const navigate=useNavigate();
   const Url = import.meta.env.VITE_API_URL;
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
   const initialdata = {
     nep_start_date: "",
     nep_end_date: "",

@@ -3,7 +3,7 @@ import axiosInstance from '../../axiosInstance';
 import "./List.scss";
 import { toast } from 'react-toastify';
 const ListNapas = () => {
-    const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
     const initialdata = {
         napa_id:0,
         office_id:loggedUser.office_id,

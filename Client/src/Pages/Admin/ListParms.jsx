@@ -3,7 +3,7 @@ import axiosInstance from '../../axiosInstance';
 import "./List.scss";
 import { toast } from 'react-toastify';
 const ListParms = () => {
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
   const initialdata = {
     id: 0,    
     vstart: "",

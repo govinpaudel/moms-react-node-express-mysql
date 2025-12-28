@@ -7,7 +7,7 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import { Circles } from "react-loader-spinner";
 const VoucherOfficeSum = () => {
   const Url = import.meta.env.VITE_API_URL;
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
   const [officeSum, setOfficeSum] = useState([]);
   const [sanchitkosh, setsanchitkosh] = useState([{}]);
   const [isthaniye, setisthaniye] = useState();

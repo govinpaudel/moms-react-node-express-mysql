@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import axiosInstance from "../../axiosInstance";
 const AdminSidebar = () => {
   const [data, setdata] = useState([])  
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
   const loadSidebar = async () => {
     const data = {
       user_id: loggedUser.id,

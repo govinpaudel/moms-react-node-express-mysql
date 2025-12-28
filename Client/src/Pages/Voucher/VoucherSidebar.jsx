@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../../axiosInstance";
 
 const VoucherSidebar = () => {  
-  const loggedUser = JSON.parse(sessionStorage?.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage?.getItem("loggedUser"));
   const [data, setdata] = useState([])
 
   const loadsidebardata = async () => {

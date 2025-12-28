@@ -8,7 +8,7 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import { toast } from "react-toastify";
 const Listvoucher = () => {
   const navigate = useNavigate();
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
   const [voucherlist, setvoucherlist] = useState([]);
   const [svoucherno, setsvoucherno] = useState(0);
   const summary = [{ sirshak_id: 99, sirshak_name: "आजको जम्माः", amount: 0 }];

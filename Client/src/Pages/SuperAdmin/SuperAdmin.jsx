@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const SuperAdmin = () => {
-  const loggedUser=JSON.parse(sessionStorage.getItem('loggedUser'));
+  const loggedUser=JSON.parse(localStorage.getItem('loggedUser'));
   const navigate=useNavigate();
   const checkRole=()=>{
     console.log("role",loggedUser.role)

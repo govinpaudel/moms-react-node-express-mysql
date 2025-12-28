@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 const ListUsers = () => {
   const [data, setdata] = useState();
   const Url = import.meta.env.VITE_API_URL;
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
   const resetPassword = async (id) => {
     const data = {

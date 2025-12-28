@@ -6,7 +6,7 @@ import axiosInstance from '../../axiosInstance'
 
 const SuperAdminSidebar = () => {
   const [data, setdata] = useState([])  
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
   const LoadSidebar = async () => {
     const url ="/getSidebarlist";

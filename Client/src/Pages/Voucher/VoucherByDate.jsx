@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const VoucherByDate = () => {
   const navigate = useNavigate();  
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
   const initialdata = {
     nep_start_date: "",
     nep_end_date: "",

@@ -37,7 +37,7 @@ const Addvoucher = () => {
   const [napas, setnapas] = useState();
   const [params, setparams] = useState();
   const [vdata, setVdata] = useState(initialdata);
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
   const navigate = useNavigate();
   const handleChange = (e) => {
     setVdata({ ...vdata, [e.target.name]: e.target.value });

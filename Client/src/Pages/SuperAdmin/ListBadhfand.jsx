@@ -22,7 +22,7 @@ const ListBadhfand = () => {
   const [sselected, setsselected] = useState([]);
   const [statedata,setstatedata]=useState();
   const Url = import.meta.env.VITE_API_URL;
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
 const onSubmit=async(e)=>{
   e.preventDefault();

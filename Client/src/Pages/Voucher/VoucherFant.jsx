@@ -6,7 +6,7 @@ import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { Circles } from "react-loader-spinner";
 const VoucherFant = () => {
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
   const Url = import.meta.env.VITE_API_URL;
   const [mselected, setmselected] = useState([]);
   const [fselected, setfselected] = useState([]);

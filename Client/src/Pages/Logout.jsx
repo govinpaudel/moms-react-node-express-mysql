@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 const Logout = () => {
   const navigate = useNavigate();
   useEffect(() => {
-    let user = sessionStorage.getItem("loggedUser");
+    let user = localStorage.getItem("loggedUser");
     if (user) {
-      sessionStorage.removeItem("loggedUser");
-      sessionStorage.removeItem("access_token");
-      sessionStorage.removeItem("refresh_token");
+      localStorage.removeItem("loggedUser");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
     }
     navigate("/login");
   }, []);

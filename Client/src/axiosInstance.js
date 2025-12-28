@@ -7,8 +7,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 // Helper: logout user
 // -----------------------------
 const logout = () => {
-  sessionStorage.removeItem("access_token");
-  sessionStorage.removeItem("refresh_token");
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
   window.location.href = "/login";
 };
 
@@ -28,7 +28,7 @@ const axiosInstance = axios.create({
 // -----------------------------
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem("access_token");
+    const token = localStorage.getItem("access_token");
     if (token) {
        // Use X-Authorization instead of Authorization
       config.headers["X-Authorization"] = `Bearer ${token}`;

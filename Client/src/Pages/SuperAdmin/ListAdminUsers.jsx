@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 const ListAdminUsers = () => {
   const [data, setdata] = useState();
   
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
   const changeStatus = async (id, status) => {
     const data = {
