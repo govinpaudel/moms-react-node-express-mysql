@@ -69,6 +69,12 @@ const Login = () => {
   const loadAabas = async () => {
     try {
       const response = await axios.get(Url + "getAllAabas");
+      // 🔴 InfinityFree HTML detection
+      if (typeof response.data === "string") {
+        toast.error("सुरक्षा जाँच भइरहेको छ, कृपया पुनः प्रयास गर्नुहोस्।");
+        window.location.reload();
+        return;
+      }
       setaabas(response.data.data);
     } catch (error) {
       console.error(error);
@@ -146,7 +152,7 @@ const Login = () => {
               </option>
             ))}
           </select>
-
+<hr/>
           <input
             type="submit"
             value="लगईन गर्नुहोस्"
