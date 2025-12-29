@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'
-import axiosInstance from '../../axiosInstance';
+import axios from 'axios';
 import "./List.scss";
 import { toast } from 'react-toastify';
 const ListFants = () => {
@@ -23,7 +23,7 @@ const OnSubmit=async(e)=>{
     e.preventDefault();
     console.log("data sent for updation",data);
     const url="/addOrUpdateFants";
-    const response= await axiosInstance.post(url,data);   
+    const response= await axios.post(url,data);   
       console.log(response);
       if(response.data.status==true){
         toast.success(response.data.message);
@@ -41,7 +41,7 @@ const OnSubmit=async(e)=>{
     }
     console.log("data sent", data);
     const url="toggleStatus";
-    const response= await axiosInstance.post(url,data);
+    const response= await axios.post(url,data);
     
     console.log(response);  
     if(response.data.status){
@@ -65,7 +65,7 @@ const OnSubmit=async(e)=>{
     }
     console.log("data sent", data);
     const url="/getAll"; 
-    const response= await axiosInstance.post(url,data)  
+    const response= await axios.post(url,data)  
     console.log(response);
     setlistdata(response.data.data);
 

@@ -11,7 +11,7 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import { NavLink, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { adToBs, bsToAd } from '@sbmdkl/nepali-date-converter'
-import axiosInstance from "../../axiosInstance";
+import axios from "axios";
 
 const edate = new Date().toISOString().slice(0, 10);
 console.log("ENGLISH DATE AAYEKO", edate);
@@ -46,7 +46,7 @@ const Editvoucher = () => {
     const data = {
       office_id: loggedUser.office_id,
     }
-    const response = await axiosInstance.post("/getVoucherMaster", data)
+    const response = await axios.post("/getVoucherMaster", data)
     console.log(response.data.data);
     setsirshaks(response.data.data.sirshaks);
     setfants(response.data.data.fants);

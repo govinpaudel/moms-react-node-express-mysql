@@ -5,10 +5,12 @@ import "./Login.scss";
 import { toast } from "react-toastify";
 import MainHeaderComponent from "../Components/MainHeaderComponent";
 import { Circles } from "react-loader-spinner";
+import { useAuth } from "../Context/AuthContext";
+
 
 const Login = () => {
   const initialdata = { username: "", password: "", aabaid: 0 };
-
+  const { login, isAuthenticated } = useAuth();
   const [aabas, setAabas] = useState([]);
   const [defaaba, setDefAaba] = useState(null);
   const [formData, setFormData] = useState(initialdata);
@@ -17,11 +19,6 @@ const Login = () => {
 
   const Url = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
-
-  // Parse safely
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser") || "null");
-
-  /* ------------------------- handlers ------------------------- */
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,6 +32,12 @@ const Login = () => {
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/apphome", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -54,23 +57,16 @@ const Login = () => {
 
     try {
       const response = await axios.post(`${Url}login`, payload);
-
-      // InfinityFree HTML detection
-      if (typeof response.data === "string") {
-        toast.error("सर्भर प्रमाणीकरण असफल भयो । कृपया केही समयपछि पुनः प्रयास गर्नुहोस्।");
-        return;
-      }
-
       if (response.data.status === true) {
         const userData = {
           ...response.data.data,
           aabaid: defaaba,
         };
-
-        localStorage.setItem("access_token", response.data.access_token);
-        localStorage.setItem("refresh_token", response.data.refresh_token);
-        localStorage.setItem("loggedUser", JSON.stringify(userData));
-
+        login({
+          access_token: response.data.access_token,
+          refresh_token: response.data.refresh_token,
+          data: userData,
+        });
         toast.success(response.data.message || "लगइन सफल भयो");
         navigate("/apphome", { replace: true });
       } else {
@@ -89,13 +85,16 @@ const Login = () => {
   const loadAabas = async () => {
     try {
       const response = await axios.get(`${Url}getAllAabas`);
-
       if (typeof response.data === "string") {
         toast.error("सर्भर प्रमाणीकरण असफल भयो । कृपया केही समयपछि पुनः प्रयास गर्नुहोस्।");
         return;
       }
-
-      setAabas(response.data.data || []);
+      const list = response.data.data || [];
+      setAabas(list);
+      const currentAaba = list.find(a => a.is_current === "1");
+    if (currentAaba) {
+      setDefAaba(currentAaba.id);
+    }
     } catch (error) {
       console.error(error);
       toast.error("डाटा लोड गर्न सकिएन");
@@ -110,22 +109,8 @@ const Login = () => {
   useEffect(() => {
     document.title = "MOMS | प्रयोगकर्ता लगईन";
     loadAabas();
-
-    if (loggedUser) {
-      navigate("/apphome", { replace: true });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Set default aaba
-  useEffect(() => {
-    if (aabas.length) {
-      const current = aabas.find((a) => a.is_current === 1);
-      if (current) {
-        setDefAaba(current.id);
-      }
-    }
-  }, [aabas]);
 
   // Sync aaba with form
   useEffect(() => {

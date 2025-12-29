@@ -1,4 +1,4 @@
-import axiosInstance from "../../axiosInstance";
+import { useAuth } from "../../Context/AuthContext";
 import { useEffect, useState } from "react";
 import "./listvoucher.scss";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import { toast } from "react-toastify";
 const Listvoucher = () => {
   const navigate = useNavigate();
+  const { axiosInstance } = useAuth();
   const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
   const [voucherlist, setvoucherlist] = useState([]);
   const [svoucherno, setsvoucherno] = useState(0);

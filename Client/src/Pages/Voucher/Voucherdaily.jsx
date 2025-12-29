@@ -3,7 +3,7 @@ import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { useState,useEffect } from "react";
 import Calendar from "@sbmdkl/nepali-datepicker-reactjs";
 import "./Voucherdaily.scss";
-import axiosInstance from "../../axiosInstance";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const Voucherdaily = () => {
@@ -30,7 +30,7 @@ const Voucherdaily = () => {
     console.log(Url);
     console.log("getting fantlist", data)
     
-    const response = await axiosInstance.post("/Fantlist",data)    
+    const response = await axios.post("/Fantlist",data)    
     console.log(response.data);
     setfdata(response.data.fants);
   }

@@ -1,6 +1,6 @@
 import { useState,useEffect } from "react"
 import { toast } from "react-toastify";
-import axiosInstance from "../../axiosInstance";
+import axios from "axios";
 const Datasync = () => {
   const [date,setDate]=useState()
   const [ip,setIp]=useState();
@@ -34,7 +34,7 @@ const Datasync = () => {
   "voucher_user_roles"
 ]
     }    
-    const response=await axiosInstance.post("/downloadRecords",data)
+    const response=await axios.post("/downloadRecords",data)
     setData(response.data.data)
     setNdata(response.data)
     console.log(response);

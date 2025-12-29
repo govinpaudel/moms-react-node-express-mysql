@@ -3,7 +3,7 @@ import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { useState,useEffect } from "react";
 import Calendar from "@sbmdkl/nepali-datepicker-reactjs";
 import "./VoucherPalika.scss";
-import axiosInstance from "../../axiosInstance";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const VoucherPalika = () => {
@@ -56,7 +56,7 @@ const dototal =()=>{
       aaba_id:loggedUser.aabaid
     };
     console.log("data sent", data);
-    const response= await axiosInstance.post("/Voucherpalika",data)    
+    const response= await axios.post("/Voucherpalika",data)    
     console.log(response.data.data);
     setrepdata(response.data.data);    
   };

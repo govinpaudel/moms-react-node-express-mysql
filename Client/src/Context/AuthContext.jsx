@@ -20,8 +20,13 @@ export const AuthProvider = ({ children }) => {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  /* -------------------- helpers -------------------- */
+  /* -------------------- Axios instance -------------------- */
+  const axiosInstance = axios.create({
+    baseURL: API_URL,
+    timeout: 20000,
+  });
 
+  /* -------------------- helpers -------------------- */
   const logout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
@@ -46,7 +51,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   /* -------------------- refresh token -------------------- */
-
   const refreshAccessToken = async () => {
     try {
       const refreshToken = localStorage.getItem("refresh_token");
@@ -56,7 +60,6 @@ export const AuthProvider = ({ children }) => {
         refresh_token: refreshToken,
       });
 
-      // InfinityFree HTML protection
       if (typeof res.data === "string") throw new Error("Invalid response");
 
       localStorage.setItem("access_token", res.data.access_token);
@@ -67,34 +70,32 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  /* -------------------- axios interceptor -------------------- */
-
+  /* -------------------- axios interceptors -------------------- */
   useEffect(() => {
-    const requestInterceptor = axios.interceptors.request.use(
+    const requestInterceptor = axiosInstance.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem("access_token");
         if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+          config.headers["X-Authorization"] = `Bearer ${token}`;
+          config.headers["Authorization"] = `Bearer ${token}`;
         }
         return config;
       },
       (error) => Promise.reject(error)
     );
 
-    const responseInterceptor = axios.interceptors.response.use(
+    const responseInterceptor = axiosInstance.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
 
-        if (
-          error.response?.status === 401 &&
-          !originalRequest._retry
-        ) {
+        if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
+
           const newToken = await refreshAccessToken();
           if (newToken) {
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-            return axios(originalRequest);
+            originalRequest.headers["X-Authorization"] = `Bearer ${newToken}`;
+            return axiosInstance(originalRequest);
           }
         }
 
@@ -103,13 +104,12 @@ export const AuthProvider = ({ children }) => {
     );
 
     return () => {
-      axios.interceptors.request.eject(requestInterceptor);
-      axios.interceptors.response.eject(responseInterceptor);
+      axiosInstance.interceptors.request.eject(requestInterceptor);
+      axiosInstance.interceptors.response.eject(responseInterceptor);
     };
   }, []);
 
   /* -------------------- initial auth check -------------------- */
-
   useEffect(() => {
     setLoading(false);
   }, []);
@@ -122,6 +122,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         isAuthenticated: !!user,
+        axiosInstance, // now available immediately
       }}
     >
       {!loading && children}
@@ -130,7 +131,6 @@ export const AuthProvider = ({ children }) => {
 };
 
 /* -------------------- hook -------------------- */
-
 export const useAuth = () => {
   return useContext(AuthContext);
 };

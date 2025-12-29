@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import axiosInstance from '../../axiosInstance';
 import "./ListAdminUsers.scss";
 import { toast } from 'react-toastify';
 const ListAdminUsers = () => {
@@ -17,7 +16,7 @@ const ListAdminUsers = () => {
       status: status
     }
     const url ="/toggleStatus";
-    const response=await axiosInstance.post(url,data);    
+    const response=await axios.post(url,data);    
     if (response.data.status) {
       toast.success(response.data.message);
       loadData();

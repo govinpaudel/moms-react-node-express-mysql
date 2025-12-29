@@ -4,7 +4,7 @@ import { BsInfoCircleFill } from "react-icons/bs"
 import  "./Changepassword.scss";
 import { useNavigate} from 'react-router-dom';
 import { useEffect } from 'react';
-import axiosInstance from "../axiosInstance"
+import axios from 'axios';
 import { toast } from 'react-toastify';
 const ChangePassword = () => {
      
@@ -29,7 +29,7 @@ const ChangePassword = () => {
             return;
         }
         const url=  "/changepassword";
-        const response = await axiosInstance.post(url,data);        
+        const response = await axios.post(url,data);        
         console.log(response.data)
         if(response.data.status==true){
             toast.success(response.data.message);

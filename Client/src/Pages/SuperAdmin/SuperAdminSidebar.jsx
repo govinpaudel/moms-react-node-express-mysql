@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import "./SuperAdminSidebar.scss";
 import { NavLink } from 'react-router-dom';
-import axiosInstance from '../../axiosInstance'
+import axios from 'axios';
 
 
 const SuperAdminSidebar = () => {
@@ -14,7 +14,7 @@ const SuperAdminSidebar = () => {
       user_id: loggedUser.id,
       module: 'SuperAdmin'
     }
-    const response = await axiosInstance.post(url,data);    
+    const response = await axios.post(url,data);    
     setdata(response.data.data);
     console.log(response.data.data)
   }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axiosInstance from '../../axiosInstance';
+import axios from 'axios';
 import "./List.scss";
 import { toast } from 'react-toastify';
 const ListParms = () => {
@@ -21,7 +21,7 @@ const ListParms = () => {
     setdata({...data,user_id:loggedUser.id,table_name:'voucher_parameter',office_id: loggedUser.office_id})
     console.log("data sent for updation", data);
     const url = "addOrUpdateParms"
-    const response = await axiosInstance.post(url, data);
+    const response = await axios.post(url, data);
 
     console.log(response);
     if (response.data.status == true) {
@@ -41,7 +41,7 @@ const ListParms = () => {
     }
     console.log("data sent", data);
     const url = "/togglestatus"
-    const response = await axiosInstance.post(url, data);
+    const response = await axios.post(url, data);
 
     console.log(response);
     if (response.data.status) {
@@ -65,7 +65,7 @@ const ListParms = () => {
     }
     console.log("data sent", data);
     const url = "/getAll"
-    const response = await axiosInstance.post(url, data);
+    const response = await axios.post(url, data);
     console.log(response);
     setlistdata(response.data.data);
 
