@@ -1,6 +1,6 @@
 import './App.scss'
-import { Route, Routes } from "react-router-dom";
-import React, { lazy, Suspense } from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
+import React, { Suspense } from "react";
 
 import Login from './Pages/Login';
 import Register from './Pages/Register';
@@ -18,6 +18,7 @@ import VoucherHome from './Pages/Voucher/VoucherHome';
 import VoucherOfficeSum from './Pages/Voucher/VoucherOfficeSum';
 import Voucherdaily from './Pages/Voucher/Voucherdaily';
 import VoucherPalika from './Pages/Voucher/VoucherPalika';
+
 // Admin
 import Admin from './Pages/Admin/Admin';
 import ListUsers from './Pages/Admin/ListUsers';
@@ -30,69 +31,72 @@ import SuperAdmin from './Pages/SuperAdmin/SuperAdmin';
 import ListAdminUsers from './Pages/SuperAdmin/ListAdminUsers';
 import ListBadhfand from './Pages/SuperAdmin/ListBadhfand';
 import ListOffices from './Pages/SuperAdmin/ListOffices';
+import Datasync from './Pages/SuperAdmin/Datasync';
 
 // Misc
 import AppHome from './Pages/AppHome';
 import ChangePassword from './Pages/ChangePassword';
 import ResetPassword from './Pages/ResetPassword';
 import Protected_route from './Utils/Protected_route';
-import Datasync from './Pages/SuperAdmin/Datasync';
 
 function App() {
   return (
-    <>
-      <div className="App__main-page-content">
-        <Suspense fallback={<div>Loading...</div>}>
+    <div className="App__main-page-content">
+      <Suspense fallback={<div>Loading...</div>}>
         <Routes>
+
+          {/* 🔓 PUBLIC ROUTES */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/resetpassword" element={<ResetPassword />} />
+          <Route path="/logout" element={<Logout />} />
+
+          {/* 🔁 ROOT REDIRECT (IMPORTANT) */}
+          <Route path="/" element={<Navigate to="/apphome" replace />} />
+
+          {/* 🔒 PROTECTED ROUTES */}
           <Route element={<Protected_route />}>
-            <Route path="/" element={<AppHome />} />
-            {/* App Routes Starts */}
             <Route path="/apphome" element={<AppHome />} />
             <Route path="/calculator" element={<CalcMainPage />} />
+            <Route path="/changepassword" element={<ChangePassword />} />
 
-            <Route path='changepassword' element={<ChangePassword />} />
-            {/* Voucher routes starts */}
-            <Route path='voucher' element={<VoucherHome />} >            
-            <Route path='' element={<Listvoucher />} />
-              <Route path='listvoucher' element={<Listvoucher />} />
-              <Route path='addvoucher' element={<Addvoucher />} />
-              <Route path='editvoucher' element={<Editvoucher />} />
-              <Route path='vouchermonthly' element={<VoucherMonthly />} />              
-              <Route path='voucherfant' element={<VoucherFant />} />              
-              <Route path='voucherbydate' element={<VoucherByDate />} />        
-              <Route path='officesum' element={<VoucherOfficeSum />} /> 
-              <Route path='voucherdaily' element={<Voucherdaily/>} /> 
-              <Route path='voucherpalika' element={<VoucherPalika/>} /> 
+            {/* Voucher */}
+            <Route path="/voucher" element={<VoucherHome />}>
+              <Route index element={<Listvoucher />} />
+              <Route path="listvoucher" element={<Listvoucher />} />
+              <Route path="addvoucher" element={<Addvoucher />} />
+              <Route path="editvoucher" element={<Editvoucher />} />
+              <Route path="vouchermonthly" element={<VoucherMonthly />} />
+              <Route path="voucherfant" element={<VoucherFant />} />
+              <Route path="voucherbydate" element={<VoucherByDate />} />
+              <Route path="officesum" element={<VoucherOfficeSum />} />
+              <Route path="voucherdaily" element={<Voucherdaily />} />
+              <Route path="voucherpalika" element={<VoucherPalika />} />
             </Route>
-            {/* Voucher routes ends */}    
-            {/* Admin Route Starts */}
-            <Route path="/admin" element={<Admin />} >              
-              <Route path='listusers' element={<ListUsers />} />
-              <Route path='listfants' element={<ListFants />} />
-              <Route path='listnapas' element={<ListNapas />} />
-              <Route path='listparms' element={<ListParms />} />
-              <Route path='logout' element={<Logout />} />
+
+            {/* Admin */}
+            <Route path="/admin" element={<Admin />}>
+              <Route path="listusers" element={<ListUsers />} />
+              <Route path="listfants" element={<ListFants />} />
+              <Route path="listnapas" element={<ListNapas />} />
+              <Route path="listparms" element={<ListParms />} />
+              <Route path="logout" element={<Logout />} />
             </Route>
-            {/* Admin Route Ends */}
-            {/* Super Admin Route Starts */}
-            <Route path="/superadmin" element={<SuperAdmin />} >              
-              <Route path='listadminusers' element={<ListAdminUsers />} />
-              <Route path='listbadhfand' element={<ListBadhfand />} />
-              <Route path='listoffices' element={<ListOffices />} />
-              <Route path='datasync' element={<Datasync />} />
-              <Route path='logout' element={<Logout />} />
+
+            {/* Super Admin */}
+            <Route path="/superadmin" element={<SuperAdmin />}>
+              <Route path="listadminusers" element={<ListAdminUsers />} />
+              <Route path="listbadhfand" element={<ListBadhfand />} />
+              <Route path="listoffices" element={<ListOffices />} />
+              <Route path="datasync" element={<Datasync />} />
+              <Route path="logout" element={<Logout />} />
             </Route>
-            {/* Super Admin Route Ends */}           
+
           </Route>
-          <Route path='/logout' element={<Logout />} />
-          <Route path='/register' element={<Register />} />          
-          <Route path='/resetpassword' element={<ResetPassword />} />
-          <Route path='/login' element={<Login />} />          
         </Routes>
-        </Suspense>
-      </div>
-    </>
-  )
+      </Suspense>
+    </div>
+  );
 }
 
-export default App
+export default App;

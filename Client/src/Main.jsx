@@ -1,17 +1,23 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'
-import { createRoot } from 'react-dom/client'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { createRoot } from 'react-dom/client';
+import { HashRouter as Router } from "react-router-dom";
+
 import App from './App';
 import './Main.scss';
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { HashRouter as Router } from "react-router-dom";
+
+import { AuthProvider } from "./Context/AuthContext";
 
 createRoot(document.getElementById('root')).render(
   <>
     <ToastContainer />
     <Router>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </Router>
   </>
-)
+);

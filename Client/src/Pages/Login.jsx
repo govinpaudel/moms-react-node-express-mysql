@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Login.scss";
 import { toast } from "react-toastify";
@@ -8,102 +8,136 @@ import { Circles } from "react-loader-spinner";
 
 const Login = () => {
   const initialdata = { username: "", password: "", aabaid: 0 };
-  const [aabas, setaabas] = useState([]);
-  const [defaaba, setdefaaba] = useState(null);
+
+  const [aabas, setAabas] = useState([]);
+  const [defaaba, setDefAaba] = useState(null);
   const [formData, setFormData] = useState(initialdata);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   const Url = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
-  const loggedUser = localStorage.getItem("loggedUser");
+  // Parse safely
+  const loggedUser = JSON.parse(localStorage.getItem("loggedUser") || "null");
+
+  /* ------------------------- handlers ------------------------- */
 
   const handleChange = (e) => {
-    if (e.target.name === "aabaid") {
-      setdefaaba(e.target.value);
+    const { name, value } = e.target;
+
+    if (name === "aabaid") {
+      setDefAaba(value);
     }
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const OnSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
 
     if (!formData.username || !formData.password) {
       toast.warning("Please fill the form");
       return;
     }
 
-    const newdata = {
+    setSubmitting(true);
+
+    const payload = {
       ...formData,
       todaydate: new Date().toISOString().split("T")[0],
     };
 
     try {
-      const response = await axios.post(Url + "login", newdata);
+      const response = await axios.post(`${Url}login`, payload);
 
-      // 🔴 InfinityFree HTML detection
+      // InfinityFree HTML detection
       if (typeof response.data === "string") {
-        toast.error("सुरक्षा जाँच भइरहेको छ, कृपया पुनः प्रयास गर्नुहोस्।");
-        window.location.reload();
+        toast.error("सर्भर प्रमाणीकरण असफल भयो । कृपया केही समयपछि पुनः प्रयास गर्नुहोस्।");
         return;
       }
 
       if (response.data.status === true) {
-        const data1 = { ...response.data.data, aabaid: defaaba };
+        const userData = {
+          ...response.data.data,
+          aabaid: defaaba,
+        };
 
         localStorage.setItem("access_token", response.data.access_token);
         localStorage.setItem("refresh_token", response.data.refresh_token);
-        localStorage.setItem("loggedUser", JSON.stringify(data1));
+        localStorage.setItem("loggedUser", JSON.stringify(userData));
 
-        toast.success(response.data.message);
-        navigate("/apphome");
+        toast.success(response.data.message || "लगइन सफल भयो");
+        navigate("/apphome", { replace: true });
       } else {
         toast.warning(response.data.message || "लगइन असफल भयो");
       }
     } catch (error) {
-      toast.error("Server error. Please try again.");
       console.error(error);
+      toast.error("Server error. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
+  /* ------------------------- API ------------------------- */
+
   const loadAabas = async () => {
     try {
-      const response = await axios.get(Url + "getAllAabas");
-      // 🔴 InfinityFree HTML detection
+      const response = await axios.get(`${Url}getAllAabas`);
+
       if (typeof response.data === "string") {
-        toast.error("सुरक्षा जाँच भइरहेको छ, कृपया पुनः प्रयास गर्नुहोस्।");
-        window.location.reload();
+        toast.error("सर्भर प्रमाणीकरण असफल भयो । कृपया केही समयपछि पुनः प्रयास गर्नुहोस्।");
         return;
       }
-      setaabas(response.data.data);
+
+      setAabas(response.data.data || []);
     } catch (error) {
       console.error(error);
+      toast.error("डाटा लोड गर्न सकिएन");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ------------------------- effects ------------------------- */
+
+  // Initial load
   useEffect(() => {
     document.title = "MOMS | प्रयोगकर्ता लगईन";
     loadAabas();
 
     if (loggedUser) {
-      navigate("/apphome");
+      navigate("/apphome", { replace: true });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Set default aaba
   useEffect(() => {
-    if (aabas?.length) {
-      const current = aabas.find((item) => item.is_current === 1);
-      if (current) setdefaaba(current.id);
+    if (aabas.length) {
+      const current = aabas.find((a) => a.is_current === 1);
+      if (current) {
+        setDefAaba(current.id);
+      }
     }
   }, [aabas]);
 
+  // Sync aaba with form
   useEffect(() => {
     if (defaaba) {
-      setFormData((prev) => ({ ...prev, aabaid: defaaba }));
+      setFormData((prev) => ({
+        ...prev,
+        aabaid: defaaba,
+      }));
     }
   }, [defaaba]);
+
+  /* ------------------------- UI ------------------------- */
 
   return (
     <section id="login" className="login">
@@ -121,7 +155,7 @@ const Login = () => {
       <div className="login__form-outer">
         <h5 className="login__form-outer__header-text">लगईन फाराम</h5>
 
-        <form className="login__form-inner" onSubmit={OnSubmit}>
+        <form className="login__form-inner" onSubmit={onSubmit}>
           <input
             type="text"
             name="username"
@@ -130,7 +164,9 @@ const Login = () => {
             onChange={handleChange}
             required
           />
-      <hr/>
+
+          <hr />
+
           <input
             type="password"
             name="password"
@@ -139,7 +175,9 @@ const Login = () => {
             onChange={handleChange}
             required
           />
- <hr/>
+
+          <hr />
+
           <select
             name="aabaid"
             value={defaaba || ""}
@@ -152,11 +190,13 @@ const Login = () => {
               </option>
             ))}
           </select>
-<hr/>
+
+          <hr />
+
           <input
             type="submit"
-            value="लगईन गर्नुहोस्"
-            disabled={!defaaba}
+            value={submitting ? "प्रवेश हुँदैछ..." : "लगईन गर्नुहोस्"}
+            disabled={!defaaba || submitting}
             className="login__form-inner__item__button"
           />
         </form>

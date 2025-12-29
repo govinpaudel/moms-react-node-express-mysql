@@ -1,8 +1,16 @@
-import React from 'react'
-import { Navigate, Outlet } from 'react-router-dom'
-const Protected_route = () => {
-const access_token=localStorage.getItem('access_token');
-  return access_token ? <Outlet/> : <Navigate to={"/login"}/>    
-}
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 
-export default Protected_route
+const Protected_route = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
+};
+
+export default Protected_route;
