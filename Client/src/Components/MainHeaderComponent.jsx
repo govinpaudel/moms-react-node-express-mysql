@@ -2,10 +2,12 @@ import { adToBs, bsToAd } from '@sbmdkl/nepali-date-converter';
 import "./MainHeaderComponent.scss";
 const edate = new Date().toISOString().slice(0, 10);
 const ndate = adToBs(edate);
+import { useAuth } from '../Context/AuthContext';
 
 
 const MainHeaderComponent = (props) => {
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+
+  const {loggedUser} = useAuth()
   const { headerText} = props;
   return (
     <div className="wrapper no-print">

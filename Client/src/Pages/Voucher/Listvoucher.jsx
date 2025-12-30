@@ -8,8 +8,8 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import { toast } from "react-toastify";
 const Listvoucher = () => {
   const navigate = useNavigate();
-  const { axiosInstance } = useAuth();
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+  const { loggedUser,axiosInstance } = useAuth();
+  
   const [voucherlist, setvoucherlist] = useState([]);
   const [svoucherno, setsvoucherno] = useState(0);
   const summary = [{ sirshak_id: 99, sirshak_name: "आजको जम्माः", amount: 0 }];
@@ -82,6 +82,7 @@ const Listvoucher = () => {
   };
 
   const loadTodayVouchers = async () => {
+    console.log("Access token:", localStorage.getItem("access_token"));
     setLoading(true);
     try {
       const url = "getTodaysVoucher";

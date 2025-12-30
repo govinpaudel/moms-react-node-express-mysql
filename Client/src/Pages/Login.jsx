@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import "./Login.scss";
 import { toast } from "react-toastify";
 import MainHeaderComponent from "../Components/MainHeaderComponent";
@@ -10,14 +9,12 @@ import { useAuth } from "../Context/AuthContext";
 
 const Login = () => {
   const initialdata = { username: "", password: "", aabaid: 0 };
-  const { login, isAuthenticated } = useAuth();
+  const { login, loggedUser, isAuthenticated,axiosInstance } = useAuth();
   const [aabas, setAabas] = useState([]);
   const [defaaba, setDefAaba] = useState(null);
   const [formData, setFormData] = useState(initialdata);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-
-  const Url = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -56,7 +53,7 @@ const Login = () => {
     };
 
     try {
-      const response = await axios.post(`${Url}login`, payload);
+      const response = await axiosInstance.post('login', payload);
       if (response.data.status === true) {
         const userData = {
           ...response.data.data,
@@ -84,16 +81,19 @@ const Login = () => {
 
   const loadAabas = async () => {
     try {
-      const response = await axios.get(`${Url}getAllAabas`);
+      const response = await axiosInstance.get('getAllAabas');
       if (typeof response.data === "string") {
         toast.error("सर्भर प्रमाणीकरण असफल भयो । कृपया केही समयपछि पुनः प्रयास गर्नुहोस्।");
         return;
       }
       const list = response.data.data || [];
       setAabas(list);
-      const currentAaba = list.find(a => a.is_current === "1");
-    if (currentAaba) {
-      setDefAaba(currentAaba.id);
+      const currentAaba = list.find(a => Number(a.is_current) === 1);
+      if (currentAaba) {
+      setFormData(prev => ({
+        ...prev,
+        aabaid: String(currentAaba.id), // ✅ DIRECT DEFAULT
+      }));
     }
     } catch (error) {
       console.error(error);
@@ -110,17 +110,6 @@ const Login = () => {
     document.title = "MOMS | प्रयोगकर्ता लगईन";
     loadAabas();
   }, []);
-
-
-  // Sync aaba with form
-  useEffect(() => {
-    if (defaaba) {
-      setFormData((prev) => ({
-        ...prev,
-        aabaid: defaaba,
-      }));
-    }
-  }, [defaaba]);
 
   /* ------------------------- UI ------------------------- */
 
@@ -165,7 +154,7 @@ const Login = () => {
 
           <select
             name="aabaid"
-            value={defaaba || ""}
+            value={formData.aabaid}
             onChange={handleChange}
             className="login__form-inner__item__input"
           >
@@ -180,8 +169,7 @@ const Login = () => {
 
           <input
             type="submit"
-            value={submitting ? "प्रवेश हुँदैछ..." : "लगईन गर्नुहोस्"}
-            disabled={!defaaba || submitting}
+            value={submitting ? "प्रवेश हुँदैछ..." : "लगईन गर्नुहोस्"}            
             className="login__form-inner__item__button"
           />
         </form>

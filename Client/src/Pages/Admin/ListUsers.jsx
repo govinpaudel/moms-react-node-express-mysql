@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios';
+import { useAuth } from '../../Context/AuthContext';
 import { toast } from 'react-toastify';
 const ListUsers = () => {
   const [data, setdata] = useState();
-  const Url = import.meta.env.VITE_API_URL;
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-
+  const {loggedUser,axiosInstance}=useAuth();
+  
   const resetPassword = async (id) => {
     const data = {
       updated_by_user_id: loggedUser.id,
@@ -13,8 +12,8 @@ const ListUsers = () => {
       user_id: id
     }
     console.log("data sent", data);
-    const url = "/resetPassword";
-    const response = await axios.post(url, data)
+    const url = "resetPassword";
+    const response = await axiosInstance.post(url, data)
     console.log(response);
     if (response.data.status) {
       toast.success(response.data.message);
@@ -34,8 +33,8 @@ const ListUsers = () => {
       table:'voucher_users'
     }
     console.log("data sent", data);
-    const url = "/toggleStatus";
-    const response =await axios.post(url, data)
+    const url = "toggleStatus";
+    const response =await axiosInstance.post(url, data)
     console.log(response);
     if (response.data.status) {
       toast.success(response.data.message);
@@ -52,8 +51,8 @@ const ListUsers = () => {
       table:'voucher_users'
     }
     console.log("data sent", data);
-    const url = "/getAll";
-    const response = await axios.post(url, data)
+    const url = "getAll";
+    const response = await axiosInstance.post(url, data)
     console.log(response);
     setdata(response.data.data);
 

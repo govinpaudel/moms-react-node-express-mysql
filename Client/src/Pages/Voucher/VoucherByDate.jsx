@@ -3,12 +3,11 @@ import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { useState, useEffect } from "react";
 import Calendar from "@sbmdkl/nepali-datepicker-reactjs";
 import "./VoucherByDate.scss";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../../Context/AuthContext";
 const VoucherByDate = () => {
   const navigate = useNavigate();  
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+  const {loggedUser,axiosInstance}=useAuth()
   const initialdata = {
     nep_start_date: "",
     nep_end_date: "",
@@ -27,7 +26,7 @@ const VoucherByDate = () => {
       aaba_id: loggedUser.aabaid,
     };
     console.log("getting loadusers", data)
-    const response = await axios.post("/Userlist",data)     
+    const response = await axiosInstance.post("/Userlist",data)     
     console.log(response.data);
     setudata(response.data.users);
   }

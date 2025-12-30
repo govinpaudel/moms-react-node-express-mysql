@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios';
 import "./List.scss";
 import { toast } from 'react-toastify';
+import { useAuth } from '../../Context/AuthContext';
 const ListParms = () => {
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+  const {loggedUser,axiosInstance}=useAuth();
   const initialdata = {
     id: 0,    
     vstart: "",
@@ -11,7 +11,7 @@ const ListParms = () => {
   }
   const [listdata, setlistdata] = useState();
   const [data, setdata] = useState(initialdata);
-  const Url = import.meta.env.VITE_API_URL;
+  
   const loadEditData = async (data) => {   
     setdata(data);   
   }
@@ -21,7 +21,7 @@ const ListParms = () => {
     setdata({...data,user_id:loggedUser.id,table_name:'voucher_parameter',office_id: loggedUser.office_id})
     console.log("data sent for updation", data);
     const url = "addOrUpdateParms"
-    const response = await axios.post(url, data);
+    const response = await axiosInstance.post(url, data);
 
     console.log(response);
     if (response.data.status == true) {
@@ -40,8 +40,8 @@ const ListParms = () => {
       user_id: loggedUser.id
     }
     console.log("data sent", data);
-    const url = "/togglestatus"
-    const response = await axios.post(url, data);
+    const url = "togglestatus"
+    const response = await axiosInstance.post(url, data);
 
     console.log(response);
     if (response.data.status) {
@@ -64,8 +64,8 @@ const ListParms = () => {
       table: "voucher_parameter"
     }
     console.log("data sent", data);
-    const url = "/getAll"
-    const response = await axios.post(url, data);
+    const url = "getAll"
+    const response = await axiosInstance.post(url, data);
     console.log(response);
     setlistdata(response.data.data);
 

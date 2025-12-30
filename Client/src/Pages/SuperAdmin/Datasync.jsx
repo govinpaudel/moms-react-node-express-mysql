@@ -1,12 +1,12 @@
 import { useState,useEffect } from "react"
 import { toast } from "react-toastify";
-import axios from "axios";
+import { useAuth } from "../../Context/AuthContext";
 const Datasync = () => {
+  const {axiosInstance}=useAuth();
   const [date,setDate]=useState()
-  const [ip,setIp]=useState();
+  const [ip,setIp]=useState('127.0.0.1');
   const [data,setData]=useState();
-  const [ndata,setNdata]=useState();
-  const Url = import.meta.env.VITE_API_URL;
+  const [ndata,setNdata]=useState();  
   const [summary, setSummary] = useState([]);
   const downloadData=async()=>{
     if(!date){
@@ -34,7 +34,7 @@ const Datasync = () => {
   "voucher_user_roles"
 ]
     }    
-    const response=await axios.post("/downloadRecords",data)
+    const response=await axiosInstance.post("downloadRecords",data)
     setData(response.data.data)
     setNdata(response.data)
     console.log(response);

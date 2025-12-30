@@ -1,13 +1,12 @@
 import React, { useState,useEffect } from "react";
 import "./VoucherMonthly.scss";
-import axios from "axios";
 import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { Circles } from "react-loader-spinner";
+import { useAuth } from "../../Context/AuthContext";
 const VoucherMonthly = () => {
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-  const Url = import.meta.env.VITE_API_URL + "voucher/";
+  const {loggedUser,axiosInstance}=useAuth();
   const [mselected, setmselected] = useState([]);
   const [regi,setregi]=useState([]);
   const [summary,setsummary]=useState([{}]);
@@ -23,7 +22,7 @@ const [loading,setLoading]= useState(false);
       aaba_id: loggedUser.aabaid,      
     };
     console.log("getting monthlist",data)
-    const response = await axios.post("getMonthlistByAaba",data)
+    const response = await axiosInstance.post("getMonthlistByAaba",data)
     console.log(response.data);
     setmdata(response.data.data);
     setLoading(false);
@@ -51,7 +50,7 @@ useEffect(() => {
     };
     setLoading(true);
     console.log("data sent", data);
-    const response = await axios.post("getVoucherMonthly",data)    
+    const response = await axiosInstance.post("getVoucherMonthly",data)    
     console.log(response.data.data);    
     setregi(response.data.data.registration); 
     setsummary(response.data.data.summary);

@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import "./SuperAdminSidebar.scss";
 import { NavLink } from 'react-router-dom';
-import axios from 'axios';
+import { useAuth } from '../../Context/AuthContext';
 
 
 const SuperAdminSidebar = () => {
   const [data, setdata] = useState([])  
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+  const {loggedUser,axiosInstance }= useAuth();
 
   const LoadSidebar = async () => {
-    const url ="/getSidebarlist";
+    const url ="getSidebarlist";
     const data = {
       user_id: loggedUser.id,
       module: 'SuperAdmin'
     }
-    const response = await axios.post(url,data);    
+    const response = await axiosInstance.post(url,data);    
     setdata(response.data.data);
     console.log(response.data.data)
   }

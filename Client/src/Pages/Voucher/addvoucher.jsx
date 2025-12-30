@@ -4,13 +4,16 @@ import '@sbmdkl/nepali-datepicker-reactjs/dist/index.css';
 import "./Addvoucher.scss";
 import { toast } from "react-toastify";
 import { useState, useEffect, useRef } from "react";
-import axios from 'axios';
+import { useAuth } from '../../Context/AuthContext';
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { adToBs, bsToAd } from '@sbmdkl/nepali-date-converter';
+
 const Addvoucher = () => {
+  const {loggedUser,axiosInstance} = useAuth();
+  console.log(loggedUser);
   const edate = new Date().toISOString().slice(0, 10);
   console.log("आजको अंग्रेजी मिति", edate);
   const ndate = adToBs(edate);
@@ -37,7 +40,6 @@ const Addvoucher = () => {
   const [napas, setnapas] = useState();
   const [params, setparams] = useState();
   const [vdata, setVdata] = useState(initialdata);
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
   const navigate = useNavigate();
   const handleChange = (e) => {
     setVdata({ ...vdata, [e.target.name]: e.target.value });
@@ -54,7 +56,7 @@ const Addvoucher = () => {
     const data = {
       office_id: loggedUser.office_id,
     }
-    const response = await axios.post("/getVoucherMaster", data)
+    const response = await axiosInstance.post("/getVoucherMaster", data)
     console.log(response.data.data);
     setsirshaks(response.data.data.sirshaks);
     setfants(response.data.data.fants);
@@ -121,7 +123,7 @@ const Addvoucher = () => {
       toast.warning("कृपया भौचर नं जाँच गर्नुहोस् ।");
       return;
     }
-    const res= await axios.post("/addOrUpdateVoucher",vdata);    
+    const res= await axiosInstance.post("/addOrUpdateVoucher",vdata);    
     console.log(res.data);
     if (res.data.status == true) {
       toast.success(res.data.message);

@@ -1,9 +1,9 @@
 import React, { useState,useEffect } from 'react'
-import axios from 'axios';
 import "./List.scss";
 import { toast } from 'react-toastify';
+import { useAuth } from '../../Context/AuthContext';
 const ListNapas = () => {
-    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+    const {loggedUser,axiosInstance}=useAuth()
     const initialdata = {
         napa_id:0,
         office_id:loggedUser.office_id,
@@ -12,7 +12,6 @@ const ListNapas = () => {
     }
   const [listdata,setlistdata]=useState();
   const [data,setdata]=useState(initialdata);
-  const Url = import.meta.env.VITE_API_URL;
   const loadEditData=async(data)=>{
       setdata(data)
    }
@@ -20,8 +19,8 @@ const ListNapas = () => {
 const OnSubmit=async(e)=>{
     e.preventDefault();
     console.log("data sent for updation",data);
-  const url="/addOrUpdateNapas"
-    const response = await axios.post(url,data); 
+  const url="addOrUpdateNapas"
+    const response = await axiosInstance.post(url,data); 
     
       console.log(response);
       if(response.data.status==true){
@@ -39,8 +38,8 @@ const OnSubmit=async(e)=>{
       status:status
     }
     console.log("data sent", data);
-    const url="/toggleStatus"
-    const response = await axios.post(url,data);     
+    const url="toggleStatus"
+    const response = await axiosInstance.post(url,data);     
     console.log(response);  
     if(response.data.status){
       toast.success(response.data.message);
@@ -63,7 +62,7 @@ const OnSubmit=async(e)=>{
     }
     console.log("data sent", data);
     const url="/getAll"
-    const response = await axios.post(url,data);
+    const response = await axiosInstance.post(url,data);
     
     console.log(response);
     setlistdata(response.data.data);

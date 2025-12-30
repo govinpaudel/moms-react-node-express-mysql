@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios';
+import { useAuth } from '../../Context/AuthContext';
 import "./ListAdminUsers.scss";
 import { toast } from 'react-toastify';
 const ListAdminUsers = () => {
   const [data, setdata] = useState();
   
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-
+  const {loggedUser ,axiosInstance}= useAuth();
   const changeStatus = async (id, status) => {
     const data = {
       table:'voucher_users',
@@ -15,8 +14,8 @@ const ListAdminUsers = () => {
       id:id,
       status: status
     }
-    const url ="/toggleStatus";
-    const response=await axios.post(url,data);    
+    const url ="toggleStatus";
+    const response=await axiosInstance.post(url,data);    
     if (response.data.status) {
       toast.success(response.data.message);
       loadData();
@@ -30,7 +29,7 @@ const ListAdminUsers = () => {
     const data = {      
       table:'voucher_users'
     }
-    const url="/getAll";    
+    const url="getAll";    
     const response =await axiosInstance.post(url,data);
     const newdata = response.data?.data || [];
     const filteredData = newdata.filter(item => item.role === 2);
@@ -44,7 +43,7 @@ const ListAdminUsers = () => {
       office_id: loggedUser.office_id,
       role_id:loggedUser.role,
     }
-    const url="/resetPassword";
+    const url="resetPassword";
     const response=await axiosInstance.post(url,data)    
     console.log(response);
     if (response.data.status) {

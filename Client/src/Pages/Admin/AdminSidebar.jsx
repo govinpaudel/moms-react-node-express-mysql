@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import "./AdminSidebar.scss";
 import { NavLink } from 'react-router-dom';
-import axios from 'axios';
+import {useAuth} from '../../Context/AuthContext'
 const AdminSidebar = () => {
   const [data, setdata] = useState([])  
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+  const {loggedUser,axiosInstance}=useAuth();
+  
   const loadSidebar = async () => {
     const data = {
       user_id: loggedUser.id,
       module: 'Admin'
     }
-    const response = await axios.post("/getSidebarlist", data);    
+    const response = await axiosInstance.post("getSidebarlist", data);    
     setdata(response.data.data);
     console.log(response.data.data)
   }

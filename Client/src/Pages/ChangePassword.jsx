@@ -4,11 +4,10 @@ import { BsInfoCircleFill } from "react-icons/bs"
 import  "./Changepassword.scss";
 import { useNavigate} from 'react-router-dom';
 import { useEffect } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useAuth } from '../Context/AuthContext';
 const ChangePassword = () => {
-     
-    const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+    const {loggedUser,axiosInstance} = useAuth()
     const initialdata={
         user_id:loggedUser.id,
         oldpassword:"",
@@ -28,8 +27,8 @@ const ChangePassword = () => {
             toast.warning("पासवर्ड र पुन पासवर्ड मिलेन ।");
             return;
         }
-        const url=  "/changepassword";
-        const response = await axios.post(url,data);        
+        const url=  "changepassword";
+        const response = await axiosInstance.post(url,data);        
         console.log(response.data)
         if(response.data.status==true){
             toast.success(response.data.message);

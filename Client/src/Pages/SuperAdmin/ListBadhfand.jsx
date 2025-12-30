@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react'
-import axios from 'axios';
+
+import { useAuth } from '../../Context/AuthContext';
 import "./ListBadhfand.scss";
 import { toast } from 'react-toastify';
 const ListBadhfand = () => { 
@@ -21,9 +22,8 @@ const ListBadhfand = () => {
   const [bdata,setbdata]=useState(initialdata);
   const [sselected, setsselected] = useState([]);
   const [statedata,setstatedata]=useState();
-  const Url = import.meta.env.VITE_API_URL;
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-
+  
+  const {loggedUser,axiosInstance} = useAuth();
 const onSubmit=async(e)=>{
   e.preventDefault();
   console.log(bdata);
@@ -32,9 +32,9 @@ const onSubmit=async(e)=>{
     toast.warning("कृपया सबैको जोड 100 हुने गरि रकम राख्नुहोस्");
     return;
   }
-  const response = await axios({
+  const response = await axiosInstance({
     method: "post",
-    url: Url + "updateBadhfand",
+    url:  "updateBadhfand",
     data: bdata,
   });
   console.log(response);  
@@ -74,9 +74,9 @@ const handlechange=(e)=>{
       aaba_id: loggedUser.aabaid,
     };
     console.log("getting statelist", data)
-    const response = await axios({
+    const response = await axiosInstance({
       method: "post",
-      url: Url + "listStates",
+      url: "listStates",
       data: data,
     });
     console.log(response.data);
@@ -95,9 +95,9 @@ const handlechange=(e)=>{
       state_id:sselected
     }
     console.log("data sent", data);
-    const response = await axios({
+    const response = await axiosInstance({
       method: "post",
-      url: Url + "listBadhfandByStates",
+      url: "listBadhfandByStates",
       data: data
     });
     console.log(response.data.data);

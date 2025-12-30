@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./VoucherFant.scss";
-import axios from "axios";
+
 import { toast } from "react-toastify";
 import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { Circles } from "react-loader-spinner";
+import { useAuth } from "../../Context/AuthContext";
 const VoucherFant = () => {
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-  const Url = import.meta.env.VITE_API_URL;
+  const {loggedUser,axiosInstance}=useAuth();  
   const [mselected, setmselected] = useState([]);
   const [fselected, setfselected] = useState([]);
   const [uselected, setuselected] = useState([]);
@@ -25,7 +25,7 @@ const VoucherFant = () => {
       aaba_id: loggedUser.aabaid      
     };
     console.log("getting monthlist", data)
-    const response = await axios.post("/MonthlistByAaba",data)
+    const response = await axiosInstance.post("MonthlistByAaba",data)
     console.log(response.data);
     setmdata(response.data.months);
     setLoading(false);
@@ -41,7 +41,7 @@ const VoucherFant = () => {
       month_id: mselected
     };
     console.log("getting fantlist", data)
-    const response = await axios.post("/FantlistByAabaMonth",data)    
+    const response = await axiosInstance.post("/FantlistByAabaMonth",data)    
     console.log(response.data);
     setfdata(response.data.fants);
    
@@ -60,7 +60,7 @@ const VoucherFant = () => {
       fant_id:fselected
     };
     console.log("getting userlist", data)
-    const response = await axios.post("/UserlistByAabaMonthFant",data)   
+    const response = await axiosInstance.post("/UserlistByAabaMonthFant",data)   
     console.log(response.data);
     setudata(response.data.users);
     
@@ -99,7 +99,7 @@ const VoucherFant = () => {
     };    
     console.log("data sent", data);
     setLoading(true);
-    const response = await axios.post("/VoucherFant",data)
+    const response = await axiosInstance.post("/VoucherFant",data)
     console.log(response.data.data);
     setsummary(response.data.data);    
     setLoading(false);

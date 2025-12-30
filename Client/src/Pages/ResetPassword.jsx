@@ -5,13 +5,13 @@ import "./ResetPassword.scss";
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 const ResetPassword = () => {
-    const handleSubmit=async(e)=>{
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
     }
 
-useEffect(() => {
-    document.title = "MOMS | पासवर्ड रिसेट";
-}, [])
+    useEffect(() => {
+        document.title = "MOMS | पासवर्ड रिसेट";
+    }, [])
 
 
 
@@ -21,13 +21,13 @@ useEffect(() => {
             icon={<BsInfoCircleFill size={40} />}
         />
         <div className='resetpassword__div'>
-        <form onSubmit={handleSubmit}>
-           <input type="text" className='resetpassword__div__input' name='idoremail'  placeholder='आईडी अथवा ईमेल' required/>           
-           <input type="submit" value="पासवर्ड रिसेट" className='resetpassword__div__button'/>
-           </form>
+            <form onSubmit={handleSubmit}>
+                <input type="text" className='resetpassword__div__input' name='idoremail' placeholder='आईडी अथवा ईमेल' required />
+                <input type="submit" value="पासवर्ड रिसेट" className='resetpassword__div__button' />
+            </form>
         </div>
         <h5 className="login__form-outer__footer-text">
-          <Link to="/login">पछाडि जानुहोस्</Link>
+            <Link to="/login">पछाडि जानुहोस्</Link>
         </h5>
 
 

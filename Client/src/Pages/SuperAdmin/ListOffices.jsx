@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'
-import axios from 'axios';
+import { useAuth } from '../../Context/AuthContext';
 import "./ListOffices.scss";
 import { toast } from 'react-toastify';
 const ListOffices = () => { 
@@ -20,9 +20,8 @@ const ListOffices = () => {
   const [bdata,setbdata]=useState(initialdata);
   const [sselected, setsselected] = useState([]);
   const [stateData,setStateData]=useState();
-  const Url = import.meta.env.VITE_API_URL;
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
-
+  
+  const {loggedUser,axiosInstance} = useAuth()
 const onSubmit=async(e)=>{
   e.preventDefault();
   console.log(bdata);
@@ -30,9 +29,9 @@ const onSubmit=async(e)=>{
     toast.warning("कृपया प्रदेश नं राख्नुहोस्");
     return;
   }  
-  const response = await axios({
+  const response = await axiosInstance({
     method: "post",
-    url: Url + "updateStateOfOffice",
+    url: "updateStateOfOffice",
     data: bdata,
   });
   console.log(response);  
@@ -72,9 +71,9 @@ const handlechange=(e)=>{
       aaba_id: loggedUser.aabaid,
     };
     console.log("getting statelist", data)
-    const response = await axios({
+    const response = await axiosInstance({
       method: "post",
-      url: Url + "listStates",
+      url: "listStates",
       data: data,
     });
     console.log(response.data);
@@ -92,9 +91,9 @@ const handlechange=(e)=>{
       state_id:sselected
     }
     console.log("data sent", data);
-    const response = await axios({
+    const response = await axiosInstance({
       method: "post",
-      url: Url + "listOfficesByStates",
+      url: "listOfficesByStates",
       data: data
     });
     console.log(response.data);

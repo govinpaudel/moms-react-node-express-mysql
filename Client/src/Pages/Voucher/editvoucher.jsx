@@ -11,20 +11,17 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import { NavLink, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { adToBs, bsToAd } from '@sbmdkl/nepali-date-converter'
-import axios from "axios";
+import { useAuth } from "../../Context/AuthContext";
 
 const edate = new Date().toISOString().slice(0, 10);
-console.log("ENGLISH DATE AAYEKO", edate);
 const ndate = adToBs(edate);
-console.log("NEPALI DATE AAYEKO", ndate);
-const Editvoucher = () => {
-  
+const Editvoucher = () => {  
+  const { loggedUser,axiosInstance}= useAuth();
   const [sirshaks, setsirshaks] = useState();
   const [fants, setfants] = useState();
   const [napas, setnapas] = useState();
   const [params, setparams] = useState();
-  const [vdata, setVdata] = useState([]);
-  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+  const [vdata, setVdata] = useState([]);  
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -46,7 +43,7 @@ const Editvoucher = () => {
     const data = {
       office_id: loggedUser.office_id,
     }
-    const response = await axios.post("/getVoucherMaster", data)
+    const response = await axiosInstance.post("/getVoucherMaster", data)
     console.log(response.data.data);
     setsirshaks(response.data.data.sirshaks);
     setfants(response.data.data.fants);

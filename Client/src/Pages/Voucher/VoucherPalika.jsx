@@ -3,13 +3,10 @@ import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { useState,useEffect } from "react";
 import Calendar from "@sbmdkl/nepali-datepicker-reactjs";
 import "./VoucherPalika.scss";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Context/AuthContext";
 
 const VoucherPalika = () => {
-  const navigate=useNavigate();
-  const Url = import.meta.env.VITE_API_URL;
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+  const {loggedUser,axiosInstance}=useAuth();  
   const initialdata = {
     nep_start_date: "",
     nep_end_date: "",
@@ -56,7 +53,7 @@ const dototal =()=>{
       aaba_id:loggedUser.aabaid
     };
     console.log("data sent", data);
-    const response= await axios.post("/Voucherpalika",data)    
+    const response= await axiosInstance.post("Voucherpalika",data)    
     console.log(response.data.data);
     setrepdata(response.data.data);    
   };

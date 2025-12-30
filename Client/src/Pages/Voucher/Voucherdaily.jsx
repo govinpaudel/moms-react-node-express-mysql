@@ -3,13 +3,11 @@ import PageHeaderComponent from "../../Components/PageHeaderComponent";
 import { useState,useEffect } from "react";
 import Calendar from "@sbmdkl/nepali-datepicker-reactjs";
 import "./Voucherdaily.scss";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Context/AuthContext";
 
 const Voucherdaily = () => {
-  const navigate=useNavigate();
-  const Url = import.meta.env.VITE_API_URL;
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+  const {loggedUser,axiosInstance}=useAuth();
+  
   const initialdata = {
     nep_start_date: "",
     nep_end_date: "",
@@ -27,10 +25,10 @@ const Voucherdaily = () => {
       office_id: loggedUser.office_id,
       aaba_id: loggedUser.aabaid,
     };
-    console.log(Url);
+    
     console.log("getting fantlist", data)
     
-    const response = await axios.post("/Fantlist",data)    
+    const response = await axiosInstance.post("Fantlist",data)    
     console.log(response.data);
     setfdata(response.data.fants);
   }
