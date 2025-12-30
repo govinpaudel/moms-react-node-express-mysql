@@ -11,7 +11,6 @@ const Login = () => {
   const initialdata = { username: "", password: "", aabaid: 0 };
   const { login, loggedUser, isAuthenticated,axiosInstance } = useAuth();
   const [aabas, setAabas] = useState([]);
-  const [defaaba, setDefAaba] = useState(null);
   const [formData, setFormData] = useState(initialdata);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -57,7 +56,7 @@ const Login = () => {
       if (response.data.status === true) {
         const userData = {
           ...response.data.data,
-          aabaid: defaaba,
+          aabaid: formData.aabaid,
         };
         login({
           access_token: response.data.access_token,
