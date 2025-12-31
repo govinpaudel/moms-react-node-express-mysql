@@ -59,6 +59,9 @@ const ChangePassword = () => {
            <input type="password" onChange={handleChange} className='changepassword__div__input' name='confirmpassword'  placeholder='फेरी नयाँ पासवर्ड'required />
            <input type="submit" value="पासवर्ड परिवर्तन" className='changepassword__div__button'/>
            </form>
+           <hr/>
+           <button onClick={()=>{navigate('/apphome')}} className='changepassword__div__button' >पछाडी जानुहोस् ।</button>
+          
         </div>
     </section>
     )
